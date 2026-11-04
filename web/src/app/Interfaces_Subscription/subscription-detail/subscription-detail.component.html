@@ -1,0 +1,73 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/FreelancerJobs" class="nav-link"><i class="fa fa-folder-open"></i> My Jobs</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link active"><i class="fa fa-crown"></i> Subscription</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container" *ngIf="loading">
+  <p><i class="fa fa-spinner fa-spin"></i> Loading plan...</p>
+</div>
+<div class="main-container" *ngIf="!loading && plan">
+  <a routerLink="/SubscriptionPlans" class="back-link">
+    <i class="fa fa-arrow-left"></i> Back to plans
+  </a>
+
+  <div class="detail-card">
+    <div class="detail-header">
+      <span class="popular-badge" *ngIf="plan.popular">Most Popular</span>
+      <h1>{{ plan.name }} Plan</h1>
+      <p class="description">{{ plan.description }}</p>
+      <div class="price-block">
+        <span class="amount">${{ plan.price }}</span>
+        <span class="period">/{{ plan.duration }}</span>
+      </div>
+    </div>
+
+    <div class="benefits-section">
+      <h3>What's included</h3>
+      <ul class="benefits-list">
+        <li *ngFor="let benefit of plan.benefits">
+          <i class="fa fa-check-circle"></i>
+          <span>{{ benefit }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ai-highlight" *ngIf="plan.type === 'premium' || plan.type === 'enterprise'">
+      <i class="fa fa-robot"></i>
+      <div>
+        <strong>AI CV Generator</strong>
+        <p>Generate and optimize your CV with our AI assistant. Premium: 10 uses/month. Enterprise: unlimited.</p>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <a [routerLink]="['/SubscriptionCheckout', plan.id]" class="btn-subscribe">
+        <i class="fa fa-credit-card"></i> Subscribe Now
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="main-container" *ngIf="!loading && !plan">
+  <div class="not-found">
+    <h2>Plan not found</h2>
+    <a routerLink="/SubscriptionPlans">View all plans</a>
+  </div>
+</div>
+
