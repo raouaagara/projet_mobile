@@ -1,0 +1,434 @@
+.error-msg { color: #dc2626; margin-bottom: 12px; font-size: 0.9rem; }
+.paypal-hint { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
+.paypal-config-msg { font-size: 0.9rem; color: #b45309; margin: 12px 0; }
+#paypal-button-container { min-height: 45px; margin-bottom: 16px; }
+.btn-paypal { background: #0070ba; }
+.btn-paypal:hover:not(:disabled) { background: #003087; }
+
+:host {
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-body: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  height: 64px;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--text-main);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-mark {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.logo-text span { color: var(--primary); }
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.nav-link { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--primary); }
+.nav-divider { width: 1px; height: 24px; background: var(--border); }
+.user-profile-menu img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; }
+
+.main-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.back-link:hover { color: var(--primary); }
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  align-items: start;
+}
+
+.checkout-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.checkout-form h1 {
+  margin: 0 0 24px;
+  font-size: 1.5rem;
+  color: var(--text-main);
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payment-option:hover,
+.payment-option:has(input:checked) {
+  border-color: var(--primary);
+  background: #f0fdf4;
+}
+
+.payment-option input { accent-color: var(--primary); }
+.payment-option span { display: flex; align-items: center; gap: 8px; }
+
+.promo-row {
+  display: flex;
+  gap: 12px;
+}
+
+.promo-row .form-input { flex: 1; }
+.btn-apply {
+  padding: 10px 20px;
+  border: 1px solid var(--primary);
+  background: white;
+  color: var(--primary);
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-apply:hover { background: var(--primary); color: white; }
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 24px 0;
+  font-size: 0.9rem;
+  color: var(--text-body);
+  cursor: pointer;
+}
+
+.checkbox-label input { accent-color: var(--primary); margin-top: 3px; }
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-submit:hover { background: var(--primary-dark); }
+
+.order-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  position: sticky;
+  top: 88px;
+}
+
+.order-summary h3 {
+  margin: 0 0 20px;
+  font-size: 1.1rem;
+  color: var(--text-main);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: var(--text-body);
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 1.1rem;
+}
+
+.summary-total strong { color: var(--primary); }
+
+.not-found {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.not-found h2 { margin: 0 0 16px; color: var(--text-main); }
+.not-found a { color: var(--primary); font-weight: 600; text-decoration: none; }
+
+@media (max-width: 768px) {
+  .checkout-layout { grid-template-columns: 1fr; }
+  .order-summary { position: static; }
+}
+
+/* Card Validation Styles */
+.form-input.error {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.error-msg {
+  display: block;
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.success-msg {
+  display: block;
+  color: #10b981;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+/* Promo Code Styles */
+.btn-remove {
+  padding: 10px 20px;
+  border: 1px solid #dc2626;
+  background: white;
+  color: #dc2626;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+  color: white;
+}
+
+.promo-hints {
+  margin-top: 8px;
+}
+
+.promo-hints small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Order Summary Discount */
+.discount-row {
+  color: #10b981;
+}
+
+.discount-amount {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.summary-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+.savings-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.form-input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+
+/* Flouci Payment Styles */
+.flouci-info {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #0ea5e9;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.flouci-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0369a1;
+}
+
+.flouci-logo i {
+  font-size: 2rem;
+  color: #0ea5e9;
+}
+
+.flouci-description {
+  color: var(--text-body);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.flouci-amount {
+  background: white;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.flouci-amount span {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.flouci-amount strong {
+  color: #0369a1;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.flouci-amount small {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.flouci-hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.btn-flouci {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.btn-flouci:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.btn-flouci:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Payment option highlight for Flouci */
+.payment-option:has(input[value="flouci"]:checked) {
+  border-color: #0ea5e9;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .flouci-amount strong {
+    font-size: 1.5rem;
+  }
+  
+  .flouci-logo {
+    font-size: 1.1rem;
+  }
+}
