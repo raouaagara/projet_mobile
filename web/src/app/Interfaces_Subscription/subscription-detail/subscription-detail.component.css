@@ -1,0 +1,214 @@
+:host {
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --bg-body: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-body: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  height: 64px;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--text-main);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-mark {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.logo-text span { color: var(--primary); }
+
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+.nav-link:hover, .nav-link.active { color: var(--primary); }
+.nav-divider { width: 1px; height: 24px; background: var(--border); }
+.user-profile-menu img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; }
+
+.main-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.back-link:hover { color: var(--primary); }
+
+.detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.detail-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.popular-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.detail-header h1 {
+  margin: 0 0 12px;
+  font-size: 2rem;
+  color: var(--text-main);
+}
+
+.description {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.price-block .amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.price-block .period {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.benefits-section h3 {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  color: var(--text-main);
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: var(--text-body);
+}
+
+.benefits-list li i {
+  color: var(--primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.ai-highlight {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  margin-bottom: 28px;
+}
+
+.ai-highlight i {
+  font-size: 2rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.ai-highlight strong { display: block; margin-bottom: 4px; color: var(--text-main); }
+.ai-highlight p { margin: 0; font-size: 0.9rem; color: var(--text-body); }
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-subscribe {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-subscribe:hover { background: var(--primary-dark); }
+
+.not-found {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.not-found h2 { margin: 0 0 16px; color: var(--text-main); }
+.not-found a { color: var(--primary); font-weight: 600; text-decoration: none; }
