@@ -1,0 +1,114 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/FreelancerJobs" class="nav-link"><i class="fa fa-folder-open"></i> My Jobs</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> Subscription</a>
+      <a routerLink="/SubscriptionDashboard" class="nav-link active"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <div class="page-header">
+    <h1>Subscription Dashboard</h1>
+    <p class="subtitle">Manage your subscription, view payment history, and download invoices.</p>
+  </div>
+
+  <div class="loading-dash" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i> Loading your subscription...
+  </div>
+
+  <div class="no-subscription" *ngIf="!loading && !subscription">
+    <h3>No active subscription</h3>
+    <p>Subscribe to a plan to unlock features and appear here.</p>
+    <a routerLink="/SubscriptionPlans" class="btn-subscribe">View plans</a>
+  </div>
+
+  <div class="dashboard-grid" *ngIf="!loading && subscription">
+    <div class="status-card">
+      <h3>Current Plan</h3>
+      <div class="plan-info">
+        <span class="plan-name">{{ subscription.plan.name || 'Plan' }}</span>
+        <span class="status-badge" [class.active]="subscription.status === 'ACTIVE'">{{ subscription.status }}</span>
+      </div>
+      <div class="plan-details">
+        <div class="detail-row">
+          <span>Price</span>
+          <strong>${{ subscription.plan.price }}/{{ subscription.plan.duration }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Expires</span>
+          <strong>{{ subscription.endDate | slice:0:10 }}</strong>
+        </div>
+      </div>
+      <div class="plan-actions">
+        <button class="btn-renew" (click)="renewSubscription()" [disabled]="renewingSubscription">
+          <i class="fa fa-sync-alt"></i> {{ renewingSubscription ? 'Renewing...' : 'Renew Subscription' }}
+        </button>
+        <a routerLink="/SubscriptionPlans" class="btn-modify">Modify Plan</a>
+      </div>
+    </div>
+
+    <!-- AI CV Generator Card - Shows for ALL users -->
+    <div class="ai-access-card" [class.locked]="!hasAiCvAccess">
+      <i class="fa" [class.fa-robot]="hasAiCvAccess" [class.fa-lock]="!hasAiCvAccess"></i>
+      <div>
+        <h4>AI CV Generator</h4>
+        <p *ngIf="hasAiCvAccess">
+          You have access to the AI CV generator with your {{ subscription!.plan.name }} plan.
+        </p>
+        <p *ngIf="!hasAiCvAccess">
+          Upgrade to Premium or Enterprise to unlock AI-powered CV improvement.
+        </p>
+        <!-- Debug info (remove after fixing) -->
+        <small style="color: #666; display: block; margin-top: 8px;">
+          Debug: Plan={{ planType }}, HasAccess={{ subscription!.plan.hasAiCvAccess }}
+        </small>
+        <a routerLink="/AICVGenerator" class="btn-ai" *ngIf="hasAiCvAccess">
+          <i class="fa fa-magic"></i> Use AI CV Tool
+        </a>
+        <a routerLink="/SubscriptionPlans" class="btn-upgrade-small" *ngIf="!hasAiCvAccess">
+          <i class="fa fa-crown"></i> Upgrade to Unlock
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-section" *ngIf="!loading && subscription">
+    <h2>Payment History</h2>
+    <div class="payment-table" *ngIf="paymentHistory.length">
+      <div class="table-header">
+        <span>Date</span>
+        <span>Amount</span>
+        <span>Status</span>
+        <span>Invoice</span>
+      </div>
+      <div class="table-row" *ngFor="let payment of paymentHistory">
+        <span>{{ payment.date }}</span>
+        <span>${{ payment.amount }}</span>
+        <span class="status-paid">{{ payment.status }}</span>
+        <span>
+          <button class="btn-download" (click)="downloadInvoice(payment)">
+            <i class="fa fa-download"></i> Download
+          </button>
+        </span>
+      </div>
+    </div>
+    <p class="no-payments" *ngIf="paymentHistory.length === 0">No payments yet.</p>
+  </div>
+</div>
+
