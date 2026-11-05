@@ -5,6 +5,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_provider.dart';
 import 'models/reward_models.dart';
 import 'models/subscription_models.dart';
+import 'subscription_database.dart';
 
 final subscriptionRepositoryProvider = Provider((ref) => SubscriptionRepository(ref.watch(dioProvider)));
 
@@ -66,10 +67,12 @@ class PlanAdvice {
 
 /// Plans, checkout, subscriptions, promo codes and the spin wheel (SubscriptionMicroService).
 /// Every method throws [ApiException] on failure.
+/// Plans and active subscription are cached locally with SQFlite for offline use.
 class SubscriptionRepository {
   SubscriptionRepository(this._dio);
 
   final Dio _dio;
+  final _db = SubscriptionDatabase.instance;
 
   Future<T> _call<T>(Future<T> Function() request) async {
     try {
@@ -100,24 +103,71 @@ class SubscriptionRepository {
     return PlanAdvice.fromJson(res.data!);
   });
 
-  /// Cheapest first.
-  Future<List<SubscriptionPlan>> fetchPlans() => _call(() async {
-    final res = await _dio.get<List<dynamic>>('/Subscription/plans');
-    return _list(res.data, SubscriptionPlan.fromJson)..sort((a, b) => a.price.compareTo(b.price));
-  });
+  /// Cheapest first. Returns cached data if offline or cache is fresh.
+  Future<List<SubscriptionPlan>> fetchPlans() async {
+    // Return fresh cache without hitting the network
+    if (await _db.arePlansFresh()) {
+      final cached = await _db.getCachedPlans();
+      if (cached.isNotEmpty) return cached;
+    }
 
-  /// The current plan, or null.
-  Future<UserSubscription?> fetchActive(int userId) => _call(() async {
-    final res = await _dio.get<Object?>('/Subscription/user/$userId/active');
-    final data = res.data;
-    return res.statusCode == 204 || data is! Map<String, dynamic> ? null : UserSubscription.fromJson(data);
-  });
+    try {
+      final plans = await _call(() async {
+        final res = await _dio.get<List<dynamic>>('/Subscription/plans');
+        return _list(res.data, SubscriptionPlan.fromJson)..sort((a, b) => a.price.compareTo(b.price));
+      });
+      // Save fresh data to local DB
+      await _db.cachePlans(plans);
+      return plans;
+    } catch (_) {
+      // Network failed — fall back to local cache
+      final cached = await _db.getCachedPlans();
+      if (cached.isNotEmpty) return cached;
+      rethrow;
+    }
+  }
 
-  /// Newest first, with their payments.
-  Future<List<UserSubscription>> fetchHistory(int userId) => _call(() async {
-    final res = await _dio.get<List<dynamic>>('/Subscription/user/$userId/subscriptions');
-    return _list(res.data, UserSubscription.fromJson)..sort((a, b) => b.id.compareTo(a.id));
-  });
+  /// The current plan, or null. Caches result locally.
+  Future<UserSubscription?> fetchActive(int userId) async {
+    try {
+      final sub = await _call(() async {
+        final res = await _dio.get<Object?>('/Subscription/user/$userId/active');
+        final data = res.data;
+        return res.statusCode == 204 || data is! Map<String, dynamic>
+            ? null
+            : UserSubscription.fromJson(data);
+      });
+      // Update local cache
+      if (sub != null) {
+        await _db.cacheActiveSubscription(userId, sub);
+      } else {
+        await _db.clearActiveSubscription(userId);
+      }
+      return sub;
+    } catch (_) {
+      // Network failed — fall back to local cache
+      return _db.getCachedActiveSubscription(userId);
+    }
+  }
+
+  /// Newest first, with their payments. Caches payment history locally.
+  Future<List<UserSubscription>> fetchHistory(int userId) async {
+    try {
+      final history = await _call(() async {
+        final res = await _dio.get<List<dynamic>>('/Subscription/user/$userId/subscriptions');
+        return _list(res.data, UserSubscription.fromJson)..sort((a, b) => b.id.compareTo(a.id));
+      });
+      // Cache all payments from history
+      final allPayments = history.expand((s) => s.payments).toList();
+      if (allPayments.isNotEmpty) {
+        await _db.cachePayments(userId, allPayments);
+      }
+      return history;
+    } catch (_) {
+      // Network failed — return empty list (payments still accessible via getCachedPayments)
+      return [];
+    }
+  }
 
   // ── Checkout (server computes the price and verifies the payment) ─
 
