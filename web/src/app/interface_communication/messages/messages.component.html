@@ -1,0 +1,87 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+    <div class="nav-menu">
+      <a routerLink="/FreelancerFeed"><i class="fa fa-stream"></i> Feed</a>
+      <a routerLink="/Messages" class="active-link"><i class="fa fa-comment-dots"></i> Messages</a>
+      <a routerLink="/FreelancerProfileManager"><i class="fa fa-user-circle"></i> Profile</a>
+    </div>
+  </div>
+</nav>
+
+<div class="chat-container">
+  
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Discussions</h2>
+      <div class="search-bar">
+        <i class="fa fa-search"></i>
+        <input type="text" placeholder="Rechercher un contact...">
+      </div>
+    </div>
+
+    <div class="conversation-list">
+      <div class="conversation-item" 
+           *ngFor="let conv of conversations" 
+           [class.active]="selectedConversation?.id === conv.id"
+           (click)="selectConversation(conv)">
+        
+        <img src="https://ui-avatars.com/api/?name=User+{{getOtherParticipantId(conv)}}&background=random" alt="Avatar">
+        
+        <div class="conv-info">
+          <h4>Utilisateur #{{ getOtherParticipantId(conv) }}</h4>
+          <p class="last-msg">Dernière activité: {{ conv.lastMessageTime | date:'shortTime' }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="conversations.length === 0" class="no-conversations">
+        Aucune discussion pour le moment.
+      </div>
+    </div>
+  </aside>
+
+  <main class="chat-main">
+    
+    <div class="empty-chat" *ngIf="!selectedConversation">
+      <i class="fa fa-comments"></i>
+      <h3>Vos Messages</h3>
+      <p>Sélectionnez une conversation à gauche pour commencer à discuter.</p>
+    </div>
+
+    <div class="active-chat" *ngIf="selectedConversation">
+      
+      <div class="chat-header">
+        <img src="https://ui-avatars.com/api/?name=User+{{getOtherParticipantId(selectedConversation)}}&background=random" alt="Avatar">
+        <div class="chat-header-info">
+          <h3>Utilisateur #{{ getOtherParticipantId(selectedConversation) }}</h3>
+          <span class="status-online"><i class="fa fa-circle"></i> En ligne</span>
+        </div>
+      </div>
+
+      <div class="chat-history" id="chat-history">
+        <div *ngFor="let msg of messages" 
+             class="message-bubble" 
+             [class.sent]="msg.senderId === currentUserId"
+             [class.received]="msg.senderId !== currentUserId">
+          <div class="bubble-content">
+            <p>{{ msg.content }}</p>
+            <span class="timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <button class="btn-attach"><i class="fa fa-paperclip"></i></button>
+        <input type="text" 
+               [(ngModel)]="newMessageText" 
+               (keyup.enter)="sendMessage()" 
+               placeholder="Écrivez un message ici...">
+        <button class="btn-send" (click)="sendMessage()"><i class="fa fa-paper-plane"></i></button>
+      </div>
+      
+    </div>
+
+  </main>
+</div>

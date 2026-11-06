@@ -1,0 +1,229 @@
+/* Inline Comment Reactions */
+.comment-reactions-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+/* ===== LEFT: Reactions Display (Badges) ===== */
+.reactions-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.reaction-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reaction-badge:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== RIGHT: Reaction Trigger (Small Button) ===== */
+.reaction-trigger {
+  position: relative;
+}
+
+.react-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.react-btn .icon {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.react-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: scale(1.1);
+}
+
+.react-btn:hover .icon {
+  transform: scale(1.2);
+}
+
+/* Reacted States */
+.react-btn.reacted {
+  border-width: 2px;
+}
+
+.react-btn.reacted[data-reaction="LIKE"] {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.react-btn.reacted[data-reaction="LOVE"] {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.react-btn.reacted[data-reaction="HAPPY"] {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.react-btn.reacted[data-reaction="SAD"] {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.react-btn.reacted[data-reaction="ANGRY"] {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.react-btn.reacted[data-reaction="WOW"] {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* ===== Mini Floating Picker ===== */
+.mini-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12),
+              0 2px 4px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  60% {
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mini-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.mini-emoji::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.25s ease;
+  z-index: -1;
+}
+
+.mini-emoji:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mini-emoji:hover {
+  transform: scale(1.2) translateY(-3px);
+}
+
+.mini-emoji.active {
+  background: #dbeafe;
+  transform: scale(1.1);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .comment-reactions-inline {
+    gap: 8px;
+  }
+  
+  .reaction-badge {
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  
+  .react-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .react-btn .icon {
+    font-size: 14px;
+  }
+  
+  .mini-picker {
+    gap: 2px;
+    padding: 4px;
+  }
+  
+  .mini-emoji {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
+
+/* ===== Accessibility ===== */
+.react-btn:focus-visible,
+.mini-emoji:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

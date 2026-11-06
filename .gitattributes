@@ -1,0 +1,5 @@
+# Shell scripts must keep LF endings, or Docker builds fail with "/bin/sh^M: not found".
+mvnw text eol=lf
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf

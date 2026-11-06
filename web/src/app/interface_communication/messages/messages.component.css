@@ -1,0 +1,236 @@
+/* --- GENERAL STYLES --- */
+.chat-container {
+  display: flex;
+  height: calc(100vh - 70px); /* Hauteur de l'écran moins la navbar */
+  background-color: #f3f4f6;
+  max-width: 1200px;
+  margin: 20px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 320px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-header h2 { margin: 0 0 15px 0; font-size: 1.5rem; color: #1f2937; }
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar i { position: absolute; left: 15px; color: #9ca3af; }
+.search-bar input {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: #f9fafb;
+  outline: none;
+}
+
+.conversation-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s;
+}
+
+.conversation-item:hover { background: #f9fafb; }
+.conversation-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; }
+
+.conversation-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.conv-info h4 { margin: 0 0 5px 0; color: #1f2937; font-size: 1rem; }
+.last-msg { margin: 0; color: #6b7280; font-size: 0.85rem; }
+
+/* --- MAIN CHAT --- */
+.chat-main {
+  flex: 1;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #9ca3af;
+}
+.empty-chat i { font-size: 4rem; margin-bottom: 15px; color: #e5e7eb; }
+
+.active-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-header {
+  padding: 15px 25px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+}
+
+.chat-header img { width: 45px; height: 45px; border-radius: 50%; margin-right: 15px; }
+.chat-header-info h3 { margin: 0 0 3px 0; }
+.status-online { font-size: 0.8rem; color: #10b981; }
+.status-online i { font-size: 0.6rem; }
+
+/* HISTORIQUE DES MESSAGES */
+.chat-history {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message-bubble {
+  display: flex;
+  max-width: 70%;
+}
+
+.message-bubble.sent { align-self: flex-end; }
+.message-bubble.received { align-self: flex-start; }
+
+.bubble-content {
+  padding: 12px 18px;
+  border-radius: 18px;
+  position: relative;
+}
+
+.message-bubble.sent .bubble-content {
+  background: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.received .bubble-content {
+  background: white;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  border-bottom-left-radius: 4px;
+}
+
+.bubble-content p { margin: 0; line-height: 1.4; }
+.timestamp {
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 5px;
+  text-align: right;
+  opacity: 0.8;
+}
+.message-bubble.received .timestamp { color: #9ca3af; }
+
+/* INPUT AREA */
+.chat-input-area {
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 15px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 30px;
+  background: #f9fafb;
+  outline: none;
+  font-size: 1rem;
+}
+
+.btn-attach, .btn-send {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.btn-send {
+  background: #3b82f6;
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-send:hover { background: #2563eb; }
+
+/* --- REACTION SECTION --- */
+.reaction-panel {
+  position: relative;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+  z-index: 100;
+}
+
+.reactions {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.reactions span {
+  font-size: 1.5rem;
+}
+
+/* --- EMOJI BUTTON --- */
+.reaction-panel button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.reaction-panel button:hover {
+  opacity: 0.8;
+}

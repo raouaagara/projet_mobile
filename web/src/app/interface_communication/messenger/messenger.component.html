@@ -1,0 +1,230 @@
+<div class="msg-dropdown">
+
+  <ng-container *ngIf="!activeChat">
+    
+    <div class="msg-header">
+      <h3>Chats</h3>
+      <div class="header-actions">
+        <a href="#">See all</a>
+        <button class="icon-sm"><i class="fa fa-edit"></i></button>
+      </div>
+    </div>
+
+    <div class="msg-search">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search Messenger">
+    </div>
+
+    <div class="msg-list">
+      <div class="msg-item" 
+           *ngFor="let user of users" 
+           [class.unread]="user.unread"
+           (click)="openChat(user)">
+        
+        <div class="avatar-wrap">
+          <img [src]="user.avatar" [alt]="user.name">
+          <div class="status-dot" [class.online]="user.status === 'online'"></div>
+        </div>
+        
+        <div class="msg-content">
+          <div class="msg-top">
+            <span class="name">{{ user.name }}</span>
+            <span class="time">{{ user.time }}</span>
+          </div>
+          <p class="preview">{{ user.lastMsg }}</p>
+        </div>
+        
+        <div class="unread-dot" *ngIf="user.unread"></div>
+      </div>
+    </div>
+
+    <div class="msg-footer">
+      <a href="#">See all in Messenger</a>
+    </div>
+
+  </ng-container>
+
+
+  <div class="chat-view" *ngIf="activeChat">
+    
+    <div class="chat-header">
+      <div class="chat-user-info">
+        <button class="back-btn" (click)="goBack()">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <div class="avatar-wrap sm">
+          <img [src]="activeChat.avatar">
+          <div class="status-dot" [class.online]="activeChat.status === 'online'"></div>
+        </div>
+        <div class="user-details">
+          <span class="name">{{ activeChat.name }}</span>
+          <span class="status-text">{{ activeChat.status === 'online' ? 'Active now' : 'Active ' + activeChat.time + ' ago' }}</span>
+        </div>
+      </div>
+      <div class="chat-actions">
+        <i class="fa fa-phone"></i>
+        <i class="fa fa-video"></i>
+        <i class="fa fa-info-circle"></i>
+      </div>
+    </div>
+
+<div class="chat-body">
+  <div class="message-wrapper" 
+       *ngFor="let msg of activeChat.history"
+       [class.me]="msg.isMe" 
+       [class.other]="!msg.isMe">
+    
+    <div class="message-row" (mouseleave)="onMessageRowLeave(msg)">
+        
+        <div class="message-bubble-container" (mouseenter)="onReactionPickerEnter()" (mouseleave)="onReactionPickerLeave()">
+          <div class="message-bubble" [class.me]="msg.isMe" [class.other]="!msg.isMe">
+            <ng-container *ngIf="!msg.isEditing">
+                <!-- Image Message -->
+                <div *ngIf="msg.imageUrl" class="image-message-container">
+                  <img [src]="msg.imageUrl" 
+                       class="message-image" 
+                       alt="Image"
+                       (error)="onImageError($event, msg)"
+                       (click)="downloadImage($event, msg.imageUrl)"
+                       loading="lazy"
+                       title="Click to download">
+                  <p *ngIf="msg.text && msg.text.trim()" class="image-caption">{{ msg.text }}</p>
+                </div>
+                
+                <!-- PDF Message -->
+                <div *ngIf="msg.pdfUrl && !msg.imageUrl" class="message-pdf">
+                  <div class="pdf-icon-wrapper">
+                    <i class="fa fa-file-pdf-o"></i>
+                  </div>
+                  <div class="pdf-info">
+                    <a [href]="msg.pdfUrl" 
+                       [download]="msg.pdfName || 'document.pdf'"
+                       (click)="downloadPDF($event, msg.pdfUrl, msg.pdfName)">
+                      {{ msg.pdfName || 'Document.pdf' }}
+                    </a>
+                    <p *ngIf="msg.text && msg.text.trim()" class="pdf-caption">{{ msg.text }}</p>
+                  </div>
+                </div>
+                
+                <!-- Text Message (only if no file) -->
+                <span *ngIf="!msg.imageUrl && !msg.pdfUrl && msg.text && msg.text.trim()">{{ msg.text }}</span>
+                
+                <!-- Fallback: Show that there's a file but it's not loading -->
+                <div *ngIf="!msg.imageUrl && !msg.pdfUrl && (!msg.text || !msg.text.trim())" class="empty-message">
+                  <i class="fa fa-exclamation-circle"></i>
+                  <span>Message content unavailable</span>
+                </div>
+            </ng-container>
+            
+            <div *ngIf="msg.isEditing" class="edit-mode">
+                <input type="text" #editInput [value]="msg.text" (keyup.enter)="saveEdit(msg, editInput.value)">
+                <i class="fa fa-check text-success" (click)="saveEdit(msg, editInput.value)"></i>
+                <i class="fa fa-times text-danger" (click)="cancelEdit(msg)"></i>
+            </div>
+          </div>
+
+          <!-- Reaction Picker -->
+          <div class="reaction-picker" *ngIf="msg.showReactions">
+            <span *ngFor="let emoji of availableReactions" 
+                  class="reaction-emoji"
+                  [class.selected]="msg.userReaction === emoji"
+                  (click)="addReaction(msg, emoji)">
+              {{ emoji }}
+            </span>
+          </div>
+
+          <!-- Display Reactions -->
+          <div class="reactions-display" *ngIf="msg.reactions && getReactionsList(msg.reactions).length > 0">
+            <span *ngFor="let emoji of getReactionsList(msg.reactions)" 
+                  class="reaction-badge"
+                  [class.user-reacted]="msg.userReaction === emoji"
+                  (click)="addReaction(msg, emoji)">
+              {{ emoji }} {{ msg.reactions![emoji] }}
+            </span>
+          </div>
+        </div>
+
+        <div class="msg-options-container" *ngIf="!msg.isEditing">
+           <!-- Reaction Button -->
+           <button class="options-btn reaction-btn" (click)="toggleReactions(msg)">
+             <i class="fa fa-smile-o"></i>
+           </button>
+
+           <!-- Menu Button (only for own messages) -->
+           <button class="options-btn" *ngIf="msg.isMe" (click)="toggleMenu(msg)">
+             <i class="fa fa-ellipsis-v"></i>
+           </button>
+           
+           <div class="dropdown-menu" *ngIf="msg.showMenu">
+              <div class="dropdown-item" (click)="editMsg(msg)">
+                <i class="fa fa-pencil"></i> Edit
+              </div>
+              <div class="dropdown-item text-danger" (click)="deleteMsg(msg)">
+                <i class="fa fa-trash"></i> Delete
+              </div>
+           </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+   <div class="chat-input-area">
+      <!-- Moderation Error Message -->
+      <div class="moderation-error" *ngIf="moderationError">
+        <i class="fa fa-exclamation-triangle"></i>
+        <span>{{ moderationError }}</span>
+      </div>
+
+      <!-- Checking Moderation Indicator -->
+      <div class="moderation-checking" *ngIf="isCheckingModeration">
+        <i class="fa fa-spinner fa-spin"></i>
+        <span>Checking message...</span>
+      </div>
+
+      <div class="file-upload-wrapper">
+        <input type="file" 
+               #fileInput 
+               (change)="onFileSelected($event)" 
+               accept="image/*,.pdf"
+               style="display: none;">
+        <i class="fa fa-plus-circle icon-add" (click)="fileInput.click()"></i>
+      </div>
+      
+      <i class="fa fa-image icon-img" (click)="fileInput.click()"></i>
+      
+      <div class="input-wrapper">
+        <input type="text" 
+               [(ngModel)]="newMessageText" 
+               (keyup.enter)="sendMessage()" 
+               placeholder="Aa">
+        <i class="fa fa-smile"></i>
+      </div>
+
+      <!-- File Preview -->
+      <div class="file-preview" *ngIf="selectedFile">
+        <div class="file-preview-content">
+          <img *ngIf="isImage(selectedFile)" [src]="filePreviewUrl" alt="Preview">
+          <div *ngIf="!isImage(selectedFile)" class="pdf-preview">
+            <i class="fa fa-file-pdf-o"></i>
+            <span>{{ selectedFile.name }}</span>
+          </div>
+          <button class="remove-file" (click)="removeFile()">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <i class="fa fa-thumbs-up icon-like" 
+         *ngIf="!newMessageText.trim() && !selectedFile"
+         style="cursor: pointer;"></i>
+
+      <i class="fa fa-paper-plane" 
+         *ngIf="newMessageText.trim() || selectedFile" 
+         (click)="sendMessage()"
+         style="cursor: pointer; color: #0084ff; font-size: 1.2rem; margin-left: 10px; transition: 0.3s;"></i>
+    </div>
+
+  </div>
+
+</div>

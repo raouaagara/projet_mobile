@@ -1,0 +1,30 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="result-container">
+  <div class="result-card" [class.passed]="passed" [class.failed]="!passed">
+    <div class="icon-wrap">
+      <i class="fa" [ngClass]="passed ? 'fa-trophy' : 'fa-times-circle'"></i>
+    </div>
+    <h1>{{ passed ? 'Congratulations!' : 'Keep Practicing' }}</h1>
+    <p class="test-name">{{ testTitle }}</p>
+    <div class="score-circle" [class.passed]="passed">
+      <span class="score-value">{{ score }}%</span>
+    </div>
+    <p class="message">{{ passed ? 'You passed! Your certification has been added to your profile.' : 'You need at least 70% to pass. Try again when you\'re ready.' }}</p>
+    <div class="actions">
+      <a routerLink="/SkillTests" class="btn">Browse More Tests</a>
+      <a routerLink="/MyCertifications" class="btn primary">View My Certifications</a>
+    </div>
+  </div>
+</div>
+

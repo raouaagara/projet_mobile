@@ -1,0 +1,2082 @@
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">CatchOPP</div>
+      <div class="page-title">
+        <span>Club Dashboard</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item" [class.active]="activeSection === 'groups'" (click)="setSection('groups')">
+        <i class="fas fa-users"></i>
+        <span>Groups & Communities</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'dashboard'" (click)="setSection('dashboard')">
+        <i class="fas fa-chart-line"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'calendar'" (click)="setSection('calendar')">
+        <i class="fas fa-calendar"></i>
+        <span>Calendar</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'announcements'" (click)="setSection('announcements')">
+        <i class="fas fa-bullhorn"></i>
+        <span>Announcements</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'clubs'" (click)="setSection('clubs')">
+        <i class="fas fa-users-cog"></i>
+        <span>Clubs</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-actions">
+      <!-- Dashboard Controls -->
+      <div class="dashboard-controls" *ngIf="activeSection === 'dashboard'">
+        <div class="control-group">
+          <label class="control-label">
+            <i class="fas fa-search"></i> Search
+          </label>
+          <input 
+            type="text" 
+            class="control-input" 
+            placeholder="Search activities..."
+            [(ngModel)]="dashboardSearchQuery"
+            (input)="filterDashboardContent()">
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <i class="fas fa-filter"></i> Filter by Type
+          </label>
+          <select 
+            class="control-select" 
+            [(ngModel)]="dashboardFilter"
+            (change)="filterDashboardContent()">
+            <option value="all">All Activities</option>
+            <option value="groups">Groups Only</option>
+            <option value="events">Events Only</option>
+            <option value="clubs">Clubs Only</option>
+            <option value="posts">Posts Only</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <i class="fas fa-sort"></i> Sort by
+          </label>
+          <select 
+            class="control-select" 
+            [(ngModel)]="dashboardSortBy"
+            (change)="sortDashboardContent()">
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Popular</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <i class="fas fa-calendar"></i> Date Range
+          </label>
+          <select 
+            class="control-select" 
+            [(ngModel)]="dashboardDateRange"
+            (change)="filterDashboardContent()">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+
+        <button class="control-reset-btn" (click)="resetDashboardFilters()">
+          <i class="fas fa-redo"></i> Reset Filters
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <h1>{{ getPageTitle() }}</h1>
+          <p class="subtitle">{{ getPageSubtitle() }}</p>
+        </div>
+        <div class="header-right">
+          <app-notification-bell></app-notification-bell>
+          <div class="header-badges" *ngIf="activeSection === 'dashboard' && (dashboardFilter !== 'all' || dashboardSearchQuery || dashboardDateRange !== 'all')">
+            <span class="filter-active-badge" *ngIf="dashboardFilter !== 'all'">
+              <i class="fas fa-filter"></i> {{ dashboardFilter }}
+            </span>
+            <span class="filter-active-badge" *ngIf="dashboardSearchQuery">
+              <i class="fas fa-search"></i> "{{ dashboardSearchQuery }}"
+            </span>
+            <span class="filter-active-badge" *ngIf="dashboardDateRange !== 'all'">
+              <i class="fas fa-calendar"></i> {{ dashboardDateRange }}
+            </span>
+          </div>
+          <button class="btn-stats-overview" (click)="setSection('overview')">
+            <i class="fas fa-chart-pie"></i>
+            <span>Statistics & Overview</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.activeGroups }}</div>
+          <div class="stat-label">Active groups</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalClubs }}</div>
+          <div class="stat-label">Total Clubs</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon orange">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.eventsThisMonth }}</div>
+          <div class="stat-label">Events this month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="content-grid" *ngIf="activeSection === 'dashboard'">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Quick Actions Card -->
+        <section class="card quick-actions-card">
+          <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+          </div>
+          <div class="quick-actions-grid">
+            <button class="quick-action-btn" (click)="openGroupModal()">
+              <div class="action-icon green">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="action-label">Create Group</div>
+            </button>
+            <button class="quick-action-btn" (click)="openEventModal()">
+              <div class="action-icon blue">
+                <i class="fas fa-calendar-plus"></i>
+              </div>
+              <div class="action-label">Add Event</div>
+            </button>
+            <button class="quick-action-btn" (click)="openClubModal()">
+              <div class="action-icon orange">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="action-label">New Club</div>
+            </button>
+            <button class="quick-action-btn" (click)="setSection('announcements'); setAnnouncementTab('posts')">
+              <div class="action-icon purple">
+                <i class="fas fa-eye"></i>
+              </div>
+              <div class="action-label">View Posts</div>
+            </button>
+          </div>
+        </section>
+
+        <!-- Groups Section (replaces Recent Activity) -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Groups</h2>
+            <button class="btn-text" (click)="setSection('groups')">
+              View More <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="groups-list-compact">
+            <div class="group-item-compact" *ngFor="let group of getFilteredGroupsForDisplay()">
+              <div class="group-avatar-small">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="group-info-compact">
+                <div class="group-name-compact">{{ group.name }}</div>
+                <div class="group-meta-compact">
+                  <span class="group-type-mini">
+                    <i class="fas" [class.fa-globe]="group.type === 'PUBLIC'" 
+                       [class.fa-lock]="group.type === 'PRIVATE'"
+                       [class.fa-user-plus]="group.type === 'INVITE_ONLY'"></i>
+                    {{ group.type }}
+                  </span>
+                  <span class="separator">•</span>
+                  <span>{{ getRandomMembers() }} members</span>
+                </div>
+              </div>
+              <div class="group-actions-compact">
+                <button class="btn-icon-small" (click)="openGroupModal(group)" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="empty-state-small" *ngIf="getFilteredGroupsForDisplay().length === 0">
+              <i class="fas fa-users-slash"></i>
+              <p>No groups found matching your filters.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- All Events Section -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">All Events</h2>
+            <button class="btn-text" (click)="setSection('calendar')">
+              View All <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="events-list-compact">
+            <div class="event-card-compact" *ngFor="let event of getFilteredEventsForDisplay()">
+              <div class="event-date-badge-compact">
+                <div class="date-day">{{ event.startDate | date: 'd' }}</div>
+                <div class="date-month">{{ event.startDate | date: 'MMM' }}</div>
+              </div>
+              <div class="event-content-compact">
+                <h3 class="event-title-compact">{{ event.title }}</h3>
+                <div class="event-meta-compact">
+                  <span><i class="fas fa-map-marker-alt"></i> {{ event.location }}</span>
+                  <span><i class="fas fa-clock"></i> {{ event.startDate | date: 'h:mm a' }}</span>
+                  <span *ngIf="event.group"><i class="fas fa-users"></i> {{ getGroupName(event.group.id) }}</span>
+                </div>
+              </div>
+              <div class="event-actions-compact">
+                <button class="btn-icon-small" (click)="openEventModal(event)" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="empty-state-small" *ngIf="getFilteredEventsForDisplay().length === 0">
+              <i class="fas fa-calendar-times"></i>
+              <p>No events found matching your filters.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Specialized Clubs -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Specialized clubs</h2>
+            <button class="btn-text" (click)="openClubModal()">
+              <i class="fas fa-plus"></i> New club
+            </button>
+          </div>
+
+          <div class="clubs-list">
+            <div class="club-item" *ngFor="let club of getFilteredClubsForDisplay()">
+              <div class="club-info">
+                <div class="club-name">{{ club.name }}</div>
+                <div class="club-description">{{ club.description }}</div>
+                <div class="club-tags">
+                  <span class="tag" *ngFor="let interest of club.interests?.split(',').slice(0, 2)">
+                    <i class="fas fa-tag"></i> {{ interest.trim() }}
+                  </span>
+                </div>
+              </div>
+              <div class="club-actions">
+                <span class="status-badge active">Active</span>
+                <button class="btn-icon" (click)="openClubModal(club)" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon danger" (click)="deleteClub(club.id!)" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="empty-state-small" *ngIf="getFilteredClubsForDisplay().length === 0">
+              <i class="fas fa-star-half-alt"></i>
+              <p>No clubs found matching your filters.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Recent Group Activity -->
+        <section class="card activity-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-clock"></i> Recent Group Activity
+            </h2>
+          </div>
+
+          <div class="activity-list">
+            <div class="activity-item" [ngClass]="activity.type" *ngFor="let activity of getFilteredActivitiesForDisplay()">
+              <div class="activity-indicator" [ngClass]="activity.type">
+                <i class="fas fa-circle"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-header">
+                  <span class="activity-group-name">{{ activity.groupName }}</span>
+                  <span class="activity-time">{{ activity.time }}</span>
+                </div>
+                <div class="activity-description">{{ activity.description }}</div>
+              </div>
+            </div>
+            
+            <div class="empty-state-small" *ngIf="getFilteredActivitiesForDisplay().length === 0">
+              <i class="fas fa-history"></i>
+              <p>No recent activity</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Trending Topics -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Trending Topics</h2>
+          </div>
+          <div class="trending-list">
+            <div class="trending-item" *ngFor="let topic of trendingTopics; let i = index">
+              <div class="trending-rank">#{{ i + 1 }}</div>
+              <div class="trending-content">
+                <div class="trending-tag">{{ topic.tag }}</div>
+                <div class="trending-count">{{ topic.count }} posts</div>
+              </div>
+              <div class="trending-trend">
+                <i class="fas fa-arrow-up" *ngIf="topic.trending === 'up'"></i>
+                <i class="fas fa-arrow-down" *ngIf="topic.trending === 'down'"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Upcoming Events -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Upcoming events</h2>
+            <button class="btn-text" (click)="openEventModal()">
+              <i class="fas fa-plus"></i> New event
+            </button>
+          </div>
+
+          <div class="events-list-compact">
+            <div class="event-item" *ngFor="let event of upcomingEvents">
+              <div class="event-date-badge">
+                <div class="date-day">{{ event.startDate | date: 'd' }}</div>
+                <div class="date-month">{{ event.startDate | date: 'MMM' }}</div>
+              </div>
+              <div class="event-info">
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-meta">
+                  <i class="fas fa-clock"></i> {{ event.startDate | date: 'h:mm a' }}
+                  <span class="separator">•</span>
+                  <span>{{ event.location || 'Online' }}</span>
+                </div>
+                <div class="event-actions-inline">
+                  <button class="btn-icon-small" (click)="openEventModal(event)" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon-small danger" (click)="deleteEvent(event.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-outline-full" (click)="viewAllEvents()" style="margin-top: 16px;">
+            View all events
+          </button>
+        </section>
+
+        <!-- Club Details -->
+        <section class="card" *ngIf="selectedClub">
+          <h2 class="card-title">Club details</h2>
+          
+          <div class="club-details">
+            <div class="detail-row">
+              <div class="detail-label">{{ selectedClub.name }}</div>
+              <div class="detail-value">{{ selectedClub.description }}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">Interests</div>
+              <div class="detail-value">{{ selectedClub.interests }}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">Created</div>
+              <div class="detail-value">{{ selectedClub.createdAt | date: 'M/d/yy, h:mm a' }}</div>
+            </div>
+
+            <div class="detail-row" *ngIf="selectedClub.status">
+              <div class="detail-label">Status</div>
+              <div class="detail-value">
+                <span class="status-badge" [class.status-active]="selectedClub.status === 'ACTIVE'" 
+                      [class.status-paused]="selectedClub.status === 'PAUSED'">
+                  {{ selectedClub.status }}
+                </span>
+              </div>
+            </div>
+
+            <button class="btn btn-outline-full" 
+                    *ngIf="selectedClub.status === 'ACTIVE' || !selectedClub.status"
+                    (click)="pauseClub()">
+              <i class="fas fa-pause"></i> Pause club
+            </button>
+
+            <button class="btn btn-success-full" 
+                    *ngIf="selectedClub.status === 'PAUSED'"
+                    (click)="unpauseClub()">
+              <i class="fas fa-play"></i> Activate club
+            </button>
+          </div>
+        </section>
+
+        <!-- Top Posts -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Top Posts</h2>
+            <button class="btn-text" (click)="setSection('announcements'); setAnnouncementTab('posts')">
+              View All
+            </button>
+          </div>
+          <div class="top-posts-list">
+            <div class="top-post-item" *ngFor="let post of topPosts">
+              <div class="post-author-avatar" [style.background]="post.authorColor">
+                {{ post.authorInitials }}
+              </div>
+              <div class="top-post-content">
+                <div class="top-post-title">{{ post.title || post.content.substring(0, 40) + '...' }}</div>
+                <div class="top-post-meta">
+                  <span class="post-author-name">{{ post.author }}</span>
+                  <span class="separator">•</span>
+                  <span class="post-stats-mini">
+                    <i class="fas fa-heart"></i> {{ post.likes }}
+                  </span>
+                </div>
+              </div>
+              <div class="top-post-badge">
+                <i class="fas fa-fire"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Community Stats Widget -->
+        <section class="card stats-widget">
+          <h2 class="card-title">Community Pulse</h2>
+          <div class="pulse-stats">
+            <div class="pulse-item">
+              <div class="pulse-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="pulse-content">
+                <div class="pulse-value">{{ getCommunityScore() }}%</div>
+                <div class="pulse-label">Engagement</div>
+              </div>
+            </div>
+            <div class="pulse-item">
+              <div class="pulse-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="pulse-content">
+                <div class="pulse-value">+{{ getGrowthRate() }}%</div>
+                <div class="pulse-label">Growth</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="calendar-section" *ngIf="activeSection === 'calendar'">
+      <!-- Calendar Stats Mini -->
+      <div class="calendar-stats-mini">
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon blue">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ upcomingEvents.length }}</div>
+            <div class="mini-stat-label">Upcoming</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon green">
+            <i class="fas fa-calendar-day"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ stats.eventsThisMonth }}</div>
+            <div class="mini-stat-label">This Month</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon orange">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ getTotalAttendees() }}</div>
+            <div class="mini-stat-label">Total Attendees</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon purple">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ getAverageEventDuration() }}h</div>
+            <div class="mini-stat-label">Avg Duration</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar Filters & Actions Bar -->
+      <div class="calendar-filters-bar">
+        <div class="filter-group">
+          <button 
+            class="filter-chip" 
+            [class.active]="eventTypeFilter === 'all'"
+            (click)="setEventTypeFilter('all')">
+            <i class="fas fa-calendar"></i> All Events
+          </button>
+          <button 
+            class="filter-chip green" 
+            [class.active]="eventTypeFilter === 'group'"
+            (click)="setEventTypeFilter('group')">
+            <i class="fas fa-users"></i> Group Events
+          </button>
+          <button 
+            class="filter-chip blue" 
+            [class.active]="eventTypeFilter === 'club'"
+            (click)="setEventTypeFilter('club')">
+            <i class="fas fa-star"></i> Club Events
+          </button>
+          <button 
+            class="filter-chip orange" 
+            [class.active]="eventTypeFilter === 'general'"
+            (click)="setEventTypeFilter('general')">
+            <i class="fas fa-globe"></i> General Events
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-container">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button class="btn-icon" (click)="previousMonth()">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <h2 class="calendar-month">{{ currentMonth }}</h2>
+            <button class="btn-icon" (click)="nextMonth()">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="btn-outline" (click)="goToToday()">
+              <i class="fas fa-calendar-day"></i> Today
+            </button>
+          </div>
+          <div class="calendar-actions">
+            <div class="view-toggle">
+              <button class="toggle-btn" [class.active]="calendarView === 'month'" (click)="setCalendarView('month')">
+                <i class="fas fa-calendar"></i> Month
+              </button>
+              <button class="toggle-btn" [class.active]="calendarView === 'week'" (click)="setCalendarView('week')">
+                <i class="fas fa-calendar-week"></i> Week
+              </button>
+              <button class="toggle-btn" [class.active]="calendarView === 'list'" (click)="setCalendarView('list')">
+                <i class="fas fa-list"></i> List
+              </button>
+            </div>
+            <button class="btn btn-primary" (click)="openEventModal()">
+              <i class="fas fa-plus"></i> New Event
+            </button>
+          </div>
+        </div>
+
+        <!-- Calendar Legend -->
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #198754;"></div>
+            <span>Group Events ({{ getGroupEventsCount() }})</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #0d6efd;"></div>
+            <span>Club Events ({{ getClubEventsCount() }})</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #fd7e14;"></div>
+            <span>General Events ({{ getGeneralEventsCount() }})</span>
+          </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid" *ngIf="calendarView === 'month'">
+          <div class="calendar-weekdays">
+            <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+          </div>
+          <div class="calendar-days">
+            <div 
+              class="calendar-day" 
+              *ngFor="let day of calendarDays"
+              [class.other-month]="!day.isCurrentMonth"
+              [class.today]="day.isToday"
+              [class.has-events]="day.events.length > 0"
+              (click)="selectDay(day)">
+              <div class="day-number">{{ day.day }}</div>
+              <div class="day-events">
+                <div 
+                  class="event-dot" 
+                  *ngFor="let event of day.events.slice(0, 3)"
+                  [title]="event.title"
+                  [style.background]="getEventColor(event)"
+                  (click)="openEventModal(event); $event.stopPropagation()">
+                  <span class="event-title-mini">{{ event.title }}</span>
+                </div>
+                <div class="more-events" *ngIf="day.events.length > 3">
+                  +{{ day.events.length - 3 }} more
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Week View -->
+        <div class="calendar-week-view" *ngIf="calendarView === 'week'">
+          <div class="week-header">
+            <div class="week-day-header" *ngFor="let day of getCurrentWeekDays()">
+              <div class="week-day-name">{{ day.dayName }}</div>
+              <div class="week-day-number" [class.today]="day.isToday">{{ day.dayNumber }}</div>
+            </div>
+          </div>
+          <div class="week-events">
+            <div class="week-day-events" *ngFor="let day of getCurrentWeekDays()">
+              <div class="week-event-item" *ngFor="let event of day.events" (click)="openEventModal(event)">
+                <div class="week-event-time">{{ event.startDate | date: 'h:mm a' }}</div>
+                <div class="week-event-title">{{ event.title }}</div>
+              </div>
+              <div class="no-events" *ngIf="day.events.length === 0">No events</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View -->
+        <div class="calendar-list-view" *ngIf="calendarView === 'list'">
+          <div class="list-event-card" *ngFor="let event of allEvents">
+            <div class="list-event-date">
+              <div class="list-date-day">{{ event.startDate | date: 'd' }}</div>
+              <div class="list-date-month">{{ event.startDate | date: 'MMM' }}</div>
+              <div class="list-date-year">{{ event.startDate | date: 'yyyy' }}</div>
+            </div>
+            <div class="list-event-content">
+              <div class="list-event-header">
+                <h3>{{ event.title }}</h3>
+                <span class="event-status-badge" [class.upcoming]="isUpcoming(event)">
+                  {{ isUpcoming(event) ? 'Upcoming' : 'Past' }}
+                </span>
+              </div>
+              <p class="list-event-description">{{ event.description }}</p>
+              <div class="list-event-meta">
+                <span><i class="fas fa-clock"></i> {{ event.startDate | date: 'h:mm a' }} - {{ event.endDate | date: 'h:mm a' }}</span>
+                <span><i class="fas fa-map-marker-alt"></i> {{ event.location }}</span>
+                <span *ngIf="event.group"><i class="fas fa-users"></i> {{ getGroupName(event.group.id) }}</span>
+              </div>
+            </div>
+            <div class="list-event-actions">
+              <button class="btn-icon" (click)="openEventModal(event)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-icon danger" (click)="deleteEvent(event.id!)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events List for Selected Day -->
+        <div class="calendar-events-list" *ngIf="selectedDayEvents.length > 0 && calendarView === 'month'">
+          <h3>Events on {{ selectedDate | date: 'MMMM d, yyyy' }}</h3>
+          <div class="event-item" *ngFor="let event of selectedDayEvents">
+            <div class="event-date-badge">
+              <div class="date-day">{{ event.startDate | date: 'd' }}</div>
+              <div class="date-month">{{ event.startDate | date: 'MMM' }}</div>
+            </div>
+            <div class="event-info">
+              <div class="event-title">{{ event.title }}</div>
+              <div class="event-meta">
+                <i class="fas fa-clock"></i> {{ event.startDate | date: 'h:mm a' }}
+                <span class="separator">•</span>
+                <span>{{ event.location || 'Online' }}</span>
+              </div>
+            </div>
+            <div class="event-actions-inline">
+              <button class="btn-icon-small" (click)="openEventModal(event)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-icon-small danger" (click)="deleteEvent(event.id!)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Club Events Timeline -->
+        <div class="club-events-timeline" *ngIf="calendarView === 'month'">
+          <h3 class="timeline-title">
+            <i class="fas fa-star"></i> Club Events Timeline
+          </h3>
+          <div class="timeline-container">
+            <div class="timeline-item" *ngFor="let clubEvent of getClubEvents()">
+              <div class="timeline-marker" [style.background]="getEventColor(clubEvent)"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <span class="timeline-date">{{ clubEvent.startDate | date: 'MMM d, h:mm a' }}</span>
+                  <span class="timeline-club-badge">
+                    <i class="fas fa-star"></i> {{ getClubName(clubEvent.clubId) }}
+                  </span>
+                </div>
+                <h4 class="timeline-event-title">{{ clubEvent.title }}</h4>
+                <p class="timeline-event-desc">{{ clubEvent.description }}</p>
+                <div class="timeline-footer">
+                  <span class="timeline-location">
+                    <i class="fas fa-map-marker-alt"></i> {{ clubEvent.location }}
+                  </span>
+                  <button class="btn-timeline" (click)="openEventModal(clubEvent)">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="empty-timeline" *ngIf="getClubEvents().length === 0">
+              <i class="fas fa-calendar-times"></i>
+              <p>No club events scheduled</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Announcements Section -->
+    <div class="announcements-section" *ngIf="activeSection === 'announcements'">
+      <!-- Announcements Stats -->
+      <div class="announcements-stats">
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon green">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ announcements.length }}</div>
+            <div class="mini-stat-label">Total Announcements</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon blue">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ posts.length }}</div>
+            <div class="mini-stat-label">Community Posts</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon purple">
+            <i class="fas fa-eye"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ getTotalViews() }}</div>
+            <div class="mini-stat-label">Total Views</div>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon orange">
+            <i class="fas fa-heart"></i>
+          </div>
+          <div class="mini-stat-content">
+            <div class="mini-stat-value">{{ getTotalLikes() }}</div>
+            <div class="mini-stat-label">Total Likes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Tabs -->
+      <div class="content-tabs">
+        <button 
+          class="tab-btn" 
+          [class.active]="announcementTab === 'announcements'"
+          (click)="setAnnouncementTab('announcements')">
+          <i class="fas fa-bullhorn"></i> Announcements
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="announcementTab === 'posts'"
+          (click)="setAnnouncementTab('posts')">
+          <i class="fas fa-comments"></i> Community Posts
+        </button>
+      </div>
+
+      <!-- Announcements Tab -->
+      <div class="announcements-container" *ngIf="announcementTab === 'announcements'">
+        <div class="announcements-header">
+          <div class="search-filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input 
+                type="text" 
+                placeholder="Search announcements..." 
+                [(ngModel)]="announcementSearchQuery"
+                (input)="filterAnnouncements()">
+            </div>
+            <select class="filter-select" [(ngModel)]="announcementFilter" (change)="filterAnnouncements()">
+              <option value="all">All Groups</option>
+              <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" (click)="openAnnouncementModal()">
+            <i class="fas fa-plus"></i> New Announcement
+          </button>
+        </div>
+
+        <div class="announcements-list">
+          <div class="announcement-card" *ngFor="let announcement of filteredAnnouncements">
+            <div class="announcement-header">
+              <div class="announcement-icon">
+                <i class="fas fa-bullhorn"></i>
+              </div>
+              <div class="announcement-meta">
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <div class="announcement-info">
+                  <span class="announcement-author">{{ announcement.author }}</span>
+                  <span class="separator">•</span>
+                  <span class="announcement-date">{{ announcement.createdAt | date: 'MMM d, yyyy' }}</span>
+                  <span class="separator">•</span>
+                  <span class="announcement-views"><i class="fas fa-eye"></i> {{ announcement.views || 0 }} views</span>
+                </div>
+              </div>
+              <div class="announcement-actions">
+                <button class="btn-icon" (click)="openAnnouncementModal(announcement)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon danger" (click)="deleteAnnouncement(announcement.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="announcement-content">
+              <p>{{ announcement.content }}</p>
+            </div>
+            <div class="announcement-footer" *ngIf="announcement.targetGroup">
+              <span class="target-badge">
+                <i class="fas fa-users"></i> {{ getGroupName(announcement.targetGroup) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="filteredAnnouncements.length === 0">
+            <i class="fas fa-bullhorn"></i>
+            <h3>No announcements found</h3>
+            <p>Create your first announcement to notify your community</p>
+            <button class="btn btn-primary" (click)="openAnnouncementModal()">
+              <i class="fas fa-plus"></i> Create Announcement
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Tab -->
+      <div class="posts-container" *ngIf="announcementTab === 'posts'">
+        <div class="posts-header">
+          <div class="search-filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input 
+                type="text" 
+                placeholder="Search posts..." 
+                [(ngModel)]="postSearchQuery"
+                (input)="filterPosts()">
+            </div>
+            <select class="filter-select" [(ngModel)]="postFilter" (change)="filterPosts()">
+              <option value="all">All Groups</option>
+              <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+            </select>
+            <select class="filter-select" [(ngModel)]="postSortBy" (change)="filterPosts()">
+              <option value="recent">Most Recent</option>
+              <option value="popular">Most Popular</option>
+              <option value="likes">Most Liked</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" (click)="openPostModal()">
+            <i class="fas fa-plus"></i> New Post
+          </button>
+        </div>
+
+        <div class="posts-grid">
+          <div class="post-card" *ngFor="let post of filteredPosts">
+            <div class="post-header">
+              <div class="post-author-info">
+                <div class="author-avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="author-details">
+                  <div class="author-name">{{ post.author }}</div>
+                  <div class="post-time">{{ post.createdAt | date: 'MMM d, yyyy - h:mm a' }}</div>
+                </div>
+              </div>
+              <div class="post-actions-menu">
+                <button class="btn-icon" (click)="openPostModal(post)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon danger" (click)="deletePost(post.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="post-content">
+              <h3 class="post-title" *ngIf="post.title">{{ post.title }}</h3>
+              <p class="post-text">{{ post.content }}</p>
+              <div class="post-image" *ngIf="post.imageUrl">
+                <img [src]="post.imageUrl" [alt]="post.title">
+              </div>
+            </div>
+
+            <div class="post-footer">
+              <div class="post-interactions">
+                <!-- Reactions Component -->
+                <app-post-reactions 
+                  [postId]="post.id"
+                  [currentUserId]="1"
+                  (reactionChanged)="loadPosts()">
+                </app-post-reactions>
+                
+                <!-- Comments Component -->
+                <app-post-comments 
+                  [postId]="post.id"
+                  [currentUserId]="1"
+                  [showComments]="false"
+                  (commentAdded)="loadPosts()">
+                </app-post-comments>
+              </div>
+              
+              <div class="post-group-badge" *ngIf="post.groupId">
+                <i class="fas fa-users"></i> {{ getGroupName(post.groupId) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="filteredPosts.length === 0">
+            <i class="fas fa-comments"></i>
+            <h3>No posts yet</h3>
+            <p>Be the first to create a post in your community</p>
+            <button class="btn btn-primary" (click)="openPostModal()">
+              <i class="fas fa-plus"></i> Create Post
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Groups Section -->
+    <div class="groups-section" *ngIf="activeSection === 'groups'">
+      <!-- Stats Overview -->
+      <div class="groups-stats-grid">
+        <div class="stat-card-large">
+          <div class="stat-icon-large green">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ groups.length }}</div>
+            <div class="stat-label-large">Total Groups</div>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> +{{ getNewGroupsThisWeek() }} this week
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large blue">
+            <i class="fas fa-user-friends"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getTotalMembers() }}</div>
+            <div class="stat-label-large">Total Members</div>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> +{{ getNewMembersThisWeek() }} this week
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large purple">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getPublicGroupsCount() }}</div>
+            <div class="stat-label-large">Public Groups</div>
+            <div class="stat-info">
+              {{ getPrivateGroupsCount() }} private groups
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large orange">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getEngagementRate() }}%</div>
+            <div class="stat-label-large">Engagement Rate</div>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> +5% from last month
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Actions -->
+      <div class="groups-toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input 
+              type="text" 
+              placeholder="Search groups..." 
+              [(ngModel)]="groupSearchQuery"
+              (input)="filterGroups()">
+          </div>
+          
+          <div class="filter-buttons">
+            <button 
+              class="filter-btn" 
+              [class.active]="groupFilter === 'all'"
+              (click)="setGroupFilter('all')">
+              All Groups
+            </button>
+            <button 
+              class="filter-btn" 
+              [class.active]="groupFilter === 'public'"
+              (click)="setGroupFilter('public')">
+              <i class="fas fa-globe"></i> Public
+            </button>
+            <button 
+              class="filter-btn" 
+              [class.active]="groupFilter === 'private'"
+              (click)="setGroupFilter('private')">
+              <i class="fas fa-lock"></i> Private
+            </button>
+            <button 
+              class="filter-btn" 
+              [class.active]="groupFilter === 'invite'"
+              (click)="setGroupFilter('invite')">
+              <i class="fas fa-user-plus"></i> Invite Only
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <button class="btn btn-outline" (click)="toggleViewMode()">
+            <i class="fas" [class.fa-th]="viewMode === 'grid'" [class.fa-list]="viewMode === 'list'"></i>
+            {{ viewMode === 'grid' ? 'Grid' : 'List' }} View
+          </button>
+          <button class="btn btn-primary" (click)="openGroupModal()">
+            <i class="fas fa-plus"></i> New Group
+          </button>
+        </div>
+      </div>
+
+      <!-- Groups Grid View -->
+      <div class="groups-grid-enhanced" *ngIf="viewMode === 'grid'">
+        <div class="group-card-enhanced" *ngFor="let group of filteredGroupsList">
+          <div class="group-banner" [style.background]="getGroupGradient(group)">
+            <div class="group-type-badge-top">
+              <i class="fas" [class.fa-globe]="group.type === 'PUBLIC'" 
+                 [class.fa-lock]="group.type === 'PRIVATE'"
+                 [class.fa-user-plus]="group.type === 'INVITE_ONLY'"></i>
+              {{ group.type }}
+            </div>
+          </div>
+          
+          <div class="group-card-body">
+            <div class="group-avatar">
+              <i class="fas fa-users"></i>
+            </div>
+            
+            <h3 class="group-name-enhanced">{{ group.name }}</h3>
+            <p class="group-description-enhanced">{{ group.description }}</p>
+            
+            <div class="group-stats-mini">
+              <div class="stat-mini">
+                <i class="fas fa-user-friends"></i>
+                <span>{{ getRandomMembers() }} members</span>
+              </div>
+              <div class="stat-mini">
+                <i class="fas fa-calendar"></i>
+                <span>{{ getGroupEventsCountById(group.id) }} events</span>
+              </div>
+            </div>
+            
+            <div class="group-tags" *ngIf="group.bannerUrl">
+              <span class="mini-tag">Active</span>
+              <span class="mini-tag">{{ getRandomActivity() }}</span>
+            </div>
+          </div>
+          
+          <div class="group-card-footer">
+            <button class="btn-card" (click)="viewGroupDetails(group)">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <button class="btn-card" (click)="openGroupModal(group)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-card danger" (click)="deleteGroup(group.id!)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Groups List View -->
+      <div class="groups-list-enhanced" *ngIf="viewMode === 'list'">
+        <div class="group-list-item" *ngFor="let group of filteredGroupsList">
+          <div class="group-list-avatar">
+            <i class="fas fa-users"></i>
+          </div>
+          
+          <div class="group-list-info">
+            <div class="group-list-header">
+              <h3>{{ group.name }}</h3>
+              <div class="group-type-badge-inline">
+                <i class="fas" [class.fa-globe]="group.type === 'PUBLIC'" 
+                   [class.fa-lock]="group.type === 'PRIVATE'"
+                   [class.fa-user-plus]="group.type === 'INVITE_ONLY'"></i>
+                {{ group.type }}
+              </div>
+            </div>
+            <p class="group-list-description">{{ group.description }}</p>
+            <div class="group-list-meta">
+              <span><i class="fas fa-user-friends"></i> {{ getRandomMembers() }} members</span>
+              <span><i class="fas fa-calendar"></i> {{ getGroupEventsCountById(group.id) }} events</span>
+              <span><i class="fas fa-clock"></i> Created {{ group.createdAt | date: 'MMM d, yyyy' }}</span>
+            </div>
+          </div>
+          
+          <div class="group-list-actions">
+            <span class="status-badge active">Active</span>
+            <button class="btn-icon" (click)="viewGroupDetails(group)" title="View">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" (click)="openGroupModal(group)" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon danger" (click)="deleteGroup(group.id!)" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state-groups" *ngIf="filteredGroupsList.length === 0">
+        <div class="empty-icon">
+          <i class="fas fa-users-slash"></i>
+        </div>
+        <h3>No groups found</h3>
+        <p *ngIf="groupSearchQuery">Try adjusting your search or filters</p>
+        <p *ngIf="!groupSearchQuery">Create your first group to get started</p>
+        <button class="btn btn-primary" (click)="openGroupModal()">
+          <i class="fas fa-plus"></i> Create Group
+        </button>
+      </div>
+    </div>
+
+    <!-- Overview/Statistics Section -->
+    <div class="overview-section" *ngIf="activeSection === 'overview'">
+      <!-- Overview Header -->
+      <div class="overview-header">
+        <div class="overview-title-section">
+          <h2>Statistics & Overview</h2>
+          <p>Comprehensive analytics for your community</p>
+        </div>
+        <div class="date-range-selector">
+          <button class="range-btn" [class.active]="dateRange === 'week'" (click)="setDateRange('week')">Week</button>
+          <button class="range-btn" [class.active]="dateRange === 'month'" (click)="setDateRange('month')">Month</button>
+          <button class="range-btn" [class.active]="dateRange === 'year'" (click)="setDateRange('year')">Year</button>
+        </div>
+      </div>
+
+      <!-- Main Stats Grid -->
+      <div class="overview-stats-grid">
+        <!-- Groups Stats -->
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="overview-icon green">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3>Groups</h3>
+          </div>
+          <div class="overview-card-body">
+            <div class="big-number">{{ groups.length }}</div>
+            <div class="stat-label">Total Groups</div>
+            <div class="stat-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">Public</span>
+                <span class="breakdown-value">{{ getPublicGroupsCount() }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Private</span>
+                <span class="breakdown-value">{{ getPrivateGroupsCount() }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Members</span>
+                <span class="breakdown-value">{{ getTotalMembers() }}</span>
+              </div>
+            </div>
+            <div class="trend-indicator positive">
+              <i class="fas fa-arrow-up"></i> +{{ getNewGroupsThisWeek() }} this week
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Stats -->
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="overview-icon blue">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h3>Events</h3>
+          </div>
+          <div class="overview-card-body">
+            <div class="big-number">{{ events.length }}</div>
+            <div class="stat-label">Total Events</div>
+            <div class="stat-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">Upcoming</span>
+                <span class="breakdown-value">{{ upcomingEvents.length }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">This Month</span>
+                <span class="breakdown-value">{{ stats.eventsThisMonth }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Attendees</span>
+                <span class="breakdown-value">{{ getTotalAttendees() }}</span>
+              </div>
+            </div>
+            <div class="trend-indicator positive">
+              <i class="fas fa-arrow-up"></i> +{{ getNewEventsThisWeek() }} this week
+            </div>
+          </div>
+        </div>
+
+        <!-- Clubs Stats -->
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="overview-icon orange">
+              <i class="fas fa-star"></i>
+            </div>
+            <h3>Clubs</h3>
+          </div>
+          <div class="overview-card-body">
+            <div class="big-number">{{ clubs.length }}</div>
+            <div class="stat-label">Total Clubs</div>
+            <div class="stat-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">Active</span>
+                <span class="breakdown-value">{{ clubs.length }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Interests</span>
+                <span class="breakdown-value">{{ getTotalInterests() }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Members</span>
+                <span class="breakdown-value">{{ getClubMembers() }}</span>
+              </div>
+            </div>
+            <div class="trend-indicator positive">
+              <i class="fas fa-arrow-up"></i> Growing community
+            </div>
+          </div>
+        </div>
+
+        <!-- Posts Stats -->
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="overview-icon purple">
+              <i class="fas fa-comments"></i>
+            </div>
+            <h3>Posts & Activity</h3>
+          </div>
+          <div class="overview-card-body">
+            <div class="big-number">{{ getTotalPosts() }}</div>
+            <div class="stat-label">Total Posts</div>
+            <div class="stat-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">This Week</span>
+                <span class="breakdown-value">{{ getPostsThisWeek() }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Comments</span>
+                <span class="breakdown-value">{{ getTotalComments() }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Engagement</span>
+                <span class="breakdown-value">{{ getEngagementRate() }}%</span>
+              </div>
+            </div>
+            <div class="trend-indicator positive">
+              <i class="fas fa-arrow-up"></i> High engagement
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-grid">
+        <!-- Activity Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Activity Overview</h3>
+            <span class="chart-subtitle">Last 7 days</span>
+          </div>
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-line"></i>
+            <p>Activity chart visualization</p>
+            <div class="mock-chart-bars">
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 80%"></div>
+              <div class="chart-bar" style="height: 45%"></div>
+              <div class="chart-bar" style="height: 90%"></div>
+              <div class="chart-bar" style="height: 70%"></div>
+              <div class="chart-bar" style="height: 85%"></div>
+              <div class="chart-bar" style="height: 95%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribution Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Content Distribution</h3>
+            <span class="chart-subtitle">By category</span>
+          </div>
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-pie"></i>
+            <p>Distribution chart visualization</p>
+            <div class="distribution-list">
+              <div class="distribution-item">
+                <div class="distribution-bar green" style="width: 40%"></div>
+                <span>Groups (40%)</span>
+              </div>
+              <div class="distribution-item">
+                <div class="distribution-bar blue" style="width: 30%"></div>
+                <span>Events (30%)</span>
+              </div>
+              <div class="distribution-item">
+                <div class="distribution-bar orange" style="width: 20%"></div>
+                <span>Clubs (20%)</span>
+              </div>
+              <div class="distribution-item">
+                <div class="distribution-bar purple" style="width: 10%"></div>
+                <span>Posts (10%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Performers -->
+      <div class="top-performers-grid">
+        <div class="performers-card">
+          <h3>Top Groups</h3>
+          <div class="performer-list">
+            <div class="performer-item" *ngFor="let group of groups.slice(0, 5); let i = index">
+              <div class="performer-rank">{{ i + 1 }}</div>
+              <div class="performer-info">
+                <div class="performer-name">{{ group.name }}</div>
+                <div class="performer-meta">{{ getRandomMembers() }} members</div>
+              </div>
+              <div class="performer-badge">
+                <i class="fas fa-fire"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="performers-card">
+          <h3>Upcoming Events</h3>
+          <div class="performer-list">
+            <div class="performer-item" *ngFor="let event of upcomingEvents.slice(0, 5); let i = index">
+              <div class="performer-rank">{{ i + 1 }}</div>
+              <div class="performer-info">
+                <div class="performer-name">{{ event.title }}</div>
+                <div class="performer-meta">{{ event.startDate | date: 'MMM d' }}</div>
+              </div>
+              <div class="performer-badge">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="performers-card">
+          <h3>Active Clubs</h3>
+          <div class="performer-list">
+            <div class="performer-item" *ngFor="let club of clubs.slice(0, 5); let i = index">
+              <div class="performer-rank">{{ i + 1 }}</div>
+              <div class="performer-info">
+                <div class="performer-name">{{ club.name }}</div>
+                <div class="performer-meta">{{ club.interests?.split(',')[0] }}</div>
+              </div>
+              <div class="performer-badge">
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clubs Section -->
+    <div class="clubs-section" *ngIf="activeSection === 'clubs'">
+      <!-- Clubs Stats Overview -->
+      <div class="clubs-stats-grid">
+        <div class="stat-card-large">
+          <div class="stat-icon-large orange">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ clubs.length }}</div>
+            <div class="stat-label-large">Total Clubs</div>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> Active clubs
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large blue">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getClubMembers() }}</div>
+            <div class="stat-label-large">Total Members</div>
+            <div class="stat-info">
+              Across all clubs
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large green">
+            <i class="fas fa-tags"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getTotalInterests() }}</div>
+            <div class="stat-label-large">Interest Categories</div>
+            <div class="stat-info">
+              Diverse interests
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card-large">
+          <div class="stat-icon-large purple">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value-large">{{ getClubEventsCount() }}</div>
+            <div class="stat-label-large">Club Events</div>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> Upcoming events
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clubs Toolbar -->
+      <div class="clubs-toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input 
+              type="text" 
+              placeholder="Search clubs..." 
+              [(ngModel)]="clubSearchQuery"
+              (input)="filterClubs()">
+          </div>
+          
+          <div class="filter-buttons">
+            <button 
+              class="filter-btn" 
+              [class.active]="clubFilter === 'all'"
+              (click)="setClubFilter('all')">
+              All Clubs
+            </button>
+            <button 
+              class="filter-btn" 
+              [class.active]="clubFilter === 'active'"
+              (click)="setClubFilter('active')">
+              <i class="fas fa-check-circle"></i> Active
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <button class="btn btn-outline" (click)="toggleClubViewMode()">
+            <i class="fas" [class.fa-th]="clubViewMode === 'grid'" [class.fa-list]="clubViewMode === 'list'"></i>
+            {{ clubViewMode === 'grid' ? 'Grid' : 'List' }} View
+          </button>
+          <button class="btn btn-primary" (click)="openClubModal()">
+            <i class="fas fa-plus"></i> New Club
+          </button>
+        </div>
+      </div>
+
+      <!-- Clubs Grid View -->
+      <div class="clubs-grid-enhanced" *ngIf="clubViewMode === 'grid'">
+        <div class="club-card-enhanced" *ngFor="let club of filteredClubsList">
+          <div class="club-banner" [style.background]="getClubGradient(club)">
+            <div class="club-status-badge-top" 
+                 [class.status-active]="club.status === 'ACTIVE' || !club.status"
+                 [class.status-paused]="club.status === 'PAUSED'">
+              <i class="fas" [class.fa-check-circle]="club.status === 'ACTIVE' || !club.status"
+                             [class.fa-pause-circle]="club.status === 'PAUSED'"></i>
+              {{ club.status || 'ACTIVE' }}
+            </div>
+          </div>
+          
+          <div class="club-card-body">
+            <div class="club-avatar">
+              <i class="fas fa-star"></i>
+            </div>
+            
+            <h3 class="club-name-enhanced">{{ club.name }}</h3>
+            <p class="club-description-enhanced">{{ club.description }}</p>
+            
+            <div class="club-stats-mini">
+              <div class="stat-mini">
+                <i class="fas fa-users"></i>
+                <span>{{ club.membersCount || getRandomMembers() }} members</span>
+              </div>
+              <div class="stat-mini">
+                <i class="fas fa-calendar"></i>
+                <span>{{ club.eventsCount || 0 }} events</span>
+              </div>
+            </div>
+            
+            <div class="club-interests-tags" *ngIf="club.interests">
+              <span class="interest-tag" *ngFor="let interest of club.interests.split(',').slice(0, 3)">
+                <i class="fas fa-tag"></i> {{ interest.trim() }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="club-card-footer">
+            <button class="btn-card" (click)="viewClub(club.id!)">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <button class="btn-card" (click)="openClubModal(club)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-card warning" 
+                    *ngIf="club.status === 'ACTIVE' || !club.status"
+                    (click)="pauseClubById(club.id!)">
+              <i class="fas fa-pause"></i> Pause
+            </button>
+            <button class="btn-card success" 
+                    *ngIf="club.status === 'PAUSED'"
+                    (click)="unpauseClubById(club.id!)">
+              <i class="fas fa-play"></i> Activate
+            </button>
+            <button class="btn-card danger" (click)="deleteClub(club.id!)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clubs List View -->
+      <div class="clubs-list-enhanced" *ngIf="clubViewMode === 'list'">
+        <div class="club-list-item" *ngFor="let club of filteredClubsList">
+          <div class="club-list-avatar">
+            <i class="fas fa-star"></i>
+          </div>
+          
+          <div class="club-list-info">
+            <div class="club-list-header">
+              <h3>{{ club.name }}</h3>
+              <div class="club-status-badge-inline"
+                   [class.status-active]="club.status === 'ACTIVE' || !club.status"
+                   [class.status-paused]="club.status === 'PAUSED'">
+                <i class="fas" [class.fa-check-circle]="club.status === 'ACTIVE' || !club.status"
+                               [class.fa-pause-circle]="club.status === 'PAUSED'"></i>
+                {{ club.status || 'ACTIVE' }}
+              </div>
+            </div>
+            <p class="club-list-description">{{ club.description }}</p>
+            <div class="club-list-meta">
+              <span><i class="fas fa-users"></i> {{ club.membersCount || getRandomMembers() }} members</span>
+              <span><i class="fas fa-calendar"></i> {{ club.eventsCount || 0 }} events</span>
+              <span><i class="fas fa-clock"></i> Created {{ club.createdAt | date: 'MMM d, yyyy' }}</span>
+            </div>
+            <div class="club-interests-inline" *ngIf="club.interests">
+              <span class="interest-tag-small" *ngFor="let interest of club.interests.split(',').slice(0, 4)">
+                {{ interest.trim() }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="club-list-actions">
+            <button class="btn-icon" (click)="viewClub(club.id!)" title="View">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" (click)="openClubModal(club)" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon warning" 
+                    *ngIf="club.status === 'ACTIVE' || !club.status"
+                    (click)="pauseClubById(club.id!)" 
+                    title="Pause Club">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="btn-icon success" 
+                    *ngIf="club.status === 'PAUSED'"
+                    (click)="unpauseClubById(club.id!)" 
+                    title="Activate Club">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="btn-icon danger" (click)="deleteClub(club.id!)" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state-clubs" *ngIf="filteredClubsList.length === 0">
+        <div class="empty-icon">
+          <i class="fas fa-star-half-alt"></i>
+        </div>
+        <h3>No clubs found</h3>
+        <p *ngIf="clubSearchQuery">Try adjusting your search or filters</p>
+        <p *ngIf="!clubSearchQuery">Create your first club to get started</p>
+        <button class="btn btn-primary" (click)="openClubModal()">
+          <i class="fas fa-plus"></i> Create Club
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Announcement Modal -->
+<div class="modal-overlay" *ngIf="showAnnouncementModal" (click)="closeAnnouncementModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement' }}</h2>
+      <button class="btn-close" (click)="closeAnnouncementModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form class="modal-body" (ngSubmit)="saveAnnouncement()">
+      <div class="form-group">
+        <label for="announcementTitle">Title *</label>
+        <input 
+          type="text" 
+          id="announcementTitle" 
+          class="form-control"
+          [(ngModel)]="announcementForm.title"
+          name="announcementTitle"
+          required
+          placeholder="Enter announcement title">
+      </div>
+
+      <div class="form-group">
+        <label for="announcementContent">Content *</label>
+        <textarea 
+          id="announcementContent" 
+          class="form-control"
+          [(ngModel)]="announcementForm.content"
+          name="announcementContent"
+          rows="6"
+          required
+          placeholder="Enter announcement content"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="announcementAuthor">Author *</label>
+        <input 
+          type="text" 
+          id="announcementAuthor" 
+          class="form-control"
+          [(ngModel)]="announcementForm.author"
+          name="announcementAuthor"
+          required
+          placeholder="Your name">
+      </div>
+
+      <div class="form-group" *ngIf="groups.length > 0">
+        <label for="announcementGroup">Target Group (Optional)</label>
+        <select 
+          id="announcementGroup" 
+          class="form-control"
+          [(ngModel)]="announcementForm.targetGroup"
+          name="announcementGroup">
+          <option [value]="null">All groups</option>
+          <option *ngFor="let group of groups" [value]="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeAnnouncementModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> {{ editingAnnouncement ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Post Modal -->
+<div class="modal-overlay" *ngIf="showPostModal" (click)="closePostModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingPost ? 'Edit Post' : 'Create New Post' }}</h2>
+      <button class="btn-close" (click)="closePostModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form class="modal-body" (ngSubmit)="savePost()">
+      <div class="form-group">
+        <label for="postAuthor">Author *</label>
+        <input 
+          type="text" 
+          id="postAuthor" 
+          class="form-control"
+          [(ngModel)]="postForm.author"
+          name="postAuthor"
+          required
+          placeholder="Your name">
+      </div>
+
+      <div class="form-group">
+        <label for="postTitle">Title (Optional)</label>
+        <input 
+          type="text" 
+          id="postTitle" 
+          class="form-control"
+          [(ngModel)]="postForm.title"
+          name="postTitle"
+          placeholder="Enter post title">
+      </div>
+
+      <div class="form-group">
+        <label for="postContent">Content *</label>
+        <textarea 
+          id="postContent" 
+          class="form-control"
+          [(ngModel)]="postForm.content"
+          name="postContent"
+          rows="6"
+          required
+          placeholder="What's on your mind?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="postImage">Image URL (Optional)</label>
+        <input 
+          type="text" 
+          id="postImage" 
+          class="form-control"
+          [(ngModel)]="postForm.imageUrl"
+          name="postImage"
+          placeholder="https://example.com/image.jpg">
+      </div>
+
+      <div class="form-group" *ngIf="groups.length > 0">
+        <label for="postGroup">Post to Group (Optional)</label>
+        <select 
+          id="postGroup" 
+          class="form-control"
+          [(ngModel)]="postForm.groupId"
+          name="postGroup">
+          <option [value]="null">General / All groups</option>
+          <option *ngFor="let group of groups" [value]="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closePostModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-paper-plane"></i> {{ editingPost ? 'Update' : 'Post' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Group Modal -->
+<div class="modal-overlay" *ngIf="showGroupModal" (click)="closeGroupModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingGroup ? 'Edit Group' : 'Create New Group' }}</h2>
+      <button class="btn-close" (click)="closeGroupModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form class="modal-body" (ngSubmit)="saveGroup()">
+      <div class="form-group">
+        <label for="groupName">Group Name *</label>
+        <input 
+          type="text" 
+          id="groupName" 
+          class="form-control"
+          [(ngModel)]="groupForm.name"
+          name="groupName"
+          required
+          placeholder="Enter group name">
+      </div>
+
+      <div class="form-group">
+        <label for="groupDescription">Description *</label>
+        <textarea 
+          id="groupDescription" 
+          class="form-control"
+          [(ngModel)]="groupForm.description"
+          name="groupDescription"
+          rows="4"
+          required
+          placeholder="Enter group description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="groupType">Group Type *</label>
+        <select 
+          id="groupType" 
+          class="form-control"
+          [(ngModel)]="groupForm.type"
+          name="groupType"
+          required>
+          <option value="PUBLIC">Public</option>
+          <option value="PRIVATE">Private</option>
+          <option value="INVITE_ONLY">Invite Only</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="groupBanner">Banner URL</label>
+        <input 
+          type="text" 
+          id="groupBanner" 
+          class="form-control"
+          [(ngModel)]="groupForm.bannerUrl"
+          name="groupBanner"
+          placeholder="https://example.com/banner.jpg">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeGroupModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> {{ editingGroup ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Club Modal -->
+<div class="modal-overlay" *ngIf="showClubModal" (click)="closeClubModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingClub ? 'Edit Club' : 'Create New Club' }}</h2>
+      <button class="btn-close" (click)="closeClubModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form class="modal-body" (ngSubmit)="saveClub()">
+      <div class="form-group">
+        <label for="clubName">Club Name *</label>
+        <input 
+          type="text" 
+          id="clubName" 
+          class="form-control"
+          [(ngModel)]="clubForm.name"
+          name="clubName"
+          required
+          placeholder="Enter club name">
+      </div>
+
+      <div class="form-group">
+        <label for="clubDescription">Description *</label>
+        <textarea 
+          id="clubDescription" 
+          class="form-control"
+          [(ngModel)]="clubForm.description"
+          name="clubDescription"
+          rows="4"
+          required
+          placeholder="Enter club description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="clubInterests">Interests</label>
+        <input 
+          type="text" 
+          id="clubInterests" 
+          class="form-control"
+          [(ngModel)]="clubForm.interests"
+          name="clubInterests"
+          placeholder="e.g., Technology, Design, Business (comma-separated)">
+      </div>
+
+      <div class="form-group">
+        <label for="clubBanner">Banner URL</label>
+        <input 
+          type="text" 
+          id="clubBanner" 
+          class="form-control"
+          [(ngModel)]="clubForm.bannerUrl"
+          name="clubBanner"
+          placeholder="https://example.com/banner.jpg">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeClubModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> {{ editingClub ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Event Modal -->
+<div class="modal-overlay" *ngIf="showEventModal" (click)="closeEventModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingEvent ? 'Edit Event' : 'Create New Event' }}</h2>
+      <button class="btn-close" (click)="closeEventModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form class="modal-body" (ngSubmit)="saveEvent()">
+      <div class="form-group">
+        <label for="eventTitle">Event Title *</label>
+        <input 
+          type="text" 
+          id="eventTitle" 
+          class="form-control"
+          [(ngModel)]="eventForm.title"
+          name="eventTitle"
+          required
+          placeholder="Enter event title">
+      </div>
+
+      <div class="form-group">
+        <label for="eventDescription">Description *</label>
+        <textarea 
+          id="eventDescription" 
+          class="form-control"
+          [(ngModel)]="eventForm.description"
+          name="eventDescription"
+          rows="4"
+          required
+          placeholder="Enter event description"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="eventStartDate">Start Date & Time *</label>
+          <input 
+            type="datetime-local" 
+            id="eventStartDate" 
+            class="form-control"
+            [(ngModel)]="eventForm.startDate"
+            name="eventStartDate"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="eventEndDate">End Date & Time *</label>
+          <input 
+            type="datetime-local" 
+            id="eventEndDate" 
+            class="form-control"
+            [(ngModel)]="eventForm.endDate"
+            name="eventEndDate"
+            required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="eventLocation">Location *</label>
+        <input 
+          type="text" 
+          id="eventLocation" 
+          class="form-control"
+          [(ngModel)]="eventForm.location"
+          name="eventLocation"
+          required
+          placeholder="Enter event location or 'Online'">
+      </div>
+
+      <div class="form-group" *ngIf="groups.length > 0">
+        <label for="eventGroup">Associated Group</label>
+        <select 
+          id="eventGroup" 
+          class="form-control"
+          [(ngModel)]="eventForm.groupId"
+          name="eventGroup">
+          <option [value]="null">No group</option>
+          <option *ngFor="let group of groups" [value]="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeEventModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> {{ editingEvent ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

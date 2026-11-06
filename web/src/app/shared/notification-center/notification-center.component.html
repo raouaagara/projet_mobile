@@ -1,0 +1,28 @@
+<div class="notification-wrapper">
+  <button class="bell-btn" (click)="toggle()">
+    <i class="fa fa-bell"></i>
+    <span class="badge" *ngIf="notif.getUnreadCount() > 0">{{ notif.getUnreadCount() }}</span>
+  </button>
+  <div class="dropdown" *ngIf="open">
+    <div class="dropdown-header">
+      <span>Notifications</span>
+      <button class="link-btn" (click)="markAllRead()">Mark all read</button>
+    </div>
+    <div class="list">
+      <div *ngFor="let n of notif.getAll()" class="item" [class.unread]="!n.read" (click)="markRead(n)">
+        <i class="fa" [ngClass]="{
+          'fa-crown': n.type === 'subscription',
+          'fa-credit-card': n.type === 'payment',
+          'fa-clock': n.type === 'reminder',
+          'fa-info-circle': n.type === 'info'
+        }"></i>
+        <div>
+          <div class="title">{{ n.title }}</div>
+          <div class="msg">{{ n.message }}</div>
+          <div class="date">{{ n.date }}</div>
+        </div>
+      </div>
+      <div *ngIf="notif.getAll().length === 0" class="empty">No notifications</div>
+    </div>
+  </div>
+</div>

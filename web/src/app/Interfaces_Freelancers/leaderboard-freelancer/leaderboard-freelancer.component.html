@@ -1,0 +1,224 @@
+<nav class="navbar">
+  <div class="nav-container">
+     <div class="nav-brand" routerLink="/FreelancerFeed">
+<img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+</div>
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search freelancers...">
+    </div>
+    <div class="nav-actions">
+       
+      <a href="#" class="nav-link"><i class="fa fa-comments"></i> Messages</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu" routerLink="/FreelancerProfil">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Kenneth">
+        <i class="fa fa-chevron-down"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-layout">
+
+  <aside class="sidebar-left">
+    <div class="filter-card">
+      <h3>Leaderboard Categories</h3>
+      
+      <div class="nav-menu-item active">
+        <i class="fa fa-globe"></i> Global Ranking
+      </div>
+      <div class="nav-menu-item">
+        <i class="fa fa-code"></i> Web Development
+      </div>
+      <div class="nav-menu-item">
+        <i class="fa fa-paint-brush"></i> Design & Creative
+      </div>
+      <div class="nav-menu-item">
+        <i class="fa fa-mobile-alt"></i> Mobile Dev
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <label>Region</label>
+        <div class="checkbox-row"><input type="checkbox" checked> <span>Worldwide</span></div>
+        <div class="checkbox-row"><input type="checkbox"> <span>Europe</span></div>
+        <div class="checkbox-row"><input type="checkbox"> <span>North America</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="feed-center">
+    
+    <div class="feed-header">
+      <h2>Global Top 15</h2>
+      <div class="sort-box">
+        <span>View:</span>
+        <select>
+          <option>This Month</option>
+          <option>All Time</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="podium-section">
+        <div class="podium-user silver">
+            <div class="rank-badge">2</div>
+            <div class="avatar-wrap">
+                <img src="https://placehold.co/100x100/94a3b8/ffffff?text=DK" alt="David">
+                <span class="medal"><i class="fa fa-medal"></i></span>
+            </div>
+            <h4>David Kim</h4>
+            <span class="p-role">Full Stack</span>
+            <div class="p-score">98.5</div>
+            <button class="btn-connect">Connect</button>
+        </div>
+
+        <div class="podium-user gold">
+            <div class="crown"><i class="fa fa-crown"></i></div>
+            <div class="rank-badge">1</div>
+            <div class="avatar-wrap">
+                <img src="https://placehold.co/100x100/f59e0b/ffffff?text=SJ" alt="Sarah">
+            </div>
+            <h4>Sarah Jenkins</h4>
+            <span class="p-role">Angular Expert</span>
+            <div class="p-score">99.8</div>
+            <button class="btn-connect">Connect</button>
+        </div>
+
+        <div class="podium-user bronze">
+            <div class="rank-badge">3</div>
+            <div class="avatar-wrap">
+                <img src="https://placehold.co/100x100/b45309/ffffff?text=EL" alt="Elena">
+                <span class="medal"><i class="fa fa-medal"></i></span>
+            </div>
+            <h4>Elena Lou</h4>
+            <span class="p-role">UI/UX Design</span>
+            <div class="p-score">97.2</div>
+            <button class="btn-connect">Connect</button>
+        </div>
+    </div>
+
+    <div class="ranking-container">
+        
+        <div class="rank-card">
+            <div class="rank-num">4</div>
+            <div class="rank-avatar"><img src="https://placehold.co/50x50/10b981/ffffff?text=MC"></div>
+            <div class="rank-info">
+                <h3>Michael Chen</h3>
+                <p>Backend (Node.js)</p>
+            </div>
+            <div class="rank-score">
+                <span>96.0</span>
+            </div>
+            <div class="rank-action">
+                <button class="btn-view-details sm">View</button>
+            </div>
+        </div>
+
+        <div class="rank-card">
+            <div class="rank-num">5</div>
+            <div class="rank-avatar"><img src="https://placehold.co/50x50/3b82f6/ffffff?text=JB"></div>
+            <div class="rank-info">
+                <h3>Jessica Blue</h3>
+                <p>Mobile Dev (Flutter)</p>
+            </div>
+            <div class="rank-score"><span>95.4</span></div>
+            <div class="rank-action"><button class="btn-view-details sm">View</button></div>
+        </div>
+
+        <div class="rank-card">
+            <div class="rank-num">6</div>
+            <div class="rank-avatar"><img src="https://placehold.co/50x50/6366f1/ffffff?text=TH"></div>
+            <div class="rank-info"><h3>Tom Hardy</h3><p>DevOps</p></div>
+            <div class="rank-score"><span>94.1</span></div>
+            <div class="rank-action"><button class="btn-view-details sm">View</button></div>
+        </div>
+
+        <div class="divider-text">Top 10 Cutoff</div>
+
+        <div class="rank-card locked">
+            <div class="rank-num">11</div>
+            <div class="rank-avatar blur"><img src="https://placehold.co/50x50/64748b/ffffff?text=?"></div>
+            <div class="rank-info">
+                <h3>Hidden User</h3>
+                <p>Security Analyst</p>
+            </div>
+            <div class="rank-score"><span>89.2</span></div>
+            <div class="rank-action">
+                <div class="locked-badge"><i class="fa fa-lock"></i> Locked</div>
+            </div>
+        </div>
+
+        <div class="rank-card locked">
+            <div class="rank-num">12</div>
+            <div class="rank-avatar blur"><img src="https://placehold.co/50x50/64748b/ffffff?text=?"></div>
+            <div class="rank-info">
+                <h3>Hidden User</h3>
+                <p>Content Writer</p>
+            </div>
+            <div class="rank-score"><span>88.0</span></div>
+            <div class="rank-action">
+                <div class="locked-badge"><i class="fa fa-lock"></i> Locked</div>
+            </div>
+        </div>
+
+    </div>
+
+  </main>
+
+  <aside class="sidebar-right">
+    
+    <div class="card profile-widget">
+      <div class="widget-head">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Me">
+        <div>
+          <h4>Kenneth Silva</h4>
+          <p>Fullstack Developer</p>
+        </div>
+      </div>
+      <div class="my-rank-display">
+          <span>Your Rank:</span>
+          <strong>#42</strong>
+      </div>
+      <div class="profile-link">
+        <a href="#">Improve your score</a>
+      </div>
+    </div>
+
+    <div class="card stats-widget">
+      <h4>Score Breakdown</h4>
+      <div class="stat-row">
+        <span>Job Success</span>
+        <strong>92%</strong>
+      </div>
+      <div class="stat-row">
+        <span>Client Rating</span>
+        <strong>4.8</strong>
+      </div>
+      <div class="stat-row">
+        <span>Response Time</span>
+        <strong>1hr</strong>
+      </div>
+    </div>
+
+    <div class="card saved-widget">
+      <div class="widget-header">
+        <h4>Top Rising Stars</h4>
+      </div>
+      <ul class="saved-list">
+        <li class="saved-item">
+          <a href="#" class="saved-title">Alex Johnson</a>
+          <span class="saved-meta">+15 ranks this week</span>
+        </li>
+        <li class="saved-item">
+          <a href="#" class="saved-title">Maria Garcia</a>
+          <span class="saved-meta">+10 ranks this week</span>
+        </li>
+      </ul>
+    </div>
+
+  </aside>
+
+</div>

@@ -1,0 +1,239 @@
+:host {
+  --primary: #198754;
+  --primary-hover: #146c43;
+  --bg-body: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --red: #ef4444;
+  --green: #22c55e;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- NAVBAR STYLES (Standard) --- */
+.navbar {
+  background: var(--surface);
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 100%;
+}
+
+.nav-brand { display: flex; align-items: center; cursor: pointer; margin-right: 40px; }
+.logo-img { height: 40px; width: auto; object-fit: contain; }
+
+.nav-menu { display: flex; gap: 8px; flex: 1; }
+.nav-menu a {
+  text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.9rem;
+  padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px; transition: 0.2s;
+}
+.nav-menu a:hover, .nav-menu a.active-link { color: var(--primary); background: #ecfdf5; font-weight: 600; }
+
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.btn-create-nav {
+  background: var(--primary); color: white; border: none; padding: 8px 16px;
+  border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+}
+.user-profile img { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border); }
+
+
+/* --- MAIN LAYOUT --- */
+.layout-container {
+  background: var(--bg-body);
+  min-height: calc(100vh - 64px);
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* Header */
+.top-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+.header-left h1 { margin: 5px 0; font-size: 1.8rem; color: var(--text-main); }
+.header-left p { margin: 0; color: var(--text-muted); }
+.back-link { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+.back-link:hover { color: var(--primary); }
+
+.header-stats { display: flex; gap: 20px; }
+.stat-pill { background: var(--surface); border: 1px solid var(--border); padding: 8px 20px; border-radius: 8px; text-align: center; }
+.stat-pill .label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+.stat-pill .value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+
+/* --- PROPOSALS GRID --- */
+.proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Responsive Grid */
+  gap: 24px;
+}
+
+/* Freelancer Card */
+.freelancer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.freelancer-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); border-color: var(--primary); }
+.freelancer-card.dimmed { opacity: 0.6; filter: grayscale(100%); pointer-events: none; }
+
+/* Status Badges */
+.card-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: #ecfdf5; color: var(--primary);
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;
+}
+.card-badge.rejected { background: #fef2f2; color: var(--red); }
+
+/* Card Top Section */
+.card-top { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.user-meta h3 { margin: 0; font-size: 1.1rem; color: var(--text-main); }
+.role { margin: 2px 0 4px; font-size: 0.85rem; color: var(--text-muted); }
+.rating { font-size: 0.8rem; color: #f59e0b; font-weight: 600; }
+.rate-box { margin-left: auto; text-align: right; }
+.rate-box .amount { display: block; font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+.rate-box small { color: var(--text-muted); font-size: 0.8rem; }
+
+/* Card Body */
+.card-body { flex: 1; display: flex; flex-direction: column; }
+.cover-letter {
+  font-size: 0.9rem; color: #4b5563; font-style: italic;
+  margin-bottom: 20px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; /* Truncate text */
+}
+
+.skills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; margin-top: auto; }
+.skill-tag { background: #f3f4f6; color: #4b5563; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+
+/* Action Buttons */
+.card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.btn-refuse, .btn-accept {
+  padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;
+}
+.btn-refuse { background: white; border: 1px solid var(--border); color: var(--text-muted); }
+.btn-refuse:hover { background: #fef2f2; border-color: var(--red); color: var(--red); }
+
+.btn-accept { background: var(--primary); border: none; color: white; }
+.btn-accept:hover { background: #15803d; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+
+/* Footer (View Profile) */
+.card-footer { border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px; text-align: center; }
+.btn-view { background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.9rem; width: 100%; }
+.btn-view:hover { color: var(--primary); text-decoration: underline; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nav-menu { display: none; }
+  .proposals-grid { grid-template-columns: 1fr; }
+  .header-stats { display: none; } /* Hide stats on mobile if cluttered */
+}
+
+/* --- NEW CONFIRMATION MODAL STYLES --- */
+.modal-overlay {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(4px);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  z-index: 2000; /* Ensures it sits above the navbar */
+}
+
+.confirm-modal {
+  background: var(--surface); 
+  padding: 30px; 
+  border-radius: 16px;
+  max-width: 400px; 
+  width: 90%; 
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-icon {
+  width: 60px; 
+  height: 60px; 
+  background: #fef3c7; 
+  color: #d97706; /* Warning yellow/orange */
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 24px; 
+  margin: 0 auto 20px;
+}
+
+.confirm-modal h2 { 
+  margin: 0 0 10px; 
+  color: var(--text-main); 
+  font-size: 1.5rem; 
+}
+
+.confirm-modal p { 
+  color: var(--text-muted); 
+  line-height: 1.5; 
+  margin-bottom: 24px; 
+}
+
+.modal-actions { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 12px; 
+}
+
+.btn-cancel { 
+  padding: 12px; 
+  border-radius: 8px; 
+  border: 1px solid var(--border); 
+  background: white; 
+  color: var(--text-main); 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: 0.2s;
+}
+
+.btn-cancel:hover { background: #f3f4f6; }
+
+.btn-confirm { 
+  padding: 12px; 
+  border-radius: 8px; 
+  border: none; 
+  background: var(--primary); 
+  color: white; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: 0.2s;
+}
+
+.btn-confirm:hover { background: var(--primary-hover); }

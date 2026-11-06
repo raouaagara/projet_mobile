@@ -1,0 +1,116 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+        <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+    <div class="nav-menu">
+        <a routerLink="/FreelancerContracts" class="back-link"><i class="fa fa-arrow-left"></i> Back to Offers</a>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container" *ngIf="isLoading">
+    <div class="loading-state">
+        <i class="fa fa-circle-notch fa-spin fa-2x"></i>
+        <p>Retrieving contract details...</p>
+    </div>
+</div>
+
+<div class="layout-container" *ngIf="!isLoading && contract">
+  
+  <div class="contract-paper">
+    
+    <header class="paper-header">
+      <div class="status-badge">
+          OFFER PENDING
+      </div>
+      <h1>Service Agreement</h1>
+      <p class="subtitle">Please review the terms below carefully before signing.</p>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="summary-grid">
+        <div class="info-box">
+            <label>Project</label>
+            <strong>{{ contract.projectTitle }}</strong>
+        </div>
+        <div class="info-box">
+            <label>Client</label>
+            <strong>{{ contract.clientName }}</strong>
+        </div>
+        <div class="info-box highlight">
+            <label>Contract Value</label>
+            <strong>${{ contract.rate | number:'1.2-2' }}</strong>
+        </div>
+        <div class="info-box">
+            <label>Start Date</label>
+            <strong>{{ contract.startDate | date:'mediumDate' }}</strong>
+        </div>
+    </section>
+
+    <section class="terms-section">
+        <h3>Scope of Work & Terms</h3>
+        <div class="terms-box">
+            {{ contract.terms }}
+        </div>
+        <div class="terms-check">
+            <i class="fa fa-info-circle"></i> By signing this document, you agree to deliver the work as described above.
+        </div>
+    </section>
+
+    <section class="signature-section">
+        
+        <div class="sig-block client-sig">
+            <p>Signed by Client:</p>
+            <div class="sig-image-container">
+                <img [src]="contract.clientSignature" alt="Client Signature">
+            </div>
+            <div class="sig-line"></div>
+            <span class="signer-name">{{ contract.clientName }}</span>
+            <span class="sig-date">Date: {{ contract.startDate | date:'shortDate' }}</span>
+        </div>
+
+        <div class="sig-block freelancer-sig">
+            <p>Your Signature:</p>
+            
+            <div class="canvas-wrapper">
+                <canvas #signatureCanvas class="signature-pad"></canvas>
+                {{ initSignaturePad() }}
+            </div>
+
+            <div class="sig-actions">
+                <button class="btn-clear" (click)="clearSignature()">
+                    <i class="fa fa-eraser"></i> Clear
+                </button>
+                <span class="sign-hint" *ngIf="!signatureImg">* Please sign in the box above</span>
+                <span class="sign-success" *ngIf="signatureImg"><i class="fa fa-check"></i> Captured</span>
+            </div>
+            
+            <div class="sig-line"></div>
+            <span class="signer-name">{{ contract.freelancerName }} (You)</span>
+            <span class="sig-date">Date: {{ currentDate | date:'shortDate' }}</span>
+        </div>
+
+    </section>
+
+  </div>
+
+  <div class="action-footer">
+      <div class="footer-content">
+          <div class="footer-text">
+              <strong>Ready to start?</strong> Accepting this offer creates a binding contract.
+          </div>
+          <div class="footer-buttons">
+              <button class="btn-reject" (click)="rejectContract()" [disabled]="isProcessing">
+                  Decline Offer
+              </button>
+              <button class="btn-accept" (click)="acceptContract()" [disabled]="isProcessing || !signatureImg">
+                  <span *ngIf="isProcessing"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
+                  <span *ngIf="!isProcessing"><i class="fa fa-file-signature"></i> Sign & Accept Contract</span>
+              </button>
+          </div>
+      </div>
+  </div>
+
+</div>

@@ -1,0 +1,666 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <div class="logo-mark">C</div>
+      <span class="logo-text">Catch<span>OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+      <a routerLink="/MyAvailability" class="nav-link"><i class="fa fa-globe"></i> Availability</a>
+      <a routerLink="/ReferralDashboard" class="nav-link active"><i class="fa fa-share-alt"></i> Community</a>
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-icon">
+      <i class="fa fa-gift"></i>
+    </div>
+    <h1>💰 Community & Rewards</h1>
+    <p class="hero-subtitle">Earn rewards for learning, help others grow, and build together</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab-btn" [class.active]="activeTab === 'overview'" (click)="switchTab('overview')">
+      <i class="fa fa-chart-line"></i> Overview
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'referrals'" (click)="switchTab('referrals')">
+      <i class="fa fa-users"></i> Referrals
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'rewards'" (click)="switchTab('rewards')">
+      <i class="fa fa-trophy"></i> Rewards
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'donations'" (click)="switchTab('donations')">
+      <i class="fa fa-heart"></i> Donations
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'wallet'" (click)="switchTab('wallet')">
+      <i class="fa fa-wallet"></i> Wallet
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'leaderboards'" (click)="switchTab('leaderboards')">
+      <i class="fa fa-medal"></i> Leaderboards
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+    <p>Loading your data...</p>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div *ngIf="!loading && activeTab === 'overview'" class="tab-content">
+    <!-- Wallet Card -->
+    <div class="wallet-card">
+      <div class="wallet-header">
+        <div class="wallet-balance">
+          <span class="balance-label">Available Balance</span>
+          <span class="balance-amount">${{ wallet?.balance || 0 | number:'1.2-2' }}</span>
+        </div>
+        <div class="wallet-tier" *ngIf="wallet">
+          <span class="tier-badge">{{ getTierBadge(wallet.currentTier) }}</span>
+          <span class="tier-label">{{ getTierLabel(wallet.currentTier) }} Learner</span>
+        </div>
+      </div>
+      <div class="wallet-stats">
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalEarned || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Earned</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalDonated || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Donated</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalReceived || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Received</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ wallet?.certificationsCount || 0 }}</span>
+          <span class="stat-label">Certifications</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress to Next Tier -->
+    <div class="progress-card" *ngIf="walletStats && walletStats.nextTier">
+      <h3>🎯 Next Milestone</h3>
+      <div class="milestone-info">
+        <span class="milestone-text">
+          {{ walletStats.certificationsToNextTier }} more certifications to 
+          {{ getTierBadge(walletStats.nextTier) }} {{ getTierLabel(walletStats.nextTier) }}
+        </span>
+        <span class="milestone-reward">${{ walletStats.nextTierReward }} Reward</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <div class="progress-label">{{ getProgressPercentage() | number:'1.0-0' }}% Complete</div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="quick-stats-grid">
+      <div class="quick-stat-card">
+        <div class="stat-icon"><i class="fa fa-users"></i></div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalReferrals }}</div>
+          <div class="stat-title">Total Referrals</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
+        <div class="stat-content">
+          <div class="stat-number">{{ qualifiedReferrals }}</div>
+          <div class="stat-title">Qualified</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon"><i class="fa fa-heart"></i></div>
+        <div class="stat-content">
+          <div class="stat-number">{{ donationsSent.length }}</div>
+          <div class="stat-title">Donations Sent</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon"><i class="fa fa-gift"></i></div>
+        <div class="stat-content">
+          <div class="stat-number">{{ donationsReceived.length }}</div>
+          <div class="stat-title">Donations Received</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h3><i class="fa fa-history"></i> Recent Activity</h3>
+      <div class="activity-list">
+        <div *ngFor="let transaction of transactions.slice(0, 5)" class="activity-item">
+          <div class="activity-icon"><i class="fa fa-dollar-sign"></i></div>
+          <div class="activity-details">
+            <div class="activity-title">{{ transaction.description }}</div>
+            <div class="activity-date">{{ formatDate(transaction.createdAt) }}</div>
+          </div>
+          <div class="activity-amount">+${{ transaction.amount | number:'1.2-2' }}</div>
+        </div>
+        <div *ngIf="transactions.length === 0" class="empty-state-small">
+          <p>No activity yet. Start earning by passing skill tests!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRALS TAB -->
+  <div *ngIf="!loading && activeTab === 'referrals'" class="tab-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon"><i class="fa fa-users"></i></div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalReferrals }}</div>
+          <div class="stat-label">Total Referrals</div>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
+        <div class="stat-content">
+          <div class="stat-value">{{ qualifiedReferrals }}</div>
+          <div class="stat-label">Qualified Referrals</div>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon"><i class="fa fa-clock"></i></div>
+        <div class="stat-content">
+          <div class="stat-value">{{ pendingReferrals }}</div>
+          <div class="stat-label">Pending Referrals</div>
+        </div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-icon"><i class="fa fa-dollar-sign"></i></div>
+        <div class="stat-content">
+          <div class="stat-value">${{ totalEarned.toFixed(2) }}</div>
+          <div class="stat-label">Total Earned</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral Link Card -->
+    <div class="link-card">
+      <div class="card-header">
+        <h3><i class="fa fa-link"></i> Your Unique Referral Link</h3>
+        <span class="referral-code-badge">{{ referralCode }}</span>
+      </div>
+      <div class="link-input-wrapper">
+        <input type="text" [value]="referralUrl" readonly class="link-input">
+        <button class="btn-copy" (click)="copyLink()" [class.success]="copySuccess">
+          <i class="fa" [ngClass]="copySuccess ? 'fa-check' : 'fa-copy'"></i>
+          {{ copySuccess ? 'Copied!' : 'Copy Link' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Share Buttons -->
+    <div class="share-section">
+      <h3 class="share-title"><i class="fa fa-share-nodes"></i> Share on Social Media</h3>
+      <div class="share-buttons">
+        <button class="share-btn twitter" (click)="shareOnTwitter()">
+          <i class="fab fa-twitter"></i> Twitter
+        </button>
+        <button class="share-btn linkedin" (click)="shareOnLinkedIn()">
+          <i class="fab fa-linkedin"></i> LinkedIn
+        </button>
+        <button class="share-btn facebook" (click)="shareOnFacebook()">
+          <i class="fab fa-facebook"></i> Facebook
+        </button>
+        <button class="share-btn whatsapp" (click)="shareOnWhatsApp()">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+        <button class="share-btn email" (click)="shareViaEmail()">
+          <i class="fa fa-envelope"></i> Email
+        </button>
+      </div>
+    </div>
+
+    <!-- How Referral Rewards Work -->
+    <div class="rewards-info-card">
+      <div class="rewards-info-header">
+        <h3><i class="fa fa-gift"></i> How Referral Rewards Work</h3>
+      </div>
+      <div class="rewards-info-content">
+        <p class="rewards-info-description">
+          Earn money when your friends sign up and subscribe! Here's how it works:
+        </p>
+        
+        <div class="rewards-milestones">
+          <div class="milestone-item">
+            <div class="milestone-icon">👥</div>
+            <div class="milestone-details">
+              <div class="milestone-title">1 Referral</div>
+              <div class="milestone-reward">Earn $1.00</div>
+              <div class="milestone-description">When your friend signs up and subscribes</div>
+            </div>
+          </div>
+          
+          <div class="milestone-item highlight">
+            <div class="milestone-icon">🎯</div>
+            <div class="milestone-details">
+              <div class="milestone-title">5 Referrals</div>
+              <div class="milestone-reward">Earn $5.00 Total</div>
+              <div class="milestone-description">Plus unlock special bonus rewards!</div>
+            </div>
+          </div>
+          
+          <div class="milestone-item">
+            <div class="milestone-icon">🏆</div>
+            <div class="milestone-details">
+              <div class="milestone-title">10 Referrals</div>
+              <div class="milestone-reward">Earn $10.00 Total</div>
+              <div class="milestone-description">Get a FREE month subscription code</div>
+            </div>
+          </div>
+          
+          <div class="milestone-item">
+            <div class="milestone-icon">💎</div>
+            <div class="milestone-details">
+              <div class="milestone-title">20 Referrals</div>
+              <div class="milestone-reward">Earn $20.00 Total</div>
+              <div class="milestone-description">Unlock VIP referrer status + exclusive perks</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="rewards-info-steps">
+          <h4>How It Works:</h4>
+          <ol>
+            <li><strong>Share your link</strong> - Copy and share your unique referral link</li>
+            <li><strong>Friend signs up</strong> - They register using your link and get 20% OFF</li>
+            <li><strong>Friend subscribes</strong> - When they purchase a subscription</li>
+            <li><strong>You earn money</strong> - $1 is added to your wallet automatically!</li>
+          </ol>
+        </div>
+        
+        <div class="rewards-info-note">
+          <i class="fa fa-info-circle"></i>
+          <span>Money is added to your wallet and can be used for donations or withdrawn. Your friends also get 20% OFF their first subscription!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referrals List -->
+    <div class="referrals-card">
+      <div class="card-header">
+        <h3><i class="fa fa-list"></i> Your Referrals</h3>
+        <span class="count-badge">{{ totalReferrals }} total</span>
+      </div>
+      <div class="table-container" *ngIf="referrals.length > 0">
+        <div class="table-row" *ngFor="let referral of referrals">
+          <div class="user-cell">
+            <div class="user-avatar"><i class="fa fa-user"></i></div>
+            <div class="user-info">
+              <div class="user-name">User #{{ referral.referredUserId }}</div>
+            </div>
+          </div>
+          <div class="status-cell">
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(referral.status)">
+              {{ getStatusLabel(referral.status) }}
+            </span>
+          </div>
+          <div class="date-cell">
+            {{ referral.createdAt | date:'MMM d, y' }}
+          </div>
+          <div class="earnings-cell">
+            ${{ getEarnings(referral).toFixed(2) }}
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="referrals.length === 0">
+        <div class="empty-icon"><i class="fa fa-users"></i></div>
+        <h4>No Referrals Yet</h4>
+        <p>Start sharing your referral link to earn rewards!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REWARDS TAB -->
+  <div *ngIf="!loading && activeTab === 'rewards'" class="tab-content">
+    <div class="rewards-section">
+      <div class="section-header">
+        <div>
+          <h2><i class="fa fa-trophy"></i> Achievement Rewards</h2>
+          <p>Earn money by passing skill tests and reaching milestones!</p>
+        </div>
+        <button class="promo-codes-btn" (click)="goToPromoCodes()">
+          🎁 View Promo Codes
+        </button>
+      </div>
+
+      <!-- Tier Progress -->
+      <div class="tier-progress">
+        <div class="tier-item" [class.completed]="(wallet?.certificationsCount || 0) >= 10">
+          <div class="tier-icon">🥉</div>
+          <div class="tier-info">
+            <h4>Bronze Learner</h4>
+            <p>10 Certifications</p>
+            <span class="tier-reward">$25</span>
+          </div>
+          <div class="tier-status">
+            <i class="fa" [ngClass]="(wallet?.certificationsCount || 0) >= 10 ? 'fa-check-circle' : 'fa-lock'"></i>
+          </div>
+        </div>
+
+        <div class="tier-item" [class.completed]="(wallet?.certificationsCount || 0) >= 20">
+          <div class="tier-icon">🥈</div>
+          <div class="tier-info">
+            <h4>Silver Learner</h4>
+            <p>20 Certifications</p>
+            <span class="tier-reward">$50</span>
+          </div>
+          <div class="tier-status">
+            <i class="fa" [ngClass]="(wallet?.certificationsCount || 0) >= 20 ? 'fa-check-circle' : 'fa-lock'"></i>
+          </div>
+        </div>
+
+        <div class="tier-item" [class.completed]="(wallet?.certificationsCount || 0) >= 30">
+          <div class="tier-icon">🥇</div>
+          <div class="tier-info">
+            <h4>Gold Learner</h4>
+            <p>30 Certifications</p>
+            <span class="tier-reward">$100</span>
+          </div>
+          <div class="tier-status">
+            <i class="fa" [ngClass]="(wallet?.certificationsCount || 0) >= 30 ? 'fa-check-circle' : 'fa-lock'"></i>
+          </div>
+        </div>
+
+        <div class="tier-item" [class.completed]="(wallet?.certificationsCount || 0) >= 50">
+          <div class="tier-icon">💎</div>
+          <div class="tier-info">
+            <h4>Platinum Learner</h4>
+            <p>50 Certifications</p>
+            <span class="tier-reward">$200</span>
+          </div>
+          <div class="tier-status">
+            <i class="fa" [ngClass]="(wallet?.certificationsCount || 0) >= 50 ? 'fa-check-circle' : 'fa-lock'"></i>
+          </div>
+        </div>
+
+        <div class="tier-item" [class.completed]="(wallet?.certificationsCount || 0) >= 100">
+          <div class="tier-icon">💠</div>
+          <div class="tier-info">
+            <h4>Diamond Learner</h4>
+            <p>100 Certifications</p>
+            <span class="tier-reward">$500</span>
+          </div>
+          <div class="tier-status">
+            <i class="fa" [ngClass]="(wallet?.certificationsCount || 0) >= 100 ? 'fa-check-circle' : 'fa-lock'"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reward History -->
+      <div class="reward-history">
+        <h3><i class="fa fa-history"></i> Reward History</h3>
+        <div *ngIf="transactions.length > 0" class="history-list">
+          <div *ngFor="let transaction of transactions" class="history-item">
+            <div class="history-icon">{{ getTierBadge(transaction.tier) }}</div>
+            <div class="history-details">
+              <div class="history-title">{{ transaction.description }}</div>
+              <div class="history-date">{{ formatDate(transaction.createdAt) }}</div>
+            </div>
+            <div class="history-amount">+${{ transaction.amount | number:'1.2-2' }}</div>
+          </div>
+        </div>
+        <div *ngIf="transactions.length === 0" class="empty-state-small">
+          <p>No rewards earned yet. Pass skill tests to start earning!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONATIONS TAB -->
+  <div *ngIf="!loading && activeTab === 'donations'" class="tab-content">
+    <div class="donations-section">
+      <h2><i class="fa fa-heart"></i> Help Others Grow</h2>
+      <p>Donate your earnings to support fellow freelancers in their learning journey</p>
+
+      <!-- Send Donation Form -->
+      <div class="donation-form-card">
+        <h3><i class="fa fa-paper-plane"></i> Send a Donation</h3>
+        <form (ngSubmit)="sendDonation()">
+          <div class="form-group">
+            <label>Recipient User ID</label>
+            <input type="number" [(ngModel)]="donationRecipientId" name="recipientId" 
+                   placeholder="Enter user ID" required>
+          </div>
+          <div class="form-group">
+            <label>Amount (Max $50)</label>
+            <input type="number" [(ngModel)]="donationAmount" name="amount" 
+                   min="1" max="50" step="0.01" required>
+            <span class="form-hint">Available: ${{ wallet?.balance || 0 | number:'1.2-2' }}</span>
+          </div>
+          <div class="form-group">
+            <label>Message (Optional)</label>
+            <textarea [(ngModel)]="donationMessage" name="message" 
+                      placeholder="Add an encouraging message..." rows="3"></textarea>
+          </div>
+          <div class="form-group checkbox">
+            <label>
+              <input type="checkbox" [(ngModel)]="donationAnonymous" name="anonymous">
+              Send anonymously
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="donationLoading">
+              <i class="fa" [ngClass]="donationLoading ? 'fa-spinner fa-spin' : 'fa-heart'"></i>
+              {{ donationLoading ? 'Sending...' : 'Send Donation' }}
+            </button>
+          </div>
+          <div *ngIf="donationSuccess" class="alert alert-success">
+            <i class="fa fa-check-circle"></i> Donation sent successfully!
+          </div>
+          <div *ngIf="donationError" class="alert alert-error">
+            <i class="fa fa-exclamation-circle"></i> {{ donationError }}
+          </div>
+        </form>
+      </div>
+
+      <!-- Donations Sent -->
+      <div class="donations-list">
+        <h3><i class="fa fa-arrow-up"></i> Donations Sent</h3>
+        <div *ngIf="donationsSent.length > 0" class="donation-items">
+          <div *ngFor="let donation of donationsSent" class="donation-item">
+            <div class="donation-icon"><i class="fa fa-heart"></i></div>
+            <div class="donation-details">
+              <div class="donation-title">
+                ${{ donation.amount | number:'1.2-2' }} to 
+                {{ donation.isAnonymous ? 'Anonymous' : 'User #' + donation.recipientId }}
+              </div>
+              <div class="donation-message" *ngIf="donation.message">
+                "{{ donation.message }}"
+              </div>
+              <div class="donation-date">{{ formatDateTime(donation.createdAt) }}</div>
+            </div>
+            <div class="donation-status">
+              <span class="status-badge success">{{ donation.status }}</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="donationsSent.length === 0" class="empty-state-small">
+          <p>No donations sent yet. Help someone today!</p>
+        </div>
+      </div>
+
+      <!-- Donations Received -->
+      <div class="donations-list">
+        <h3><i class="fa fa-arrow-down"></i> Donations Received</h3>
+        <div *ngIf="donationsReceived.length > 0" class="donation-items">
+          <div *ngFor="let donation of donationsReceived" class="donation-item">
+            <div class="donation-icon"><i class="fa fa-gift"></i></div>
+            <div class="donation-details">
+              <div class="donation-title">
+                ${{ donation.amount | number:'1.2-2' }} from 
+                {{ donation.isAnonymous ? 'Anonymous Donor' : 'User #' + donation.donorId }}
+              </div>
+              <div class="donation-message" *ngIf="donation.message">
+                "{{ donation.message }}"
+              </div>
+              <div class="donation-date">{{ formatDateTime(donation.createdAt) }}</div>
+            </div>
+            <div class="donation-actions" *ngIf="!donation.thankYouSent">
+              <button class="btn-small" (click)="sendThankYou(donation.id)">
+                <i class="fa fa-heart"></i> Say Thanks
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="donationsReceived.length === 0" class="empty-state-small">
+          <p>No donations received yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WALLET TAB -->
+  <div *ngIf="!loading && activeTab === 'wallet'" class="tab-content">
+    <div class="wallet-section">
+      <h2><i class="fa fa-wallet"></i> My Wallet</h2>
+      
+      <!-- Balance Card -->
+      <div class="balance-card-large">
+        <div class="balance-main">
+          <span class="balance-label">Available Balance</span>
+          <span class="balance-value">${{ wallet?.balance || 0 | number:'1.2-2' }}</span>
+        </div>
+        <div class="balance-actions">
+          <button class="btn-action" (click)="switchTab('donations')">
+            <i class="fa fa-heart"></i> Donate
+          </button>
+        </div>
+      </div>
+
+      <!-- Wallet Stats -->
+      <div class="wallet-stats-grid">
+        <div class="wallet-stat-card">
+          <div class="stat-icon"><i class="fa fa-arrow-up"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">${{ wallet?.totalEarned || 0 | number:'1.2-2' }}</div>
+            <div class="stat-label">Total Earned</div>
+          </div>
+        </div>
+        <div class="wallet-stat-card">
+          <div class="stat-icon"><i class="fa fa-heart"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">${{ wallet?.totalDonated || 0 | number:'1.2-2' }}</div>
+            <div class="stat-label">Total Donated</div>
+          </div>
+        </div>
+        <div class="wallet-stat-card">
+          <div class="stat-icon"><i class="fa fa-gift"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">${{ wallet?.totalReceived || 0 | number:'1.2-2' }}</div>
+            <div class="stat-label">Total Received</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="transaction-history">
+        <h3><i class="fa fa-list"></i> Transaction History</h3>
+        <div *ngIf="transactions.length > 0" class="transaction-list">
+          <div *ngFor="let transaction of transactions" class="transaction-item">
+            <div class="transaction-icon">
+              <i class="fa fa-dollar-sign"></i>
+            </div>
+            <div class="transaction-details">
+              <div class="transaction-title">{{ transaction.description }}</div>
+              <div class="transaction-date">{{ formatDateTime(transaction.createdAt) }}</div>
+            </div>
+            <div class="transaction-amount positive">
+              +${{ transaction.amount | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+        <div *ngIf="transactions.length === 0" class="empty-state-small">
+          <p>No transactions yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARDS TAB -->
+  <div *ngIf="!loading && activeTab === 'leaderboards'" class="tab-content">
+    <div class="leaderboards-section">
+      <h2><i class="fa fa-medal"></i> Community Leaderboards</h2>
+      <p>See who's leading in learning, earning, and giving!</p>
+
+      <!-- Top Learners -->
+      <div class="leaderboard-card">
+        <h3><i class="fa fa-graduation-cap"></i> Top Learners</h3>
+        <div class="leaderboard-list">
+          <div *ngFor="let user of topLearners; let i = index" class="leaderboard-item">
+            <div class="rank">
+              <span class="rank-number" *ngIf="i >= 3">{{ i + 1 }}</span>
+              <span class="rank-medal" *ngIf="i === 0">🥇</span>
+              <span class="rank-medal" *ngIf="i === 1">🥈</span>
+              <span class="rank-medal" *ngIf="i === 2">🥉</span>
+            </div>
+            <div class="user-info">
+              <div class="user-name">User #{{ user.userId }}</div>
+              <div class="user-tier">{{ getTierBadge(user.currentTier) }} {{ getTierLabel(user.currentTier) }}</div>
+            </div>
+            <div class="user-score">
+              {{ user.certificationsCount }} certs
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Earners -->
+      <div class="leaderboard-card">
+        <h3><i class="fa fa-dollar-sign"></i> Top Earners</h3>
+        <div class="leaderboard-list">
+          <div *ngFor="let user of topEarners; let i = index" class="leaderboard-item">
+            <div class="rank">
+              <span class="rank-number" *ngIf="i >= 3">{{ i + 1 }}</span>
+              <span class="rank-medal" *ngIf="i === 0">🥇</span>
+              <span class="rank-medal" *ngIf="i === 1">🥈</span>
+              <span class="rank-medal" *ngIf="i === 2">🥉</span>
+            </div>
+            <div class="user-info">
+              <div class="user-name">User #{{ user.userId }}</div>
+              <div class="user-tier">{{ getTierBadge(user.currentTier) }} {{ getTierLabel(user.currentTier) }}</div>
+            </div>
+            <div class="user-score">
+              ${{ user.totalEarned | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Donors -->
+      <div class="leaderboard-card">
+        <h3><i class="fa fa-heart"></i> Top Donors</h3>
+        <div class="leaderboard-list">
+          <div *ngFor="let user of topDonors; let i = index" class="leaderboard-item">
+            <div class="rank">
+              <span class="rank-number" *ngIf="i >= 3">{{ i + 1 }}</span>
+              <span class="rank-medal" *ngIf="i === 0">🥇</span>
+              <span class="rank-medal" *ngIf="i === 1">🥈</span>
+              <span class="rank-medal" *ngIf="i === 2">🥉</span>
+            </div>
+            <div class="user-info">
+              <div class="user-name">User #{{ user.userId }}</div>
+              <div class="user-tier">Community Hero</div>
+            </div>
+            <div class="user-score">
+              ${{ user.totalDonated | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<div class="post-comments">
+  <!-- Comments Toggle Button -->
+  <button 
+    class="comments-toggle-btn"
+    (click)="toggleComments()"
+    [class.active]="showComments">
+    <i class="fas fa-comment"></i>
+    <span>{{ commentsCount }} Comments</span>
+    <i class="fas fa-chevron-down toggle-icon" [class.rotated]="showComments"></i>
+  </button>
+
+  <!-- Comments Section -->
+  <div class="comments-section" *ngIf="showComments">
+    <!-- Add Comment Form -->
+    <div class="add-comment-form">
+      <div class="comment-author-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="comment-input-container">
+        <textarea
+          class="comment-input"
+          [(ngModel)]="newCommentContent"
+          placeholder="Write a comment..."
+          rows="2"
+          (keypress)="onKeyPress($event)"
+          [disabled]="isSubmitting"></textarea>
+        <div class="comment-actions">
+          <button 
+            class="btn-submit-comment"
+            (click)="addComment()"
+            [disabled]="!newCommentContent.trim() || isSubmitting">
+            <i class="fas fa-paper-plane"></i>
+            {{ isSubmitting ? 'Posting...' : 'Post' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comments List -->
+    <div class="comments-list" *ngIf="comments.length > 0">
+      <div class="comment-item" *ngFor="let comment of comments">
+        <div class="comment-author-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="comment-content">
+          <div class="comment-header">
+            <span class="comment-author">{{ getAuthorName(comment.authorId!) }}</span>
+            <span class="comment-time">{{ getTimeAgo(comment.createdAt!) }}</span>
+          </div>
+          
+          <!-- Comment Text (Normal View) -->
+          <div class="comment-text" *ngIf="editingCommentId !== comment.id">
+            {{ comment.content }}
+          </div>
+          
+          <!-- Comment Reactions -->
+          <div class="comment-reactions-wrapper" *ngIf="editingCommentId !== comment.id">
+            <app-comment-reactions 
+              [commentId]="comment.id!" 
+              [currentUserId]="currentUserId">
+            </app-comment-reactions>
+          </div>
+          
+          <!-- Comment Edit Form -->
+          <div class="comment-edit-form" *ngIf="editingCommentId === comment.id">
+            <textarea
+              class="comment-edit-input"
+              [(ngModel)]="editingContent"
+              rows="2"></textarea>
+            <div class="edit-actions">
+              <button class="btn-save-edit" (click)="saveEdit(comment.id!)">
+                <i class="fas fa-check"></i> Save
+              </button>
+              <button class="btn-cancel-edit" (click)="cancelEditing()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </div>
+          
+          <!-- Comment Actions -->
+          <div class="comment-actions" *ngIf="editingCommentId !== comment.id">
+            <button 
+              class="comment-action-btn"
+              *ngIf="comment.authorId === currentUserId"
+              (click)="startEditing(comment)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button 
+              class="comment-action-btn danger"
+              *ngIf="comment.authorId === currentUserId"
+              (click)="deleteComment(comment.id!)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-comments" *ngIf="comments.length === 0 && showComments">
+      <i class="fas fa-comments"></i>
+      <p>No comments yet. Be the first to comment!</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,161 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link active"><i class="fa fa-crown"></i> Subscription</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container" *ngIf="plan">
+  <a [routerLink]="['/SubscriptionDetail', plan.id]" class="back-link">
+    <i class="fa fa-arrow-left"></i> Back to plan details
+  </a>
+
+  <div class="checkout-layout">
+    <div class="checkout-form">
+      <h1>Complete Your Subscription</h1>
+
+      <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-section">
+          <h3>Payment Method</h3>
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card" [(ngModel)]="paymentMethod" (ngModelChange)="onPaymentMethodChange()">
+              <span><i class="fa fa-credit-card"></i> Credit / Debit Card</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="flouci" [(ngModel)]="paymentMethod" (ngModelChange)="onPaymentMethodChange()">
+              <span><i class="fa fa-wallet"></i> Flouci (Tunisia)</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="paypal" [(ngModel)]="paymentMethod" (ngModelChange)="onPaymentMethodChange()">
+              <span><i class="fa fa-paypal"></i> PayPal</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section" *ngIf="paymentMethod === 'card'">
+          <label>Cardholder Name</label>
+          <input type="text" [(ngModel)]="cardName" name="cardName" (blur)="validateCardName()" placeholder="John Doe" class="form-input" [class.error]="cardNameError">
+          <span class="error-msg" *ngIf="cardNameError">{{ cardNameError }}</span>
+        </div>
+        
+        <div class="form-section" *ngIf="paymentMethod === 'card'">
+          <label>Card Number</label>
+          <input type="text" [(ngModel)]="cardNumber" name="cardNumber" (input)="formatCardNumber($event)" (blur)="validateCardNumber()" placeholder="1234 5678 9012 3456" class="form-input" [class.error]="cardNumberError" maxlength="19">
+          <span class="error-msg" *ngIf="cardNumberError">{{ cardNumberError }}</span>
+          <span class="success-msg" *ngIf="!cardNumberError && cardNumber.length >= 13">✓ Valid card number</span>
+        </div>
+        
+        <div class="form-row" *ngIf="paymentMethod === 'card'">
+          <div class="form-section">
+            <label>Expiry Date</label>
+            <input type="text" [(ngModel)]="cardExpiry" name="cardExpiry" (input)="formatCardExpiry($event)" (blur)="validateCardExpiry()" placeholder="MM/YY" class="form-input" [class.error]="cardExpiryError" maxlength="5">
+            <span class="error-msg" *ngIf="cardExpiryError">{{ cardExpiryError }}</span>
+          </div>
+          <div class="form-section">
+            <label>CVV</label>
+            <input type="text" [(ngModel)]="cardCvv" name="cardCvv" (input)="formatCardCvv($event)" (blur)="validateCardCvv()" placeholder="123" class="form-input" [class.error]="cardCvvError" maxlength="4">
+            <span class="error-msg" *ngIf="cardCvvError">{{ cardCvvError }}</span>
+          </div>
+        </div>
+
+        <div class="form-section" *ngIf="paymentMethod === 'flouci'">
+          <div class="flouci-info">
+            <div class="flouci-logo">
+              <i class="fa fa-wallet"></i>
+              <span>Flouci Payment</span>
+            </div>
+            <p class="flouci-description">
+              Pay securely with Flouci - Tunisia's leading mobile payment solution.
+              Supports credit cards, D17, and mobile wallets.
+            </p>
+            <div class="flouci-amount">
+              <span>Amount to pay:</span>
+              <strong>{{ getFlouciAmountTND() }}</strong>
+              <small>(≈ ${{ getFinalPrice().toFixed(2) }} USD)</small>
+            </div>
+            <p class="flouci-hint" *ngIf="!agreeTerms">
+              Accept the terms below to proceed with Flouci payment.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-section" *ngIf="paymentMethod === 'paypal'">
+          <p class="paypal-hint" *ngIf="!agreeTerms">Accept the terms below to show the PayPal button.</p>
+          <p class="paypal-hint" *ngIf="agreeTerms">Complete payment securely with PayPal.</p>
+          <div id="paypal-button-container"></div>
+        </div>
+
+        <div class="form-section">
+          <label>Promo Code</label>
+          <div class="promo-row">
+            <input type="text" [(ngModel)]="promoCode" name="promoCode" placeholder="Enter code" class="form-input" [disabled]="promoCodeApplied">
+            <button type="button" class="btn-apply" (click)="applyPromoCode()" *ngIf="!promoCodeApplied">Apply</button>
+            <button type="button" class="btn-remove" (click)="removePromoCode()" *ngIf="promoCodeApplied">Remove</button>
+          </div>
+          <span class="error-msg" *ngIf="promoCodeError">{{ promoCodeError }}</span>
+          <span class="success-msg" *ngIf="promoCodeSuccess">{{ promoCodeSuccess }}</span>
+          <div class="promo-hints" *ngIf="!promoCodeApplied">
+            <small>Try: WELCOME10, SAVE20, CATCHOPP25, FIRST50</small>
+          </div>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="agreeTerms" name="agreeTerms">
+          <span>I agree to the terms and conditions and subscription policy.</span>
+        </label>
+
+        <button type="submit" class="btn-submit" *ngIf="paymentMethod === 'card'" [disabled]="submitting">
+          <i class="fa fa-lock"></i> {{ submitting ? 'Processing...' : 'Subscribe - $' + plan.price + '/' + plan.duration }}
+        </button>
+
+        <button type="button" class="btn-submit btn-flouci" *ngIf="paymentMethod === 'flouci'" (click)="onFlouciPayment()" [disabled]="flouciProcessing || !agreeTerms">
+          <i class="fa fa-wallet"></i> {{ flouciProcessing ? 'Redirecting to Flouci...' : 'Pay with Flouci - ' + getFlouciAmountTND() }}
+        </button>
+      </form>
+    </div>
+
+    <div class="order-summary">
+      <h3>Order Summary</h3>
+      <div class="summary-row">
+        <span>{{ plan.name }} Plan</span>
+        <span>${{ plan.price }}/{{ plan.duration }}</span>
+      </div>
+      <div class="summary-row discount-row" *ngIf="promoCodeApplied">
+        <span>Discount ({{ promoCodeDiscount }}%)</span>
+        <span class="discount-amount">-${{ getDiscountAmount().toFixed(2) }}</span>
+      </div>
+      <div class="summary-divider" *ngIf="promoCodeApplied"></div>
+      <div class="summary-total">
+        <span>Total</span>
+        <strong>${{ getFinalPrice().toFixed(2) }}</strong>
+      </div>
+      <div class="savings-badge" *ngIf="promoCodeApplied">
+        <i class="fa fa-tag"></i> You save ${{ getDiscountAmount().toFixed(2) }}!
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-container" *ngIf="!plan">
+  <div class="not-found">
+    <h2>Plan not found</h2>
+    <a routerLink="/SubscriptionPlans">View all plans</a>
+  </div>
+</div>
+

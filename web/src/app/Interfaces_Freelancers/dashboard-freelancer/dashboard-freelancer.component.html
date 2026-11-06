@@ -1,0 +1,114 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/FreelancerFeed" routerLinkActive="active"><i class="fa fa-stream"></i> Feed</a>
+      <a routerLink="/FreelancerDashboard" routerLinkActive="active" class="active-link"><i class="fa fa-th-large"></i> Dashboard</a>
+      <a routerLink="/FreelancerProfileManager" routerLinkActive="active"><i class="fa fa-user-circle"></i> Profile</a>
+      <a routerLink="/FreelancerContracts" routerLinkActive="active"><i class="fa fa-briefcase"></i> My Jobs</a>
+      <a routerLink="/Messages" routerLinkActive="active"><i class="fa fa-comment-dots"></i> Messages</a>
+      <a routerLink="/FreelancerWallet" routerLinkActive="active"><i class="fa fa-wallet"></i> Wallet</a>
+    </div>
+
+    <div class="nav-actions">
+        <button class="btn-create-nav" routerLink="/FreelancerFeed"><i class="fa fa-search"></i> Find Work</button>
+        <div class="user-profile">
+            <img src="https://i.pravatar.cc/150?u=10" alt="Kenneth Silva">
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-layout">
+  
+  <div class="content-container">
+    
+    <header class="page-header">
+      <div class="welcome-text">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, Kenneth. You have 2 active jobs and 1 pending offer.</p>
+      </div>
+    </header>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="icon-box green"><i class="fa fa-dollar-sign"></i></div>
+        <div><h3>$12.4k</h3><p>Total Earnings</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box orange"><i class="fa fa-briefcase"></i></div>
+        <div><h3>2</h3><p>Active Jobs</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box blue"><i class="fa fa-check-circle"></i></div>
+        <div><h3>24</h3><p>Jobs Completed</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box purple"><i class="fa fa-eye"></i></div>
+        <div><h3>124</h3><p>Profile Views</p></div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Active Contracts</h3>
+    
+    <div class="projects-grid">
+      
+      <div class="project-card">
+        <div class="card-status active">In Progress</div>
+        <div class="card-body">
+          <h3>Senior Angular Developer</h3>
+          <p class="budget">Hourly: $55.00/hr</p>
+          <div class="meta-info">
+            <span><i class="fa fa-user"></i> Acme Corp</span>
+            <span><i class="fa fa-clock"></i> 12 hrs this week</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-manage" routerLink="/WorkDiary/1">
+            View Work Diary <i class="fa fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-status review">Milestone Review</div>
+        <div class="card-body">
+          <h3>E-commerce Mobile App</h3>
+          <p class="budget">Fixed: $2,500 (Milestone 2)</p>
+          <div class="meta-info">
+            <span><i class="fa fa-user"></i> Startup Inc</span>
+            <span><i class="fa fa-calendar-alt"></i> Due in 3 days</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-manage" routerLink="/Contract/2">
+            Submit Work <i class="fa fa-upload"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-status pending">Pending Offer</div>
+        <div class="card-body">
+          <h3>React Frontend Refactor</h3>
+          <p class="budget">Fixed: $1,800</p>
+          <div class="meta-info">
+            <span><i class="fa fa-user"></i> TechSolutions</span>
+            <span><i class="fa fa-envelope"></i> Offer received</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-manage primary-color">
+            Review Offer <i class="fa fa-file-contract"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+ 
+</div>

@@ -1,0 +1,247 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/SubscriptionDashboard" class="nav-link"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+      <a routerLink="/AICVGenerator" class="nav-link active"><i class="fa fa-robot"></i> AI CV Tool</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="checkingAccess">
+    <i class="fa fa-spinner fa-spin"></i>
+    <p>Checking your subscription access...</p>
+  </div>
+
+  <!-- No Access State -->
+  <div class="no-access-card" *ngIf="!checkingAccess && !hasAccess">
+    <div class="lock-icon">
+      <i class="fa fa-lock"></i>
+    </div>
+    <h2>Premium Feature</h2>
+    <p>The AI CV Generator is available for Premium and Enterprise subscribers only.</p>
+    <div class="benefits">
+      <h3>What you'll get:</h3>
+      <ul>
+        <li><i class="fa fa-check"></i> AI-powered CV analysis and improvement</li>
+        <li><i class="fa fa-check"></i> Domain-specific optimization</li>
+        <li><i class="fa fa-check"></i> ATS-friendly formatting</li>
+        <li><i class="fa fa-check"></i> Skill gap analysis</li>
+        <li><i class="fa fa-check"></i> Professional suggestions</li>
+        <li><i class="fa fa-check"></i> Unlimited CV improvements</li>
+      </ul>
+    </div>
+    <button class="btn-upgrade" (click)="goToSubscription()">
+      <i class="fa fa-crown"></i> Upgrade to Premium
+    </button>
+  </div>
+
+  <!-- Main Content (Has Access) -->
+  <div class="ai-cv-content" *ngIf="!checkingAccess && hasAccess">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="icon-badge">
+          <i class="fa fa-robot"></i>
+        </div>
+        <div>
+          <h1>AI CV Generator</h1>
+          <p class="subtitle">Upload your CV and let AI make it professional and domain-specific</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'input'" (click)="activeTab = 'input'">
+        <i class="fa fa-upload"></i> Upload & Analyze
+      </button>
+      <button class="tab" [class.active]="activeTab === 'result'" (click)="activeTab = 'result'" [disabled]="!analysisComplete">
+        <i class="fa fa-file-alt"></i> Results
+      </button>
+    </div>
+
+    <!-- Input Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'input'">
+      <div class="input-section">
+        <!-- Step 1: Upload CV -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-number">1</span>
+            <h3>Upload Your CV</h3>
+          </div>
+          
+          <div class="upload-area" *ngIf="!uploadedFileName">
+            <input type="file" id="cvFileInput" (change)="onFileSelected($event)" accept=".txt,.png,.jpg,.jpeg,.webp,image/*" hidden>
+            <label for="cvFileInput" class="upload-label">
+              <i class="fa fa-cloud-upload-alt"></i>
+              <span>Click to upload or drag and drop</span>
+              <small>Supports: Images (PNG, JPG, JPEG, WebP) or Text files (.txt)</small>
+            </label>
+          </div>
+
+          <div class="file-uploaded" *ngIf="uploadedFileName">
+            <i class="fa" [class.fa-file-alt]="!isUploadedFileImage" [class.fa-file-image]="isUploadedFileImage"></i>
+            <span>{{ uploadedFileName }}</span>
+            <button class="btn-remove-file" (click)="removeFile()">
+              <i class="fa fa-times"></i>
+            </button>
+          </div>
+
+          <div class="divider">
+            <span>OR</span>
+          </div>
+
+          <div class="paste-area">
+            <label>Paste Your CV Text</label>
+            <textarea 
+              [(ngModel)]="cvText" 
+              placeholder="Paste your CV content here...&#10;&#10;Example:&#10;John Doe&#10;Software Developer&#10;&#10;Experience:&#10;- 3 years in web development&#10;- Proficient in JavaScript, React, Node.js&#10;..."
+              rows="10"
+              class="cv-textarea"
+            ></textarea>
+            <div class="char-count">{{ cvText.length }} characters</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Select Domain -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-number">2</span>
+            <h3>Select Target Job Domain</h3>
+          </div>
+          
+          <select [(ngModel)]="targetDomain" class="domain-select">
+            <option value="">-- Choose a domain --</option>
+            <option *ngFor="let domain of jobDomains" [value]="domain">{{ domain }}</option>
+          </select>
+          
+          <p class="help-text">
+            <i class="fa fa-info-circle"></i>
+            Select the job domain you're targeting. The AI will optimize your CV specifically for this field.
+          </p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-alert" *ngIf="errorMessage">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Analyze Button -->
+        <button 
+          class="btn-analyze" 
+          (click)="analyzeCV()" 
+          [disabled]="analyzing || !cvText || !targetDomain"
+        >
+          <i class="fa" [class.fa-magic]="!analyzing" [class.fa-spinner]="analyzing" [class.fa-spin]="analyzing"></i>
+          {{ analyzing ? 'Analyzing Your CV...' : 'Analyze & Improve CV' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'result' && analysisResult">
+      <div class="results-section">
+        <!-- Summary Card -->
+        <div class="summary-card">
+          <h3><i class="fa fa-lightbulb"></i> Analysis Summary</h3>
+          <p>{{ analysisResult.summary }}</p>
+        </div>
+
+        <!-- Improved CV -->
+        <div class="result-card">
+          <div class="card-header">
+            <h3><i class="fa fa-file-alt"></i> Your Improved CV</h3>
+            <div class="card-actions">
+              <button class="btn-icon" (click)="copyToClipboard(analysisResult.improvedCV)" title="Copy to clipboard">
+                <i class="fa fa-copy"></i>
+              </button>
+              <button class="btn-icon" (click)="downloadImprovedCV()" title="Download">
+                <i class="fa fa-download"></i>
+              </button>
+            </div>
+          </div>
+          <div class="cv-content">
+            <pre>{{ analysisResult.improvedCV }}</pre>
+          </div>
+          <div class="copy-success" *ngIf="showCopySuccess">
+            <i class="fa fa-check"></i> Copied to clipboard!
+          </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="result-card" *ngIf="analysisResult.suggestions.length">
+          <h3><i class="fa fa-tasks"></i> Improvement Suggestions</h3>
+          <ul class="suggestions-list">
+            <li *ngFor="let suggestion of analysisResult.suggestions">
+              <i class="fa fa-check-circle"></i>
+              {{ suggestion }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Strength Areas -->
+        <div class="result-card highlight-card" *ngIf="analysisResult.strengthAreas.length">
+          <h3><i class="fa fa-star"></i> Your Strengths</h3>
+          <div class="tags">
+            <span class="tag strength-tag" *ngFor="let strength of analysisResult.strengthAreas">
+              {{ strength }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Missing Skills -->
+        <div class="result-card warning-card" *ngIf="analysisResult.missingSkills.length">
+          <h3><i class="fa fa-exclamation-triangle"></i> Skills to Consider Adding</h3>
+          <div class="tags">
+            <span class="tag skill-tag" *ngFor="let skill of analysisResult.missingSkills">
+              {{ skill }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn-secondary" (click)="startNew()">
+            <i class="fa fa-plus"></i> Analyze Another CV
+          </button>
+          
+          <!-- Download with Format Options -->
+          <div class="download-dropdown">
+            <button class="btn-primary" (click)="toggleDownloadOptions()">
+              <i class="fa fa-download"></i> Download Improved CV
+              <i class="fa fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
+            </button>
+            
+            <div class="download-options" *ngIf="showDownloadOptions">
+              <button class="download-option" (click)="selectDownloadFormat('pdf')">
+                <i class="fa fa-file-pdf"></i> Download as PDF
+              </button>
+              <button class="download-option" (click)="selectDownloadFormat('docx')">
+                <i class="fa fa-file-word"></i> Download as Word (.doc)
+              </button>
+              <button class="download-option" (click)="selectDownloadFormat('txt')">
+                <i class="fa fa-file-text"></i> Download as Text (.txt)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,207 @@
+:host {
+  --primary-green: #198754;
+  --dark-green: #0b3d33;
+  --text-gray: #666;
+}
+
+.split-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* --- Left Side --- */
+/* --- Background Shapes Logic --- */
+
+.selection-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff; /* Clean white background */
+  padding: 40px;
+  position: relative; /* Essential for absolute shapes */
+  overflow: hidden; /* Keeps shapes from bleeding out */
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 2; /* Ensures text is always on top */
+}
+
+.bg-shape {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.15; /* Very subtle so it doesn't distract */
+}
+
+/* Green Circle Outline */
+.shape-1 {
+  top: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  border: 30px solid var(--primary-green);
+  border-radius: 50%;
+}
+
+/* Rotated Square (Carreaux) */
+.shape-2 {
+  bottom: 10%;
+  right: 5%;
+  width: 120px;
+  height: 120px;
+  background: var(--primary-green);
+  transform: rotate(45deg);
+  border-radius: 20px;
+}
+
+/* Floating Triangle */
+.shape-3 {
+  top: 20%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: var(--dark-green);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  transform: rotate(15deg);
+}
+
+/* The Dot Grid Pattern */
+.shape-dots {
+  bottom: 20%;
+  left: 10%;
+  width: 100px;
+  height: 150px;
+  background-image: radial-gradient(var(--primary-green) 2px, transparent 2px);
+  background-size: 15px 15px;
+}
+
+/* Softening the Role Cards background slightly to pop over shapes */
+.role-card {
+  background: rgba(255, 255, 255, 0.9); /* Slight transparency */
+  backdrop-filter: blur(5px); /* Modern glass effect */
+  /* ... keep your existing role-card styles ... */
+}
+
+.logo {
+  color: var(--primary-green);
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.header-text h1 {
+  font-size: 2.5rem;
+  color: var(--dark-green);
+  margin-bottom: 10px;
+}
+
+.header-text p {
+  color: var(--text-gray);
+  margin-bottom: 40px;
+}
+
+/* Role Cards */
+.role-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  border: 2px solid #f0f0f0;
+  border-radius: 15px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.role-card:hover {
+  border-color: var(--primary-green);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.icon-box {
+  width: 60px;
+  height: 60px;
+  background: #e9f5ee;
+  color: var(--primary-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  margin-right: 20px;
+}
+
+.text-box h3 {
+  color: #333;
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.text-box p {
+  color: #888;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.arrow {
+  margin-left: auto;
+  color: #ccc;
+  transition: color 0.3s;
+}
+
+.role-card:hover .arrow {
+  color: var(--primary-green);
+}
+
+.footer-note {
+  margin-top: 30px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.footer-note a {
+  color: var(--primary-green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* --- Right Side --- */
+.image-side {
+  flex: 1.2;
+  background: linear-gradient(rgba(25, 135, 84, 0.8), rgba(11, 61, 51, 0.9)), 
+              url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.overlay-text {
+  color: white;
+  text-align: center;
+}
+
+.overlay-text h2 {
+  font-size: 3rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .image-side { display: none; }
+}

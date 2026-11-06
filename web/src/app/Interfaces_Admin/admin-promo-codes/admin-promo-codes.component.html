@@ -1,0 +1,135 @@
+<div class="admin-layout">
+  <header class="admin-header">
+    <div class="logo" routerLink="/">
+      <span class="logo-mark">C</span>
+      <span class="logo-text">Catch<span>OPP</span> Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a routerLink="/AdminStatistics" class="nav-link"><i class="fa fa-chart-bar"></i> Statistics</a>
+      <a routerLink="/AdminSubscriptions" class="nav-link"><i class="fa fa-users"></i> Subscriptions</a>
+      <a routerLink="/AdminPromoCodes" class="nav-link active"><i class="fa fa-tag"></i> Promo Codes</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> Plans</a>
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1>Promo Codes</h1>
+        <p>Create and manage discount codes for subscriptions.</p>
+      </div>
+      <button class="btn-add" (click)="showForm = !showForm">
+        <i class="fa fa-plus"></i> Add Promo Code
+      </button>
+    </div>
+
+    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+    <div class="alert alert-info" *ngIf="loading">Loading promo codes...</div>
+
+    <div class="form-card" *ngIf="showForm">
+      <h3>New Promo Code</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label>Code *</label>
+          <input [(ngModel)]="newCode" placeholder="e.g. SAVE20" style="text-transform: uppercase;">
+        </div>
+        
+        <div class="field">
+          <label>Type *</label>
+          <select [(ngModel)]="newType">
+            <option value="SPECIAL">Special</option>
+            <option value="LOYALTY_3MONTH">Loyalty 3 Month</option>
+            <option value="LOYALTY_6MONTH">Loyalty 6 Month</option>
+            <option value="ANNUAL_UPGRADE">Annual Upgrade</option>
+            <option value="REFERRAL_5">Referral 5</option>
+            <option value="CERTIFICATION">Certification</option>
+            <option value="TOP10_LEADERBOARD">Top 10 Leaderboard</option>
+            <option value="MONTHLY_CHALLENGE">Monthly Challenge</option>
+            <option value="STUDENT">Student</option>
+            <option value="SPIN_WHEEL">Spin Wheel</option>
+          </select>
+        </div>
+        
+        <div class="field">
+          <label>Discount Type *</label>
+          <select [(ngModel)]="newDiscountType">
+            <option value="PERCENTAGE">Percentage (%)</option>
+            <option value="FIXED_AMOUNT">Fixed Amount (TND)</option>
+            <option value="FREE_MONTH">Free Month</option>
+          </select>
+        </div>
+        
+        <div class="field">
+          <label>Discount Value *</label>
+          <input type="number" [(ngModel)]="newDiscountValue" min="1" max="100" 
+                 [placeholder]="newDiscountType === 'PERCENTAGE' ? '10' : '50'">
+        </div>
+        
+        <div class="field">
+          <label>Valid Until *</label>
+          <input type="date" [(ngModel)]="newExpiresAt">
+        </div>
+        
+        <div class="field">
+          <label>User ID (0 = general)</label>
+          <input type="number" [(ngModel)]="newUserId" min="0" placeholder="0">
+        </div>
+        
+        <div class="field field-full">
+          <label>Description (optional)</label>
+          <input [(ngModel)]="newDescription" placeholder="e.g. Special discount for loyal customers">
+        </div>
+        
+        <div class="field field-full field-actions">
+          <button class="btn-save" (click)="addPromo()">
+            <i class="fa fa-check"></i> Save Promo Code
+          </button>
+          <button class="btn-cancel" (click)="showForm = false; resetForm()">
+            <i class="fa fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section class="table-card">
+      <div class="table-header-row">
+        <span>Code</span>
+        <span>Type</span>
+        <span>Discount</span>
+        <span>Valid Until</span>
+        <span>User ID</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+      
+      <div class="table-row" *ngFor="let p of promos" [class.expired]="isExpired(p)" [class.used]="isUsed(p)">
+        <span class="code">{{ p.code }}</span>
+        <span class="type-cell">{{ p.type }}</span>
+        <span class="discount-cell">{{ getDiscountDisplay(p) }}</span>
+        <span>{{ formatDate(p.expiresAt) }}</span>
+        <span>{{ p.userId }}</span>
+        <span class="status-cell">
+          <span class="badge" [ngClass]="p.isActive ? 'active' : 'inactive'">
+            {{ p.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          <span class="badge expired" *ngIf="isExpired(p)">Expired</span>
+          <span class="badge used" *ngIf="isUsed(p)">Used</span>
+        </span>
+        <span class="actions-cell">
+          <button class="btn-toggle" (click)="toggleActive(p)" [disabled]="isUsed(p)">
+            {{ p.isActive ? 'Deactivate' : 'Activate' }}
+          </button>
+          <button class="btn-delete" (click)="deletePromo(p)">
+            <i class="fa fa-trash"></i>
+          </button>
+        </span>
+      </div>
+      
+      <div class="empty-state" *ngIf="!loading && promos.length === 0">
+        <i class="fa fa-tag"></i>
+        <p>No promo codes yet. Create your first one!</p>
+      </div>
+    </section>
+  </main>
+</div>

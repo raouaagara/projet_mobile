@@ -1,0 +1,28 @@
+:host { --primary: #10b981; --surface: #fff; --text-main: #111827; --text-muted: #9ca3af; --border: #e5e7eb; }
+.navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; }
+.nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.nav-brand { display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; color: inherit; }
+.logo-mark { width: 32px; height: 32px; border-radius: 6px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.logo-text span { color: var(--primary); }
+.nav-actions { display: flex; align-items: center; gap: 16px; }
+.nav-link { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+.nav-link:hover, .nav-link.active { color: var(--primary); }
+.main-container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+.page-header { margin-bottom: 32px; }
+.loading { text-align: center; padding: 48px; color: var(--text-muted); }
+.page-header h1 { margin: 0 0 8px; font-size: 1.75rem; display: flex; align-items: center; gap: 10px; }
+.page-header h1 i { color: var(--primary); }
+.page-header p { margin: 0; color: var(--text-muted); }
+.certs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+.cert-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; text-align: center; transition: 0.2s; }
+.cert-card:hover { border-color: var(--primary); }
+.badge-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 12px; }
+.cert-card h3 { margin: 0 0 4px; font-size: 1.1rem; }
+.category { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 12px; }
+.score { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.date { font-size: 0.8rem; color: var(--text-muted); }
+.empty { text-align: center; padding: 80px 24px; }
+.empty i { font-size: 4rem; color: var(--border); margin-bottom: 16px; }
+.empty h3 { margin: 0 0 8px; }
+.empty p { color: var(--text-muted); margin-bottom: 24px; }
+.btn { display: inline-block; padding: 12px 24px; background: var(--primary); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; }

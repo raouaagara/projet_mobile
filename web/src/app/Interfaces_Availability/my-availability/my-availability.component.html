@@ -1,0 +1,109 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <a routerLink="/MyAvailability" class="nav-link active"><i class="fa fa-globe"></i> Availability</a>
+      <a routerLink="/ReferralDashboard" class="nav-link"><i class="fa fa-share-alt"></i> Referral</a>
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container" *ngIf="!loading">
+  <div class="hero">
+    <h1><i class="fa fa-globe-americas"></i> Time Zone & Availability</h1>
+    <p>Indiquez votre fuseau horaire et vos créneaux. Les clients verront quand vous êtes joignable.</p>
+  </div>
+
+  <!-- Timezone & Status -->
+  <div class="card zone-card">
+    <h3><i class="fa fa-map-marker-alt"></i> Votre fuseau horaire</h3>
+    <div class="zone-row">
+      <select [(ngModel)]="timezone" class="zone-select">
+        <option *ngFor="let tz of timezoneOptions" [value]="tz.id">{{ tz.label }}</option>
+      </select>
+      <span class="local-time">Heure locale : {{ getLocalTime() }}</span>
+    </div>
+  </div>
+
+  <div class="card status-card">
+    <h3><i class="fa fa-broadcast-tower"></i> Statut actuel</h3>
+    <div class="status-pills">
+      <button *ngFor="let opt of statusOptions"
+              type="button"
+              class="status-pill"
+              [class.active]="status === opt.value"
+              [attr.data-color]="opt.color"
+              (click)="status = opt.value">
+        <i class="fa" [ngClass]="opt.icon"></i>
+        <span>{{ opt.label }}</span>
+      </button>
+    </div>
+    <div class="custom-msg" *ngIf="status === 'CUSTOM'">
+      <input type="text" [(ngModel)]="customMessage" placeholder="Ex: En vacances jusqu'au 15 mars" />
+    </div>
+    <button class="btn-save" (click)="saveProfile()" [disabled]="saving">
+      <i class="fa fa-save"></i> {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  </div>
+
+  <!-- Weekly Slots -->
+  <div class="card slots-card">
+    <h3><i class="fa fa-calendar-week"></i> Créneaux disponibles (récurrents)</h3>
+    <p class="hint">Ajoutez les plages horaires où vous êtes généralement joignable chaque semaine.</p>
+
+    <div class="week-grid">
+      <div class="grid-header">
+        <span class="day-label">Jour</span>
+        <span class="time-label">Début</span>
+        <span class="time-label">Fin</span>
+        <span class="action-label"></span>
+      </div>
+      <div class="grid-row" *ngFor="let slot of slots">
+        <span class="day-badge">{{ slot.dayOfWeek | slice:0:3 }}</span>
+        <span>{{ slot.startTime }}</span>
+        <span>{{ slot.endTime }}</span>
+        <button type="button" class="btn-remove" (click)="removeSlot(slot)" title="Supprimer">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="grid-row add-row">
+        <select [(ngModel)]="newSlot.dayOfWeek" class="input-sm">
+          <option *ngFor="let d of days" [value]="d">{{ d | slice:0:3 }}</option>
+        </select>
+        <input type="time" [(ngModel)]="newSlot.startTime" class="input-sm" />
+        <input type="time" [(ngModel)]="newSlot.endTime" class="input-sm" />
+        <button type="button" class="btn-add" (click)="addSlot()"><i class="fa fa-plus"></i> Ajouter</button>
+      </div>
+    </div>
+
+    <div class="visual-week" *ngIf="slots.length">
+      <h4>Vue hebdomadaire</h4>
+      <div class="week-bars">
+        <div *ngFor="let d of days" class="day-col">
+          <span class="day-name">{{ d | slice:0:2 }}</span>
+          <div class="bar-container">
+            <ng-container *ngFor="let s of slots">
+              <div *ngIf="s.dayOfWeek === d" class="bar"
+                   [style.left]="getBarLeft(s) + '%'"
+                   [style.width]="getBarWidth(s) + '%'"></div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="msg" *ngIf="message">{{ message }}</p>
+</div>
+
+<div class="loading" *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> Chargement...
+</div>
+

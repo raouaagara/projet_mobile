@@ -1,0 +1,168 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/AdminDashboard">
+      <img src="assets/logo.png" alt="CatchIQ Admin" class="logo-img">
+      <span class="admin-badge">ADMIN</span>
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/AdminDashboard" routerLinkActive="active"><i class="fa fa-chart-line"></i> Overview</a>
+      <a routerLink="/AdminUsers" routerLinkActive="active"><i class="fa fa-users-cog"></i> Users</a>
+      <a routerLink="/AdminSkills" routerLinkActive="active" ><i class="fa fa-tags"></i> Skills</a>
+      <a routerLink="/AdminJobs" routerLinkActive="active" class="active-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/AdminFinance" routerLinkActive="active"><i class="fa fa-wallet"></i> Finance</a>
+      <a routerLink="/AdminDisputes" routerLinkActive="active"><i class="fa fa-gavel"></i> Disputes</a>
+    </div>
+
+    <div class="nav-actions">
+        <div class="user-profile">
+            <img src="https://placehold.co/40x40/1f2937/ffffff?text=AD" alt="Admin">
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content" *ngIf="!isLoading">
+    
+    <header class="page-header">
+      <div class="header-left">
+        <a routerLink="/AdminJobs" class="back-link"><i class="fa fa-arrow-left"></i> Back to Jobs List</a>
+        <div class="title-row">
+            <h1>{{ contract?.projectTitle || 'Project Contract' }}</h1>
+            <span class="status-badge" [ngClass]="getStatusClass(contract?.status)">
+                {{ contract?.status }}
+            </span>
+        </div>
+        <p class="job-id">Job ID: #JOB-{{ contract?.id }} • Started on {{ contract?.startDate | date:'mediumDate' }}</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn-outline-danger"><i class="fa fa-ban"></i> Suspend Job</button>
+        <button class="btn-primary"><i class="fa fa-file-invoice"></i> View Invoice</button>
+      </div>
+    </header>
+
+    <div class="detail-grid">
+      <div class="col-main">
+        <div class="card content-card">
+            <h3>Description & Terms</h3>
+            <div class="description-text">
+                <p>{{ contract?.terms }}</p>
+            </div>
+            
+            <!-- AI Insights Section -->
+            <div class="ai-insights-container" *ngIf="contract?.terms">
+                <div class="ai-header">
+                    <i class="fa fa-magic ai-icon"></i>
+                    <h4>AI Contract Analysis</h4>
+                </div>
+                
+                <div *ngIf="isAnalyzingAi" class="ai-loading">
+                    <i class="fa fa-spinner fa-spin"></i> Extracting key terms...
+                </div>
+                
+                <div *ngIf="!isAnalyzingAi && aiInsights.length > 0" class="ai-results">
+                    <ul class="insight-list">
+                        <li *ngFor="let insight of aiInsights" class="insight-item" [ngClass]="insight.type">
+                            <div class="insight-icon">
+                                <i class="fa" 
+                                   [ngClass]="{
+                                     'fa-money-bill-wave': insight.type === 'payment',
+                                     'fa-clock': insight.type === 'deadline',
+                                     'fa-list-check': insight.type === 'requirement',
+                                     'fa-info-circle': insight.type === 'general'
+                                   }"></i>
+                            </div>
+                            <div class="insight-content">
+                                <strong>{{ insight.type | titlecase }}</strong>
+                                <span>{{ insight.text }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card content-card">
+            <h3><i class="fa fa-shield-alt"></i> Financial & Escrow Status</h3>
+            
+            <div class="escrow-grid">
+                <div class="escrow-item">
+                    <span class="label">Total Budget</span>
+                    <span class="amount">{{ (escrow?.totalAmount || contract?.rate) | currency:'USD' }}</span>
+                </div>
+                <div class="escrow-item">
+                    <span class="label">In Escrow (Locked)</span>
+                    <span class="amount locked">{{ (escrow?.remainingAmount || 0) | currency:'USD' }}</span>
+                </div>
+                <div class="escrow-item">
+                    <span class="label">Released / Paid</span>
+                    <span class="amount paid">{{ (escrow?.releasedAmount || 0) | currency:'USD' }}</span>
+                </div>
+            </div>
+
+            <div class="progress-container" *ngIf="escrow">
+                <div class="progress-bar">
+                    <div class="fill" [style.width.%]="(escrow.releasedAmount / escrow.totalAmount) * 100"></div>
+                </div>
+                <small>{{ (escrow.releasedAmount / escrow.totalAmount) | percent }} of budget released</small>
+            </div>
+        </div>
+
+        <div class="card content-card">
+            <h3>Activity Log</h3>
+            <ul class="timeline">
+                <li class="timeline-item" *ngIf="contract?.status === 'COMPLETED'">
+                    <div class="time-marker"></div>
+                    <div class="time-content">
+                        <strong>Project Completed</strong>
+                        <p>All milestones approved and funds released.</p>
+                    </div>
+                </li>
+                <li class="timeline-item">
+                    <div class="time-marker"></div>
+                    <div class="time-content">
+                        <strong>Contract Signed</strong>
+                        <p>Accepted by Freelancer: {{ contract?.freelancerName }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+      </div>
+
+      <aside class="col-side">
+        <div class="card side-card">
+            <div class="card-head">
+                <h4>Client</h4>
+            </div>
+            <div class="user-row">
+                <img [src]="'https://placehold.co/50x50/198754/ffffff?text=' + contract?.clientName?.charAt(0)" class="avatar">
+                <div>
+                    <h5>{{ contract?.clientName }}</h5>
+                    <span class="meta-text">Client ID: #{{ contract?.clientId }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card side-card">
+            <div class="card-head">
+                <h4>Freelancer (Hired)</h4>
+            </div>
+            <div class="user-row">
+                <img [src]="'https://placehold.co/50x50/3b82f6/ffffff?text=' + (contract?.freelancerName?.charAt(0) || 'F')" class="avatar">
+                <div>
+                    <h5>{{ contract?.freelancerName || 'Pending' }}</h5>
+                    <span class="meta-text">Freelancer ID: #{{ contract?.freelancerId }}</span>
+                </div>
+            </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div *ngIf="isLoading" style="text-align: center; padding: 100px;">
+      <i class="fa fa-spinner fa-spin fa-3x"></i>
+      <p>Fetching Contract Details...</p>
+  </div>
+</div>

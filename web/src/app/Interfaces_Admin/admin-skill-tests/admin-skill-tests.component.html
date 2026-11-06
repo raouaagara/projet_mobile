@@ -1,0 +1,467 @@
+<div class="admin-layout">
+  <header class="admin-header">
+    <div class="logo" routerLink="/">
+      <span class="logo-mark">C</span>
+      <span class="logo-text">Catch<span>OPP</span> Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a routerLink="/AdminStatistics" class="nav-link"><i class="fa fa-chart-bar"></i> Statistics</a>
+      <a routerLink="/AdminSubscriptions" class="nav-link"><i class="fa fa-users"></i> Subscriptions</a>
+      <a routerLink="/AdminCertifications" class="nav-link"><i class="fa fa-award"></i> Certifications</a>
+      <a routerLink="/AdminSkillTests" class="nav-link active"><i class="fa fa-clipboard-list"></i> Skill Tests</a>
+      <a routerLink="/AdminPromoCodes" class="nav-link"><i class="fa fa-tag"></i> Promo Codes</a>
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1>Skill Tests Management</h1>
+        <p>Create, edit, and manage skill assessment tests</p>
+      </div>
+      <button class="btn-primary" (click)="openCreateModal()">
+        <i class="fa fa-plus"></i> Create New Test
+      </button>
+    </div>
+
+    <div class="api-error" *ngIf="loadError">
+      <i class="fa fa-exclamation-triangle"></i> Could not load tests. Ensure SkillTestsMicroService is running on port 8086.
+      <button type="button" class="retry-btn" (click)="loadTests()">Retry</button>
+    </div>
+
+    <!-- Filters -->
+    <section class="filters">
+      <div class="filter-group search-group">
+        <i class="fa fa-search"></i>
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search tests..." (ngModelChange)="currentPage = 1">
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select [(ngModel)]="categoryFilter" (ngModelChange)="currentPage = 1">
+          <option value="ALL">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="statusFilter" (ngModelChange)="currentPage = 1">
+          <option value="ALL">All Status</option>
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Per Page</label>
+        <select [(ngModel)]="pageSize" (ngModelChange)="currentPage = 1">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Tests Table -->
+    <section class="table-card">
+      <div class="table-header-row">
+        <span>Test Title</span>
+        <span>Category</span>
+        <span>Duration</span>
+        <span>Pass Score</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+      
+      <div class="loading-row" *ngIf="loading">
+        <i class="fa fa-spinner fa-spin"></i> Loading tests...
+      </div>
+
+      <div class="table-row" *ngFor="let test of paginatedTests">
+        <div class="cell">
+          <div class="test-title">{{ test.title }}</div>
+          <div class="test-desc">{{ test.description }}</div>
+        </div>
+        <div class="cell">
+          <span class="badge category-badge">{{ test.category }}</span>
+        </div>
+        <div class="cell">
+          <i class="fa fa-clock"></i> {{ test.durationMinutes }} min
+        </div>
+        <div class="cell">
+          <span class="score-badge">{{ test.passScore }}%</span>
+        </div>
+        <div class="cell">
+          <span class="badge" [ngClass]="test.active ? 'active-badge' : 'inactive-badge'">
+            {{ test.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="cell actions-cell">
+          <button class="action-btn" (click)="openStatisticsModal(test)" title="View Statistics">
+            <i class="fa fa-chart-bar"></i>
+          </button>
+          <button class="action-btn" (click)="openQuestionsModal(test)" title="Manage Questions">
+            <i class="fa fa-list"></i>
+          </button>
+          <button class="action-btn" (click)="openEditModal(test)" title="Edit Test">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button class="action-btn delete-btn" (click)="openDeleteModal(test)" title="Delete Test">
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-row" *ngIf="!loading && filteredTests.length === 0">
+        <i class="fa fa-inbox"></i> No tests found
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-row" *ngIf="!loading && filteredTests.length > 0">
+        <span class="pagination-info">
+          Showing {{ (currentPage - 1) * pageSize + 1 }}–{{ Math.min(currentPage * pageSize, filteredTests.length) }} of {{ filteredTests.length }}
+        </span>
+        <div class="pagination-controls">
+          <button class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+            ‹ Prev
+          </button>
+          <button *ngFor="let p of [].constructor(totalPages); let i = index" 
+                  class="page-btn" 
+                  [class.active]="currentPage === i + 1" 
+                  (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+          <button class="page-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+            Next ›
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modals would go here - keeping HTML short for now -->
+<!-- You can add the full modals from the previous version if needed -->
+
+
+<!-- Create Test Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Test</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" [(ngModel)]="testForm.title" placeholder="e.g., JavaScript Fundamentals">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="testForm.description" rows="3" placeholder="Brief description of the test"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <input type="text" [(ngModel)]="testForm.category" placeholder="e.g., JavaScript, Python, Java">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Duration (minutes) *</label>
+          <input type="number" [(ngModel)]="testForm.durationMinutes" min="1">
+        </div>
+        <div class="form-group">
+          <label>Pass Score (%) *</label>
+          <input type="number" [(ngModel)]="testForm.passScore" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="testForm.active">
+          <span>Active (visible to users)</span>
+        </label>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Scheduled Start Date (Optional)</label>
+          <input type="datetime-local" [(ngModel)]="testForm.scheduledStartDate">
+          <small class="form-hint">Test will auto-activate at this date/time</small>
+        </div>
+        <div class="form-group">
+          <label>Expiry Date (Optional)</label>
+          <input type="datetime-local" [(ngModel)]="testForm.expiryDate">
+          <small class="form-hint">Test will auto-deactivate at this date/time</small>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="createTest()">Create Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Test Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Test</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" [(ngModel)]="testForm.title">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="testForm.description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <input type="text" [(ngModel)]="testForm.category">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Duration (minutes) *</label>
+          <input type="number" [(ngModel)]="testForm.durationMinutes" min="1">
+        </div>
+        <div class="form-group">
+          <label>Pass Score (%) *</label>
+          <input type="number" [(ngModel)]="testForm.passScore" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="testForm.active">
+          <span>Active (visible to users)</span>
+        </label>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Scheduled Start Date (Optional)</label>
+          <input type="datetime-local" [(ngModel)]="testForm.scheduledStartDate">
+          <small class="form-hint">Test will auto-activate at this date/time</small>
+        </div>
+        <div class="form-group">
+          <label>Expiry Date (Optional)</label>
+          <input type="datetime-local" [(ngModel)]="testForm.expiryDate">
+          <small class="form-hint">Test will auto-deactivate at this date/time</small>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="updateTest()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Statistics Modal -->
+<div class="modal-overlay" *ngIf="showStatisticsModal" (click)="closeModal()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fa fa-chart-bar"></i> Test Statistics</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="stats-header">
+        <h3>{{ selectedTest?.title }}</h3>
+        <p class="stats-category">{{ selectedTest?.category }}</p>
+      </div>
+
+      <div class="stats-grid" *ngIf="testStatistics">
+        <div class="stat-card">
+          <div class="stat-icon attempts">
+            <i class="fa fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ testStatistics.totalAttempts }}</div>
+            <div class="stat-label">Total Attempts</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon score">
+            <i class="fa fa-star"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ testStatistics.averageScore }}%</div>
+            <div class="stat-label">Average Score</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pass">
+            <i class="fa fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ testStatistics.passRate }}%</div>
+            <div class="stat-label">Pass Rate</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon questions">
+            <i class="fa fa-question-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ testStatistics.questionCount }}</div>
+            <div class="stat-label">Total Questions</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-details" *ngIf="testStatistics">
+        <div class="detail-row">
+          <span class="detail-label">Passed:</span>
+          <span class="detail-value success">{{ testStatistics.passedCount }} users</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Failed:</span>
+          <span class="detail-value danger">{{ testStatistics.failedCount }} users</span>
+        </div>
+      </div>
+
+      <div class="stats-chart">
+        <h4>Pass/Fail Distribution</h4>
+        <div class="chart-container" *ngIf="testStatistics && testStatistics.totalAttempts > 0">
+          <div class="progress-bar-chart">
+            <div class="progress-segment pass" 
+                 [style.width.%]="testStatistics.passRate"
+                 [title]="'Passed: ' + testStatistics.passedCount">
+              <span *ngIf="testStatistics.passRate > 15">{{ testStatistics.passedCount }}</span>
+            </div>
+            <div class="progress-segment fail" 
+                 [style.width.%]="(100 - testStatistics.passRate)"
+                 [title]="'Failed: ' + testStatistics.failedCount">
+              <span *ngIf="(100 - testStatistics.passRate) > 15">{{ testStatistics.failedCount }}</span>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-color pass"></span>
+              <span>Passed ({{ testStatistics.passRate }}%)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color fail"></span>
+              <span>Failed ({{ 100 - testStatistics.passRate }}%)</span>
+            </div>
+          </div>
+        </div>
+        <div class="empty-chart" *ngIf="!testStatistics || testStatistics.totalAttempts === 0">
+          <i class="fa fa-chart-bar"></i>
+          <p>No attempts yet. Statistics will appear once users take this test.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeModal()">
+  <div class="modal-content small-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Delete Test</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete <strong>{{ selectedTest?.title }}</strong>?</p>
+      <p class="warning-text">This will also delete all associated questions. This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-danger" (click)="deleteTest()">Delete Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Questions Modal -->
+<div class="modal-overlay" *ngIf="showQuestionsModal" (click)="closeModal()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Manage Questions: {{ selectedTest?.title }}</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="questions-header">
+        <p>{{ testQuestions.length }} question(s)</p>
+        <button class="btn-primary" (click)="openAddQuestionForm()" *ngIf="!showAddQuestionForm">
+          <i class="fa fa-plus"></i> Add Question
+        </button>
+      </div>
+
+      <!-- Add/Edit Question Form -->
+      <div class="question-form" *ngIf="showAddQuestionForm">
+        <h3>{{ editingQuestionId ? 'Edit Question' : 'New Question' }}</h3>
+        <div class="form-group">
+          <label>Question Text *</label>
+          <textarea [(ngModel)]="questionForm.questionText" rows="3" placeholder="Enter the question"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Option A *</label>
+          <input type="text" [(ngModel)]="questionForm.optionA" placeholder="First option">
+        </div>
+        <div class="form-group">
+          <label>Option B *</label>
+          <input type="text" [(ngModel)]="questionForm.optionB" placeholder="Second option">
+        </div>
+        <div class="form-group">
+          <label>Option C *</label>
+          <input type="text" [(ngModel)]="questionForm.optionC" placeholder="Third option">
+        </div>
+        <div class="form-group">
+          <label>Option D *</label>
+          <input type="text" [(ngModel)]="questionForm.optionD" placeholder="Fourth option">
+        </div>
+        <div class="form-group">
+          <label>Correct Answer *</label>
+          <select [(ngModel)]="questionForm.correctOption">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" (click)="showAddQuestionForm = false">Cancel</button>
+          <button class="btn-primary" (click)="saveQuestion()">{{ editingQuestionId ? 'Update' : 'Add' }} Question</button>
+        </div>
+      </div>
+
+      <!-- Questions List -->
+      <div class="questions-list">
+        <div class="question-item" *ngFor="let q of testQuestions; let i = index">
+          <div class="question-number">Q{{ i + 1 }}</div>
+          <div class="question-content">
+            <p class="question-text">{{ q.questionText }}</p>
+            <div class="options-grid">
+              <div class="option">A) {{ q.optionA }}</div>
+              <div class="option">B) {{ q.optionB }}</div>
+              <div class="option">C) {{ q.optionC }}</div>
+              <div class="option">D) {{ q.optionD }}</div>
+            </div>
+          </div>
+          <div class="question-actions">
+            <button class="action-btn" (click)="editQuestion(q)" title="Edit">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteQuestion(q.id!)" title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="empty-questions" *ngIf="testQuestions.length === 0">
+          <i class="fa fa-inbox"></i>
+          <p>No questions yet. Add your first question above.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+</div>

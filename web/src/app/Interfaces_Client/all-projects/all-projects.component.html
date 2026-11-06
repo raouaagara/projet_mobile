@@ -1,0 +1,276 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/ClientFeed">
+      <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/ClientFeed" routerLinkActive="active"><i class="fa fa-stream"></i> Feed</a>
+      <a routerLink="/ClientDashboard" routerLinkActive="active"><i class="fa fa-th-large"></i> Dashboard</a>
+      <a routerLink="/ClientProfileManager" routerLinkActive="active"><i class="fa fa-user-circle"></i> Profile</a>
+      <a routerLink="/AllProjects" routerLinkActive="active" class="active-link"><i class="fa fa-folder-open"></i> Projects</a>
+      <a routerLink="/ClientContracts"><i class="fa fa-file-contract"></i> Contracts</a>
+      <a routerLink="/WorldClock" class="menu-item"><i class="fa fa-globe"></i> World Clock</a>
+      <a routerLink="/ClientWallet" routerLinkActive="active"><i class="fa fa-wallet"></i> Payments</a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn-create-nav" routerLink="/ClientFeed"><i class="fa fa-plus"></i> Post Job</button>
+      <div class="user-profile" routerLink="/ClientProfil" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/40x40/198754/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'C')" alt="User Avatar">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+
+    <header class="page-header">
+      <div class="header-text">
+        <h1>My Projects</h1>
+        <p>Manage your job postings, track applications, and view proposals.</p>
+      </div>
+    </header>
+
+    <div class="controls-bar">
+      <div class="tabs">
+
+        <!-- OPEN tab -->
+        <button class="tab-btn" [class.active]="selectedTab === 'OPEN'" (click)="setTab('OPEN')">
+          <span class="tab-dot open-dot"></span>
+          Open
+          <span class="badge badge-open">{{ getCount('OPEN') }}</span>
+        </button>
+
+        <!-- ACTIVE tab -->
+        <button class="tab-btn" [class.active]="selectedTab === 'ACTIVE'" (click)="setTab('ACTIVE')">
+          <span class="tab-dot active-dot"></span>
+          Active
+          <span class="badge badge-active">{{ getCount('ACTIVE') }}</span>
+        </button>
+
+        <!-- CLOSED tab -->
+        <button class="tab-btn" [class.active]="selectedTab === 'CLOSED'" (click)="setTab('CLOSED')">
+          <span class="tab-dot closed-dot"></span>
+          Closed
+          <span class="badge badge-closed">{{ getCount('CLOSED') }}</span>
+        </button>
+
+      </div>
+
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" [(ngModel)]="searchText" placeholder="Search by title...">
+      </div>
+    </div>
+
+    <!-- Status Summary Banner -->
+    <div class="status-banner" *ngIf="selectedTab === 'OPEN'">
+      <i class="fa fa-circle-info"></i>
+      <span>These projects are <strong>open</strong> — freelancers can submit proposals.</span>
+    </div>
+    <div class="status-banner active-banner" *ngIf="selectedTab === 'ACTIVE'">
+      <i class="fa fa-bolt"></i>
+      <span>These projects are <strong>active</strong> — a freelancer has been hired.</span>
+    </div>
+    <div class="status-banner closed-banner" *ngIf="selectedTab === 'CLOSED'">
+      <i class="fa fa-ban"></i>
+      <span>These projects are <strong>closed</strong> — no more proposals accepted.</span>
+    </div>
+
+    <div class="project-list">
+
+      <div class="empty-state" *ngIf="filteredProjects.length === 0">
+        <div class="empty-icon">
+          <i class="fa fa-folder-open" *ngIf="selectedTab === 'OPEN'"></i>
+          <i class="fa fa-bolt" *ngIf="selectedTab === 'ACTIVE'"></i>
+          <i class="fa fa-ban" *ngIf="selectedTab === 'CLOSED'"></i>
+        </div>
+        <h3>No {{ selectedTab.toLowerCase() }} projects</h3>
+        <p *ngIf="selectedTab === 'OPEN'">You don't have any open projects. Post a new job to get started.</p>
+        <p *ngIf="selectedTab === 'ACTIVE'">No active projects yet. Accept a freelancer proposal to activate a project.</p>
+        <p *ngIf="selectedTab === 'CLOSED'">No closed projects yet.</p>
+        <button class="btn-outline" routerLink="/ClientFeed" *ngIf="selectedTab === 'OPEN'">Post a Job</button>
+      </div>
+
+      <div class="project-row" *ngFor="let p of filteredProjects">
+        <div class="status-strip" [ngClass]="p.status"></div>
+
+        <div class="row-content">
+
+          <!-- Status pill inline -->
+          <div class="col-info">
+            <div class="title-row">
+              <h3 class="job-title">
+                <a [routerLink]="['/ClientDetailProject', p.id]">{{ p.title }}</a>
+              </h3>
+              <span class="status-pill" [ngClass]="'pill-' + p.status">
+                <span class="pill-dot"></span>
+                {{ p.status }}
+              </span>
+            </div>
+            <div class="job-meta">
+              <span class="id">ID: #{{ p.id }}</span>
+              <span class="dot">•</span>
+              <span class="date">Posted {{ p.postedAt }}</span>
+              <span class="dot">•</span>
+              <span class="category-tag">{{ formatEnumText(p.category) }}</span>
+            </div>
+          </div>
+
+          <div class="col-metrics">
+            <div class="metric">
+              <strong>{{ p.proposals?.length || 0 }}</strong>
+              <small>Proposals</small>
+            </div>
+            <div class="metric">
+              <strong>{{ p.status === 'ACTIVE' ? '1' : '0' }}</strong>
+              <small>Hired</small>
+            </div>
+            <div class="metric budget">
+              <strong>${{ p.budget }}</strong>
+              <small>{{ p.jobType === 'HOURLY' ? '/ hr' : 'Fixed' }}</small>
+            </div>
+          </div>
+
+          <div class="col-actions">
+            <!-- Show "View Proposals" on OPEN and ACTIVE -->
+            <button
+              class="btn-action view"
+              *ngIf="selectedTab === 'OPEN' || selectedTab === 'ACTIVE'"
+              [routerLink]="['/ProjectProposals', p.id]">
+              View Proposals
+            </button>
+
+            <button class="btn-action repost" *ngIf="selectedTab === 'CLOSED'">
+              <i class="fa fa-redo"></i> Repost
+            </button>
+
+            <div class="more-menu-container">
+              <button class="btn-icon-more" (click)="toggleMenu(p.id, $event)">
+                <i class="fa fa-ellipsis-v"></i>
+              </button>
+
+              <div class="actions-dropdown" *ngIf="activeMenuId === p.id" (click)="$event.stopPropagation()">
+                <button class="dropdown-item" (click)="editProject(p.id)">
+                  <i class="fa fa-pen"></i> Edit Project
+                </button>
+                <button class="dropdown-item" *ngIf="selectedTab === 'OPEN' || selectedTab === 'ACTIVE'" (click)="openCloseConfirm(p.id)">
+                  <i class="fa fa-ban"></i> Close Job
+                </button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item delete" (click)="openDeleteConfirm(p.id)">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" *ngIf="isEditModalOpen">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Edit Project #{{ projectToEdit.id }}</h2>
+      <button class="close-btn" (click)="closeEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" class="form-control" [(ngModel)]="projectToEdit.title">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-control" [(ngModel)]="projectToEdit.category">
+            <option value="WEB_DEVELOPMENT">Web Development</option>
+            <option value="MOBILE_DEVELOPMENT">Mobile App</option>
+            <option value="UI_UX_DESIGN">UI/UX Design</option>
+            <option value="DIGITAL_MARKETING">Digital Marketing</option>
+            <option value="DATA_SCIENCE_AI">Data Science & AI</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Experience Level</label>
+          <select class="form-control" [(ngModel)]="projectToEdit.ExperienceLevel">
+            <option value="Entry Level">Entry Level</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Expert">Expert</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-control text-area" [(ngModel)]="projectToEdit.description" rows="5"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contract Type</label>
+          <div class="radio-group" style="display: flex; gap: 15px; margin-top: 10px;">
+            <label><input type="radio" value="FIXED_PRICE" [(ngModel)]="projectToEdit.jobType"> Fixed Price</label>
+            <label><input type="radio" value="HOURLY" [(ngModel)]="projectToEdit.jobType"> Hourly</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Budget ($)</label>
+          <input type="number" class="form-control" [(ngModel)]="projectToEdit.budget">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeEditModal()">Cancel</button>
+      <button class="btn-publish" (click)="saveUpdatedProject()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay confirm-modal" *ngIf="isConfirmDeleteOpen">
+  <div class="modal-card small-modal">
+    <div class="modal-header delete-header">
+      <h2><i class="fa fa-exclamation-triangle"></i> Delete Project</h2>
+      <button class="close-btn" (click)="cancelDelete()">&times;</button>
+    </div>
+    <div class="modal-body text-center">
+      <p>Are you sure you want to <strong>delete</strong> this project?</p>
+      <p class="warning-text">This action cannot be undone and will remove all associated proposals.</p>
+    </div>
+    <div class="modal-footer flex-center">
+      <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-danger" (click)="confirmDeleteProject()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Close Confirm Modal -->
+<div class="modal-overlay confirm-modal" *ngIf="isConfirmCloseOpen">
+  <div class="modal-card small-modal">
+    <div class="modal-header close-header">
+      <h2><i class="fa fa-ban"></i> Close Project</h2>
+      <button class="close-btn" (click)="cancelClose()">&times;</button>
+    </div>
+    <div class="modal-body text-center">
+      <p>Are you sure you want to <strong>close</strong> this project?</p>
+      <p class="info-text">Freelancers will no longer be able to submit new proposals.</p>
+    </div>
+    <div class="modal-footer flex-center">
+      <button class="btn-cancel" (click)="cancelClose()">Cancel</button>
+      <button class="btn-warning" (click)="confirmCloseJob()">Yes, Close Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nvidia Toast -->
+<div class="nvidia-toast" [class.show]="showNvidiaToast">
+  <div class="nvidia-toast-content">
+    <i class="fa fa-microchip nvidia-icon"></i>
+    <span class="nvidia-text">{{ toastMessage }}</span>
+  </div>
+  <div class="nvidia-progress"></div>
+</div>

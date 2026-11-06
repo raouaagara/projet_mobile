@@ -1,0 +1,21 @@
+[
+  {"id": 1, "name": "Java"}, {"id": 2, "name": "JavaScript"}, {"id": 3, "name": "TypeScript"},
+  {"id": 4, "name": "Python"}, {"id": 5, "name": "C"}, {"id": 6, "name": "C++"}, {"id": 7, "name": "PHP"},
+  {"id": 8, "name": "Dart"}, {"id": 9, "name": "Kotlin"}, {"id": 10, "name": "Swift"}, {"id": 11, "name": "Go"},
+  {"id": 12, "name": "HTML"}, {"id": 13, "name": "CSS"}, {"id": 14, "name": "Angular"}, {"id": 15, "name": "React"},
+  {"id": 16, "name": "Vue.js"}, {"id": 17, "name": "Node.js"}, {"id": 18, "name": "Spring Boot"},
+  {"id": 19, "name": "Django"}, {"id": 20, "name": "Laravel"}, {"id": 21, "name": "Flutter"},
+  {"id": 22, "name": "React Native"}, {"id": 23, "name": "Android"}, {"id": 24, "name": "Firebase"},
+  {"id": 25, "name": "MySQL"}, {"id": 26, "name": "PostgreSQL"}, {"id": 27, "name": "MongoDB"}, {"id": 28, "name": "SQL"},
+  {"id": 29, "name": "Docker"}, {"id": 30, "name": "Kubernetes"}, {"id": 31, "name": "Git"}, {"id": 32, "name": "Jenkins"},
+  {"id": 33, "name": "AWS"}, {"id": 34, "name": "Linux"}, {"id": 35, "name": "CI/CD"},
+  {"id": 36, "name": "Machine Learning"}, {"id": 37, "name": "Deep Learning"}, {"id": 38, "name": "Data Analysis"},
+  {"id": 39, "name": "Power BI"}, {"id": 40, "name": "Tableau"}, {"id": 41, "name": "TensorFlow"},
+  {"id": 42, "name": "UI/UX Design"}, {"id": 43, "name": "Figma"}, {"id": 44, "name": "Adobe Photoshop"},
+  {"id": 45, "name": "Graphic Design"}, {"id": 46, "name": "Project Management"}, {"id": 47, "name": "Agile/Scrum"},
+  {"id": 48, "name": "Digital Marketing"}, {"id": 49, "name": "SEO"}, {"id": 50, "name": "Content Writing"},
+  {"id": 51, "name": "Mobile Development"}, {"id": 52, "name": "Web Development"}, {"id": 53, "name": "REST APIs"},
+  {"id": 54, "name": "Unit Testing"}, {"id": 55, "name": "Teamwork"}, {"id": 56, "name": "Communication"},
+  {"id": 57, "name": "Cybersecurity"}, {"id": 58, "name": "Microservices"}, {"id": 59, "name": "Databases"},
+  {"id": 60, "name": "English"}, {"id": 61, "name": "French"}
+]

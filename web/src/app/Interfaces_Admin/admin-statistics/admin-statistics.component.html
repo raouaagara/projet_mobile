@@ -1,0 +1,128 @@
+<div class="admin-layout">
+  <header class="admin-header">
+    <div class="logo" routerLink="/">
+      <span class="logo-mark">C</span>
+      <span class="logo-text">Catch<span>OPP</span> Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a routerLink="/AdminStatistics" class="nav-link active"><i class="fa fa-chart-bar"></i> Statistics</a>
+      <a routerLink="/AdminSubscriptions" class="nav-link"><i class="fa fa-users"></i> Subscriptions</a>
+      <a routerLink="/AdminPromoCodes" class="nav-link"><i class="fa fa-tag"></i> Promo Codes</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> Plans</a>
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1>Platform Statistics</h1>
+        <p>Real-time overview of subscription metrics and revenue.</p>
+      </div>
+      <button *ngIf="!loading" (click)="loadStatistics()" class="refresh-btn" title="Refresh data">
+        <i class="fa fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <i class="fa fa-spinner fa-spin fa-3x"></i>
+      <p>Loading statistics...</p>
+    </div>
+
+    <div *ngIf="!loading" class="stats-content">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon users"><i class="fa fa-users"></i></div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.totalSubscribers }}</span>
+          <span class="stat-label">Total Subscribers</span>
+          <span class="stat-trend up"><i class="fa fa-arrow-up"></i> {{ stats.totalSubscribersTrend }}% vs last month</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon active"><i class="fa fa-check-circle"></i></div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.activeSubscriptions }}</span>
+          <span class="stat-label">Active Subscriptions</span>
+          <span class="stat-trend up"><i class="fa fa-arrow-up"></i> {{ stats.activeTrend }}%</span>
+        </div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-icon revenue"><i class="fa fa-dollar-sign"></i></div>
+        <div class="stat-content">
+          <span class="stat-value">${{ stats.monthlyRevenue | number:'1.2-2' }}</span>
+          <span class="stat-label">Monthly Revenue</span>
+          <span class="stat-trend up"><i class="fa fa-arrow-up"></i> {{ stats.revenueTrend }}%</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon conversion"><i class="fa fa-percentage"></i></div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.conversionRate }}%</span>
+          <span class="stat-label">Conversion Rate</span>
+          <span class="stat-trend down"><i class="fa fa-arrow-down"></i> {{ stats.conversionTrend }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card wide">
+        <h3><i class="fa fa-line-chart"></i> Monthly Revenue Trend</h3>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="lineChartData"
+            [options]="lineChartOptions"
+            [type]="lineChartType">
+          </canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3><i class="fa fa-pie-chart"></i> Revenue by Plan</h3>
+        <div class="chart-container small">
+          <canvas baseChart
+            [data]="doughnutChartData"
+            [options]="doughnutChartOptions"
+            [type]="doughnutChartType">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3><i class="fa fa-bar-chart"></i> Subscribers by Plan</h3>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="barChartData"
+            [options]="barChartOptions"
+            [type]="barChartType">
+          </canvas>
+        </div>
+      </div>
+      <div class="table-card">
+        <h3><i class="fa fa-table"></i> Plan Performance</h3>
+        <div class="plan-rows">
+          <div *ngFor="let row of stats.byPlan" class="plan-row">
+            <div class="plan-info">
+              <span class="plan-dot" [style.background]="row.color"></span>
+              <span class="plan-name">{{ row.plan }}</span>
+            </div>
+            <div class="plan-stats">
+              <span class="plan-count">{{ row.count }} subs</span>
+              <span class="plan-revenue">${{ row.revenue | number:'1.2-2' }}</span>
+            </div>
+            <div class="plan-bar-wrap">
+              <div class="plan-bar" [style.width.%]="getPlanPercent(row)" [style.background]="row.color"></div>
+            </div>
+          </div>
+        </div>
+        <div class="table-total">
+          <span>Total</span>
+          <strong>${{ getTotalRevenue() | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+</div>

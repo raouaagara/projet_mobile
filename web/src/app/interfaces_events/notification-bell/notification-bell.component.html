@@ -1,0 +1,79 @@
+<div class="notification-bell-container">
+  <button class="notification-bell-btn" (click)="toggleDropdown()">
+    <span class="bell-icon">🔔</span>
+    <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </button>
+
+  <div class="notification-dropdown" *ngIf="showDropdown" (clickOutside)="closeDropdown()">
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <div class="header-actions">
+        <button class="mark-all-read" (click)="markAllAsRead()" *ngIf="unreadCount > 0" title="Mark all as read">
+          <i class="fa fa-check-double"></i>
+        </button>
+        <button class="clear-all-btn" (click)="clearAll()" *ngIf="notifications.length > 0" title="Clear all notifications">
+          <i class="fa fa-trash-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="notification-tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'all'"
+        (click)="setTab('all')">
+        All
+        <span class="tab-count">{{ notifications.length }}</span>
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'upcoming'"
+        (click)="setTab('upcoming')">
+        Upcoming
+        <span class="tab-count">{{ getUpcomingCount() }}</span>
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'past'"
+        (click)="setTab('past')">
+        Past
+        <span class="tab-count">{{ getPastCount() }}</span>
+      </button>
+    </div>
+
+    <div class="notification-list">
+      <div 
+        *ngFor="let notification of getFilteredNotifications()" 
+        class="notification-item"
+        [class.unread]="!notification.read"
+        [ngClass]="getNotificationClass(notification.importance)"
+        (click)="navigateToNotification(notification)"
+      >
+        <div class="notification-icon">
+          {{ getNotificationIcon(notification.type) }}
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">{{ notification.title }}</div>
+          <div class="notification-message">{{ notification.message }}</div>
+          <div class="notification-time">{{ getTimeAgo(notification.createdAt) }}</div>
+        </div>
+        <button 
+          class="mark-read-btn" 
+          *ngIf="!notification.read"
+          (click)="markAsRead(notification, $event)"
+          title="Mark as read"
+        >
+          ✓
+        </button>
+      </div>
+
+      <div class="no-notifications" *ngIf="getFilteredNotifications().length === 0">
+        <span class="empty-icon">🔕</span>
+        <p *ngIf="activeTab === 'all'">No notifications yet</p>
+        <p *ngIf="activeTab === 'upcoming'">No upcoming events</p>
+        <p *ngIf="activeTab === 'past'">No past events</p>
+      </div>
+    </div>
+  </div>
+</div>

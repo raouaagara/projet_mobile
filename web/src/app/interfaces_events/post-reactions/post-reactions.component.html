@@ -1,0 +1,47 @@
+<div class="reactions-container">
+  <!-- Single Line: Reaction Summary + Action Button -->
+  <div class="reactions-line">
+    <!-- Left: Reaction Summary -->
+    <div class="reaction-summary" *ngIf="getTotalReactions() > 0">
+      <div class="reaction-icons">
+        <span 
+          class="reaction-icon" 
+          *ngFor="let type of getTopReactions()"
+          [title]="reactionLabels[type]">
+          {{ reactionEmojis[type] }}
+        </span>
+      </div>
+      <span class="count-text">{{ getTotalReactions() }}</span>
+    </div>
+
+    <!-- Right: Like Button with Hover Picker -->
+    <div class="reaction-action">
+      <button 
+        class="like-btn" 
+        [class.liked]="userReaction"
+        [attr.data-reaction]="userReaction"
+        (mouseenter)="showPicker()"
+        (mouseleave)="hidePicker()"
+        (click)="userReaction ? selectReaction(userReaction) : selectReaction(ReactionType.LIKE)">
+        <span class="emoji">{{ userReaction ? reactionEmojis[userReaction] : '👍' }}</span>
+        <span class="text">{{ userReaction ? reactionLabels[userReaction] : 'Like' }}</span>
+      </button>
+
+      <!-- Floating Emoji Picker -->
+      <div 
+        class="emoji-picker" 
+        *ngIf="showReactionPicker"
+        (mouseenter)="showPicker()"
+        (mouseleave)="hidePicker()">
+        <button 
+          class="emoji-btn"
+          *ngFor="let type of getReactionTypes()"
+          [class.selected]="userReaction === type"
+          (click)="selectReaction(type)"
+          [title]="reactionLabels[type]">
+          {{ reactionEmojis[type] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

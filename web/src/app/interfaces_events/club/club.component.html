@@ -1,0 +1,327 @@
+<!-- Top Navigation -->
+<nav class="top-navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <div class="logo-circle">C</div>
+      <span class="brand-text">CatchOPP</span>
+    </div>
+
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search by club, interest or skill">
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-icon-btn" [routerLink]="['/groups']" title="Groups">
+        <i class="fa fa-users"></i>
+      </button>
+      <button class="nav-icon-btn" [routerLink]="['/events']" title="Events">
+        <i class="fa fa-calendar-alt"></i>
+      </button>
+      <app-notification-bell></app-notification-bell>
+      <div class="user-profile">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <span class="user-name">Community User</span>
+          <span class="user-role">Member</span>
+        </div>
+        <i class="fa fa-chevron-down"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="club-page" *ngIf="!loading && club">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i> Back to Clubs
+    </button>
+    
+    <div class="hero-content">
+      <div class="club-icon-large">
+        <i class="fa fa-users-cog"></i>
+      </div>
+      <h1>{{ club.name }}</h1>
+      <p class="club-description">{{ club.description }}</p>
+      
+      <div class="club-stats">
+        <div class="stat-box">
+          <i class="fa fa-comments"></i>
+          <span class="stat-value">{{ posts.length }}</span>
+          <span class="stat-label">Posts</span>
+        </div>
+        <div class="stat-box">
+          <i class="fa fa-tags"></i>
+          <span class="stat-value">{{ getInterests().length }}</span>
+          <span class="stat-label">Interests</span>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="shareClub()">
+          <i class="fa fa-share-alt"></i> Share
+        </button>
+        <button class="btn btn-secondary" (click)="inviteFriends()">
+          <i class="fa fa-user-plus"></i> Invite
+        </button>
+        <button class="btn btn-danger" (click)="leaveClub()">
+          <i class="fa fa-sign-out-alt"></i> Leave
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-container">
+    <div class="tabs-wrapper">
+      <button class="tab" [class.active]="activeTab === 'about'" (click)="setTab('about')">
+        <i class="fa fa-info-circle"></i> About
+      </button>
+      <button class="tab" [class.active]="activeTab === 'posts'" (click)="setTab('posts')">
+        <i class="fa fa-comments"></i> Posts ({{ posts.length }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="content-area">
+    <div class="content-layout">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- About Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'about'">
+          <div class="content-card">
+            <h3><i class="fa fa-info-circle"></i> About This Club</h3>
+            <p>{{ club.description }}</p>
+          </div>
+          
+          <div class="content-card" *ngIf="getInterests().length > 0">
+            <h3><i class="fa fa-tags"></i> Interests</h3>
+            <div class="interests-tags">
+              <span class="interest-tag" *ngFor="let interest of getInterests()">
+                {{ interest }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Posts Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'posts'">
+          <div class="posts-section">
+            <!-- Loading state -->
+            <div *ngIf="loading" class="loading-state">
+              <p><i class="fa fa-spinner fa-spin"></i> Loading posts...</p>
+            </div>
+
+            <!-- Error state -->
+            <div *ngIf="error && !loading" class="error-state">
+              <p><i class="fa fa-exclamation-triangle"></i> {{ error }}</p>
+              <button class="btn btn-primary" (click)="loadClubPosts()">
+                <i class="fa fa-refresh"></i> Retry
+              </button>
+            </div>
+
+            <!-- Create post form -->
+            <div class="create-post-card" *ngIf="!loading && !error">
+              <h3><i class="fa fa-edit"></i> Share with the club</h3>
+              <div class="create-post-form">
+                <textarea
+                  [(ngModel)]="newPost.content"
+                  placeholder="Share an announcement or update with the club..."
+                  rows="4"></textarea>
+                <input
+                  type="text"
+                  [(ngModel)]="newPost.title"
+                  placeholder="Optional title (e.g. Weekly meetup, New resource...)"
+                  class="post-title-input">
+                <div class="create-post-footer">
+                  <label class="announcement-toggle">
+                    <input type="checkbox" [(ngModel)]="isAnnouncement">
+                    <span><i class="fa fa-bullhorn"></i> Mark as announcement</span>
+                  </label>
+                  <button class="btn btn-primary" (click)="createPost()">
+                    <i class="fa fa-paper-plane"></i> Post
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Posts display -->
+            <div *ngIf="!loading && !error">
+              <!-- No posts message -->
+              <div *ngIf="posts.length === 0" class="empty-state">
+                <i class="fa fa-comments"></i>
+                <h3>No posts yet</h3>
+                <p>Be the first to share something with this club!</p>
+              </div>
+
+              <!-- Posts count -->
+              <div *ngIf="posts.length > 0" class="posts-count">
+                <p>{{ posts.length }} post(s) in this club</p>
+              </div>
+
+              <!-- Announcements Section -->
+              <div class="announcements-section" *ngIf="announcements.length > 0">
+                <div class="announcements-header">
+                  <span class="announcements-title">
+                    <i class="fa fa-bullhorn"></i> Announcements
+                  </span>
+                  <span class="announcements-count">{{ announcements.length }}</span>
+                </div>
+
+                <article class="post-card announcement-card" *ngFor="let announcement of announcements">
+                  <div class="post-header">
+                    <div class="post-author-info">
+                      <div class="post-author-avatar">
+                        <img [src]="announcement.avatar" [alt]="announcement.author">
+                      </div>
+                      <div class="post-meta">
+                        <div class="author-row">
+                          <span class="author-name">{{ announcement.author }}</span>
+                          <span class="badge-role">{{ announcement.role }}</span>
+                          <span class="announcement-badge">Announcement</span>
+                        </div>
+                        <span class="post-date">{{ announcement.createdAt }}</span>
+                      </div>
+                    </div>
+                    <div class="post-actions-menu">
+                      <button class="btn-icon" (click)="startEditPost(announcement)" title="Edit">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn-icon danger" (click)="deletePost(announcement.id)" title="Delete">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="post-body">
+                    <h3 *ngIf="announcement.title">{{ announcement.title }}</h3>
+                    <div *ngIf="editingPost?.id !== announcement.id">
+                      <p>{{ announcement.content }}</p>
+                    </div>
+                    <div *ngIf="editingPost?.id === announcement.id" class="edit-post-form">
+                      <textarea [(ngModel)]="editPostContent" rows="4"></textarea>
+                      <div class="edit-actions">
+                        <button class="btn btn-secondary" (click)="cancelEditPost()">Cancel</button>
+                        <button class="btn btn-primary" (click)="saveEditPost()">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="post-footer">
+                    <!-- Reactions Component -->
+                    <app-post-reactions 
+                      [postId]="announcement.id" 
+                      [currentUserId]="1"
+                      (reactionChanged)="onPostInteraction()">
+                    </app-post-reactions>
+                    
+                    <!-- Comments Component -->
+                    <app-post-comments 
+                      [postId]="announcement.id" 
+                      [currentUserId]="1"
+                      (commentAdded)="onPostInteraction()">
+                    </app-post-comments>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Regular Posts Section -->
+              <div class="posts-list" *ngIf="regularPosts.length > 0">
+                <article class="post-card" *ngFor="let post of regularPosts">
+                  <div class="post-header">
+                    <div class="post-author-info">
+                      <div class="post-author-avatar">
+                        <img [src]="post.avatar" [alt]="post.author">
+                      </div>
+                      <div class="post-meta">
+                        <div class="author-row">
+                          <span class="author-name">{{ post.author }}</span>
+                          <span class="badge-role">{{ post.role }}</span>
+                        </div>
+                        <span class="post-date">{{ post.createdAt }}</span>
+                      </div>
+                    </div>
+                    <div class="post-actions-menu">
+                      <button class="btn-icon" (click)="startEditPost(post)" title="Edit">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn-icon danger" (click)="deletePost(post.id)" title="Delete">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="post-body">
+                    <h3 *ngIf="post.title">{{ post.title }}</h3>
+                    <div *ngIf="editingPost?.id !== post.id">
+                      <p>{{ post.content }}</p>
+                    </div>
+                    <div *ngIf="editingPost?.id === post.id" class="edit-post-form">
+                      <textarea [(ngModel)]="editPostContent" rows="4"></textarea>
+                      <div class="edit-actions">
+                        <button class="btn btn-secondary" (click)="cancelEditPost()">Cancel</button>
+                        <button class="btn btn-primary" (click)="saveEditPost()">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="post-footer">
+                    <!-- Reactions Component -->
+                    <app-post-reactions 
+                      [postId]="post.id" 
+                      [currentUserId]="1"
+                      (reactionChanged)="onPostInteraction()">
+                    </app-post-reactions>
+                    
+                    <!-- Comments Component -->
+                    <app-post-comments 
+                      [postId]="post.id" 
+                      [currentUserId]="1"
+                      (commentAdded)="onPostInteraction()">
+                    </app-post-comments>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <h4><i class="fa fa-info"></i> Details</h4>
+          <div class="detail-row">
+            <span class="detail-label">Created:</span>
+            <strong>{{ club.createdAt | date: 'MMM d, yyyy' }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Posts:</span>
+            <strong>{{ posts.length }}</strong>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <h4><i class="fa fa-link"></i> Quick Links</h4>
+          <button class="quick-link" [routerLink]="['/clubs']">
+            <i class="fa fa-users-cog"></i> All Clubs
+          </button>
+          <button class="quick-link" [routerLink]="['/groups']">
+            <i class="fa fa-users"></i> All Groups
+          </button>
+          <button class="quick-link" [routerLink]="['/events']">
+            <i class="fa fa-calendar-alt"></i> All Events
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading club...</p>
+</div>

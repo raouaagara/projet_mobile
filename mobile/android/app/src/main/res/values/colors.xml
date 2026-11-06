@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- Brand green (lib/core/theme/brand.dart), behind the launch screen. -->
+    <color name="splash_background">#5CB135</color>
+</resources>

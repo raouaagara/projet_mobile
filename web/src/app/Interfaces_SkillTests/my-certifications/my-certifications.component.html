@@ -1,0 +1,43 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <a routerLink="/SkillTests" class="nav-link"><i class="fa fa-graduation-cap"></i> Skill Tests</a>
+      <a routerLink="/MyCertifications" class="nav-link active"><i class="fa fa-award"></i> My Certifications</a>
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <div class="page-header">
+    <h1><i class="fa fa-award"></i> My Certifications</h1>
+    <p>Your verified skill badges. Display them on your profile to stand out.</p>
+  </div>
+
+  <div class="loading" *ngIf="loading"><i class="fa fa-spinner fa-spin"></i> Loading...</div>
+  <div class="certs-grid" *ngIf="!loading && certs.length > 0">
+    <div *ngFor="let c of certs" class="cert-card" [class.passed]="c.passed">
+      <div class="badge-icon"><i class="fa fa-medal"></i></div>
+      <h3>{{ c.testTitle }}</h3>
+      <span class="category">{{ c.category }}</span>
+      <div class="score">{{ c.score }}%</div>
+      <span class="date">{{ formatDate(c.completedAt) }}</span>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="!loading && certs.length === 0">
+    <i class="fa fa-certificate"></i>
+    <h3>No certifications yet</h3>
+    <p>Take skill tests to earn verified badges.</p>
+    <a routerLink="/SkillTests" class="btn">Browse Tests</a>
+  </div>
+</div>
+

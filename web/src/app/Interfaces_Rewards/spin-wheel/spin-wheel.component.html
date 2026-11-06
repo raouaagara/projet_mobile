@@ -1,0 +1,102 @@
+<div class="spin-container">
+  <div class="spin-header">
+    <button class="back-btn" (click)="goToRewards()">← Back to Rewards</button>
+    <h1>🎰 Spin the Wheel</h1>
+    <p>Try your luck and win a discount code!</p>
+  </div>
+
+  <!-- Wheel Container -->
+  <div class="wheel-wrapper">
+    <div class="wheel-pointer">▼</div>
+    <div class="wheel" [style.transform]="'rotate(' + rotation + 'deg)'" [class.spinning]="spinning">
+      <div class="segment segment-1">
+        <span class="segment-text">5%</span>
+      </div>
+      <div class="segment segment-2">
+        <span class="segment-text">25%</span>
+      </div>
+      <div class="segment segment-3">
+        <span class="segment-text">10%</span>
+      </div>
+      <div class="segment segment-4">
+        <span class="segment-text">20%</span>
+      </div>
+      <div class="segment segment-5">
+        <span class="segment-text">15%</span>
+      </div>
+      <div class="wheel-center">SPIN</div>
+    </div>
+  </div>
+
+  <!-- Spin Button -->
+  <div class="spin-controls">
+    <button 
+      class="spin-button" 
+      [disabled]="!canSpin || spinning"
+      (click)="spin()">
+      <span *ngIf="!spinning">🎰 Spin Now!</span>
+      <span *ngIf="spinning">Spinning...</span>
+    </button>
+    
+    <div *ngIf="!canSpin && !showResult" class="cooldown-message">
+      <p>⏰ Next spin available in {{ daysUntilNextSpin }} days</p>
+      <p class="cooldown-hint">Come back later to spin again!</p>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div class="result-modal" *ngIf="showResult">
+    <div class="result-content">
+      <div class="result-icon">🎉</div>
+      <h2>Congratulations!</h2>
+      <p class="result-text">You won {{ wonDiscount }}% OFF!</p>
+      <div class="result-code">
+        <span class="code-label">Your Code:</span>
+        <span class="code-value">{{ wonCode }}</span>
+      </div>
+      <p class="result-hint">Code has been added to your rewards wallet</p>
+      <div class="result-actions">
+        <button class="use-now-btn" (click)="goToCheckout()">
+          Use Now
+        </button>
+        <button class="later-btn" (click)="goToRewards()">
+          Use Later
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="info-section">
+    <h2>📋 How It Works</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-number">1</div>
+        <h3>Spin Once Per Month</h3>
+        <p>You can spin the wheel once every 30 days</p>
+      </div>
+      <div class="info-card">
+        <div class="info-number">2</div>
+        <h3>Win Random Discount</h3>
+        <p>Get 5%, 10%, 15%, 20%, or 25% off</p>
+      </div>
+      <div class="info-card">
+        <div class="info-number">3</div>
+        <h3>Use on Next Subscription</h3>
+        <p>Apply your code on your next renewal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="rules-section">
+    <h3>⚠️ Rules</h3>
+    <ul>
+      <li>One spin per user every 30 days</li>
+      <li>Code expires in 30 days from earning</li>
+      <li>One-time use only</li>
+      <li>Can be used on future subscriptions (not first subscription)</li>
+      <li>Cannot be combined with other codes</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+:host {
+  --primary: #10b981;
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #111827;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+}
+
+.admin-layout { min-height: 100vh; background: var(--bg); }
+.admin-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.logo-text span { color: var(--primary); }
+.admin-nav { display: flex; align-items: center; gap: 16px; }
+.nav-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--text-muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+.nav-link:hover, .nav-link.active { color: var(--primary); }
+
+.admin-main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.page-header h1 { margin: 0; font-size: 1.75rem; }
+.page-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+.btn-primary { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary { padding: 10px 20px; background: var(--border); color: var(--text-main); border: none; border-radius: 8px; cursor: pointer; }
+.btn-sm { padding: 6px 12px; font-size: 0.85rem; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer; margin-right: 8px; }
+.btn-sm:hover { background: #f9fafb; }
+.btn-sm.btn-danger { border-color: #fecaca; color: #dc2626; }
+.btn-sm.btn-danger:hover { background: #fee2e2; }
+
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table-header-row, .table-row { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr 0.8fr 0.8fr 1.5fr; gap: 16px; padding: 14px 20px; align-items: center; }
+.table-header-row { background: #f9fafb; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); }
+.table-row { border-top: 1px solid var(--border); }
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+.badge.base { background: #dbeafe; color: #1e40af; }
+.badge.premium { background: #d1fae5; color: #065f46; }
+.badge.enterprise { background: #ede9fe; color: #5b21b6; }
+.muted { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+.actions { display: flex; gap: 8px; }
+
+.msg { color: var(--primary); margin-bottom: 16px; }
+.loading-row { padding: 40px; text-align: center; color: var(--text-muted); }
+.empty-row { padding: 60px; text-align: center; color: var(--text-muted); }
+.link-btn { background: none; border: none; color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; }
+.modal-overlay.active { display: flex; }
+.modal-card { background: white; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { margin: 0; font-size: 1.25rem; }
+.close-btn { background: #f3f4f6; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+.modal-body { padding: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.checkbox-wrap label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }

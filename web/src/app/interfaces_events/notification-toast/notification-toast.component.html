@@ -1,0 +1,51 @@
+<div class="toast-container">
+  <div 
+    *ngFor="let toast of toasts" 
+    class="toast-notification"
+    [ngClass]="getToastClass(toast.importance)"
+    [@slideIn]
+  >
+    <div class="toast-icon">
+      {{ getToastIcon(toast.type) }}
+    </div>
+    
+    <div class="toast-content">
+      <div class="toast-header">
+        <h4 class="toast-title">{{ toast.title }}</h4>
+        <button class="toast-close" (click)="closeToast(toast)">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <p class="toast-message">{{ toast.message }}</p>
+      
+      <!-- Countdown for event reminders -->
+      <div class="toast-countdown" *ngIf="toast.countdown !== undefined">
+        <div class="countdown-circle">
+          <svg class="countdown-svg" viewBox="0 0 36 36">
+            <path
+              class="countdown-bg"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path
+              class="countdown-progress"
+              [attr.stroke-dasharray]="(toast.countdown / 120) * 100 + ', 100'"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+          </svg>
+          <div class="countdown-text">
+            <span class="countdown-number">{{ toast.countdown }}</span>
+            <span class="countdown-label">min</span>
+          </div>
+        </div>
+        <span class="countdown-message">until event starts</span>
+      </div>
+      
+      <div class="toast-time">{{ getTimeAgo(toast.createdAt) }}</div>
+    </div>
+  </div>
+</div>
