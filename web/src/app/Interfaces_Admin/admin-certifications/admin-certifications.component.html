@@ -1,0 +1,112 @@
+<div class="admin-layout">
+  <header class="admin-header">
+    <div class="logo" routerLink="/">
+      <span class="logo-mark">C</span>
+      <span class="logo-text">Catch<span>OPP</span> Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a routerLink="/AdminStatistics" class="nav-link"><i class="fa fa-chart-bar"></i> Statistics</a>
+      <a routerLink="/AdminSubscriptions" class="nav-link"><i class="fa fa-users"></i> Subscriptions</a>
+      <a routerLink="/AdminCertifications" class="nav-link active"><i class="fa fa-award"></i> Certifications</a>
+      <a routerLink="/AdminSkillTests" class="nav-link"><i class="fa fa-clipboard-list"></i> Skill Tests</a>
+      <a routerLink="/AdminPromoCodes" class="nav-link"><i class="fa fa-tag"></i> Promo Codes</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> Plans</a>
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1>Certifications & Skills</h1>
+        <p>Freelancers who passed skill tests and their verified competencies.</p>
+      </div>
+    </div>
+
+    <div class="api-error" *ngIf="loadError">
+      <i class="fa fa-exclamation-triangle"></i> Could not load certifications. Ensure SkillTestsMicroService is running on port 8086.
+      <button type="button" class="retry-btn" (click)="loadData()">Retry</button>
+    </div>
+
+    <section class="stats-row" *ngIf="hasStats">
+      <div class="stat-card" *ngFor="let kv of (statsByCategory | keyvalue)">
+        <div class="stat-value">{{ kv.value }}</div>
+        <div class="stat-label">{{ kv.key }} passed</div>
+      </div>
+    </section>
+
+    <section class="filters">
+      <div class="filter-group">
+        <label>Filter</label>
+        <select [(ngModel)]="filterPassedOnly" (ngModelChange)="currentPage = 1">
+          <option [ngValue]="false">All attempts</option>
+          <option [ngValue]="true">Passed only</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select [(ngModel)]="categoryFilter" (ngModelChange)="currentPage = 1">
+          <option value="ALL">All categories</option>
+          <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Per page</label>
+        <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+          <option *ngFor="let n of pageSizeOptions" [value]="n">{{ n }}</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <div class="table-header-row">
+        <span>User</span>
+        <span>Test / Category</span>
+        <span>Score</span>
+        <span>Status</span>
+        <span>Date</span>
+      </div>
+      <div class="loading-row" *ngIf="loading">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </div>
+      <div class="table-row" *ngFor="let cert of paginatedCerts">
+        <div class="cell user-cell">
+          <div class="avatar">{{ safeChar(cert.userName, 'User') }}</div>
+          <div>
+            <div class="user-name">{{ cert.userName || 'User #' + cert.userId }}</div>
+            <div class="user-email">ID: {{ cert.userId }}</div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="plan-name">{{ cert.testTitle }}</div>
+          <div class="plan-type">{{ cert.category }}</div>
+        </div>
+        <div class="cell">
+          <span class="score-value">{{ cert.score }}%</span>
+        </div>
+        <div class="cell">
+          <span class="badge" [ngClass]="cert.passed ? 'passed' : 'failed'">
+            {{ cert.passed ? 'Passed' : 'Failed' }}
+          </span>
+        </div>
+        <div class="cell muted">{{ formatDate(cert.completedAt) }}</div>
+      </div>
+      <div class="empty-row" *ngIf="!loading && displayCerts.length === 0">
+        No certifications match your filters.
+      </div>
+      <div class="pagination-row" *ngIf="!loading && displayCerts.length > 0">
+        <span class="pagination-info">
+          Showing {{ paginationStart() }}–{{ paginationEnd() }} of {{ displayCerts.length }}
+        </span>
+        <div class="pagination-controls">
+          <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">‹ Prev</button>
+          <span class="page-numbers">
+            <button type="button" *ngFor="let p of pageNumbers" class="page-btn" [class.active]="currentPage === p" (click)="goToPage(p)">{{ p }}</button>
+          </span>
+          <button type="button" class="page-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Next ›</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

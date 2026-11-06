@@ -1,0 +1,47 @@
+<div class="split-container">
+  <div class="selection-side">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+    <div class="bg-shape shape-dots"></div>
+    <div class="content-wrapper">
+      <h2 class="logo">CatchIQ</h2>
+      <div class="header-text">
+        <h1>Welcome!</h1>
+        <p>Please select your account type to continue to login.</p>
+      </div>
+
+      <div class="role-grid">
+        <a routerLink="/LoginFreelancer" [queryParams]="{role: 'freelancer'}" class="role-card">
+          <div class="icon-box">
+            <i class="fa fa-laptop-code"></i>
+          </div>
+          <div class="text-box">
+            <h3>I am a Freelancer</h3>
+            <p>I want to find work and offer my expertise.</p>
+          </div>
+          <i class="fa fa-arrow-right arrow"></i>
+        </a>
+
+        <a routerLink="/LoginClient" [queryParams]="{role: 'client'}" class="role-card">
+          <div class="icon-box">
+            <i class="fa fa-briefcase"></i>
+          </div>
+          <div class="text-box">
+            <h3>I am a Client</h3>
+            <p>I want to hire experts for my projects.</p>
+          </div>
+          <i class="fa fa-arrow-right arrow"></i>
+        </a>
+      </div>
+      
+     
+    </div>
+  </div>
+
+  <div class="image-side">
+    <div class="overlay-text">
+      <h2>Connecting Talent <br>with Opportunity.</h2>
+    </div>
+  </div>
+</div>

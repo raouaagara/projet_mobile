@@ -1,0 +1,18 @@
+# Each app also has its own .gitignore (backend/, web/, mobile/).
+
+# Secrets — never commit these
+.env
+*.env.local
+*.jks
+*.keystore
+key.properties
+google-services.json
+
+# Files uploaded at runtime (CVs, chat attachments…)
+uploads/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+*.iml

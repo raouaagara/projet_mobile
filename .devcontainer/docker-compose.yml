@@ -1,0 +1,24 @@
+# Dev container for GitHub Codespaces (see devcontainer.json).
+# "app" shares MariaDB's network, so localhost:3306 works exactly like XAMPP on our PCs.
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/java:1-17-bookworm
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    init: true # reaps the services' processes when they stop
+    network_mode: service:db
+
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    # Table names ignore case, like on Windows.
+    command: --lower-case-table-names=1
+    environment:
+      # root without a password, like XAMPP. Only reachable inside the codespace.
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+
+volumes:
+  mariadb-data:

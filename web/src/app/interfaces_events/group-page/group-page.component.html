@@ -1,0 +1,290 @@
+<div class="group-page">
+  <div class="group-banner">
+    <div class="overlay"></div>
+    <div class="banner-content" *ngIf="group">
+      <div class="banner-header">
+        <div class="banner-info">
+          <h1>{{ group.name }}</h1>
+          <p>{{ group.description }}</p>
+          <div class="chips">
+            <span class="chip"><i class="fa fa-globe"></i> {{ group.visibility }}</span>
+            <span class="chip"><i class="fa fa-users"></i> {{ group.membersCount }} members</span>
+            <span class="chip"><i class="fa fa-clock"></i> Created {{ group.createdAt }}</span>
+          </div>
+        </div>
+        <div class="banner-actions">
+          <app-notification-bell></app-notification-bell>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group-layout" *ngIf="group">
+    <main class="main-column">
+      <section class="card wall-card">
+        <h2>Group wall</h2>
+        <p class="muted">Announcements and posts shared with all members.</p>
+
+        <!-- Loading state -->
+        <div *ngIf="loading" class="loading-state">
+          <p><i class="fa fa-spinner fa-spin"></i> Loading posts...</p>
+        </div>
+
+        <!-- Error state -->
+        <div *ngIf="error && !loading" class="error-state">
+          <p><i class="fa fa-exclamation-triangle"></i> {{ error }}</p>
+          <button class="btn-retry" (click)="loadGroupPosts(group!.id)">
+            <i class="fa fa-refresh"></i> Retry
+          </button>
+        </div>
+
+        <!-- Create post form -->
+        <div class="create-post" *ngIf="!loading && !error">
+          <div class="create-row">
+            <div class="avatar-wrapper sm" *ngIf="group.members && group.members.length > 0">
+              <img [src]="group.members[0].avatar" [alt]="group.members[0].name">
+            </div>
+            <div class="avatar-wrapper sm" *ngIf="!group.members || group.members.length === 0">
+              <img src="https://i.pravatar.cc/150?u=default" alt="User">
+            </div>
+            <textarea
+              [(ngModel)]="newPost.content"
+              placeholder="Share an announcement or update with the group..."></textarea>
+          </div>
+          <div class="create-footer">
+            <label class="announcement-toggle">
+              <input type="checkbox" [(ngModel)]="isAnnouncement">
+              <span>Mark as announcement</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="newPost.title"
+              placeholder="Optional title (e.g. Weekly meetup, New resource...)">
+            <button class="btn-post" (click)="createPost()">
+              <i class="fa fa-paper-plane"></i> Post
+            </button>
+          </div>
+        </div>
+
+        <!-- Posts display -->
+        <div *ngIf="!loading && !error">
+          <!-- No posts message -->
+          <div *ngIf="posts.length === 0" class="no-posts-message">
+            <p><i class="fa fa-comments"></i> No posts yet. Be the first to share something!</p>
+          </div>
+
+          <!-- Posts count -->
+          <div *ngIf="posts.length > 0" class="posts-count">
+            <p class="muted">{{ posts.length }} post(s) in this group</p>
+          </div>
+
+        <div class="announcements-section" *ngIf="announcements.length">
+          <div class="announcements-header">
+            <span class="announcements-title">
+              <i class="fa fa-bullhorn"></i>
+              Announcements
+            </span>
+            <span class="announcements-count">{{ announcements.length }}</span>
+          </div>
+
+          <article class="post-card announcement-card" *ngFor="let a of announcements">
+            <div class="post-header">
+              <div class="post-header-left">
+                <div class="avatar-wrapper sm">
+                  <img [src]="a.avatar" [alt]="a.author">
+                </div>
+                <div class="post-meta">
+                  <div class="author-row">
+                    <span class="author">{{ a.author }}</span>
+                    <span class="badge-role">{{ a.role }}</span>
+                    <span class="announcement-badge">Announcement</span>
+                  </div>
+                  <span class="date">{{ a.createdAt }}</span>
+                </div>
+              </div>
+              <div class="post-actions">
+                <button class="icon-btn" title="Edit announcement" (click)="startEditPost(a)" *ngIf="canModerate">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button class="icon-btn delete-btn" title="Delete announcement" (click)="deletePost(a.id)" *ngIf="canModerate">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="post-body">
+              <h3 *ngIf="a.title">{{ a.title }}</h3>
+              <div *ngIf="editingPost?.id !== a.id">
+                <p>{{ a.content }}</p>
+              </div>
+              <div *ngIf="editingPost?.id === a.id" class="edit-post-form">
+                <textarea [(ngModel)]="editPostContent" rows="4"></textarea>
+                <div class="edit-actions">
+                  <button class="btn-cancel" (click)="cancelEditPost()">Cancel</button>
+                  <button class="btn-save" (click)="saveEditPost()">Save</button>
+                </div>
+              </div>
+            </div>
+            <div class="post-footer">
+              <!-- Reactions Component -->
+              <app-post-reactions [postId]="a.id" [currentUserId]="1"></app-post-reactions>
+              
+              <!-- Comments Component -->
+              <app-post-comments [postId]="a.id" [currentUserId]="1"></app-post-comments>
+            </div>
+          </article>
+        </div>
+
+        <div class="posts-list">
+          <article class="post-card" *ngFor="let p of regularPosts">
+            <div class="post-header">
+              <div class="post-header-left">
+                <div class="avatar-wrapper sm">
+                  <img [src]="p.avatar" [alt]="p.author">
+                </div>
+                <div class="post-meta">
+                  <div class="author-row">
+                    <span class="author">{{ p.author }}</span>
+                    <span class="badge-role">{{ p.role }}</span>
+                  </div>
+                  <span class="date">{{ p.createdAt }}</span>
+                </div>
+              </div>
+              <div class="post-actions">
+                <button class="icon-btn" title="Edit post" (click)="startEditPost(p)" *ngIf="canModerate">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button class="icon-btn delete-btn" title="Delete post" (click)="deletePost(p.id)" *ngIf="canModerate">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="post-body">
+              <h3 *ngIf="p.title">{{ p.title }}</h3>
+              <div *ngIf="editingPost?.id !== p.id">
+                <p>{{ p.content }}</p>
+              </div>
+              <div *ngIf="editingPost?.id === p.id" class="edit-post-form">
+                <textarea [(ngModel)]="editPostContent" rows="4"></textarea>
+                <div class="edit-actions">
+                  <button class="btn-cancel" (click)="cancelEditPost()">Cancel</button>
+                  <button class="btn-save" (click)="saveEditPost()">Save</button>
+                </div>
+              </div>
+            </div>
+            <div class="post-footer">
+              <!-- Reactions Component -->
+              <app-post-reactions [postId]="p.id" [currentUserId]="1"></app-post-reactions>
+              
+              <!-- Comments Component -->
+              <app-post-comments [postId]="p.id" [currentUserId]="1"></app-post-comments>
+            </div>
+          </article>
+        </div>
+        </div>
+      </section>
+
+      <section class="card events-card" *ngIf="events && events.length">
+        <h2>Upcoming events</h2>
+        <p class="muted">Plan and track this group&apos;s activities.</p>
+
+        <div class="events-list">
+          <div class="event-row" *ngFor="let e of events">
+            <div class="event-date">
+              <span class="day">{{ e.date | date:'d' }}</span>
+              <span class="month">{{ e.date | date:'MMM' }}</span>
+            </div>
+            <div class="event-info">
+              <h3>{{ e.title }}</h3>
+              <p class="event-meta">
+                <i class="fa fa-clock"></i> {{ e.time }}
+                •
+                <i class="fa" [ngClass]="e.isOnline ? 'fa-video' : 'fa-map-marker-alt'"></i>
+                {{ e.location }}
+                • {{ e.type }}
+              </p>
+            </div>
+            <div class="event-actions">
+              <button
+                class="btn-remind"
+                [class.active]="e.remindMe"
+                (click)="toggleReminder(e)">
+                <i class="fa" [ngClass]="e.remindMe ? 'fa-bell' : 'fa-bell-slash'"></i>
+                {{ e.remindMe ? 'Reminder on' : 'Remind me' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="side-column">
+      <section class="card role-card">
+        <h3>Role system</h3>
+        <p class="muted current-role" *ngIf="currentUser">
+          Your role in this group:
+          <span class="badge-role">{{ currentUserRole }}</span>
+        </p>
+        <div class="role-stats">
+          <div class="role-pill admin">
+            <span class="label">Admin</span>
+            <span class="count">{{ roleStats.Admin }}</span>
+          </div>
+          <div class="role-pill moderator">
+            <span class="label">Moderator</span>
+            <span class="count">{{ roleStats.Moderator }}</span>
+          </div>
+          <div class="role-pill member">
+            <span class="label">Member</span>
+            <span class="count">{{ roleStats.Member }}</span>
+          </div>
+        </div>
+        <ul class="roles-help">
+          <li><strong>Admin</strong>: manages settings, members and all content.</li>
+          <li><strong>Moderator</strong>: helps moderate posts and members.</li>
+          <li><strong>Member</strong>: participates and interacts with group content.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Members</h3>
+        <div class="member-row" *ngFor="let m of group.members">
+          <div class="avatar-wrapper">
+            <img [src]="m.avatar" [alt]="m.name">
+            <span class="status-dot" [ngClass]="m.status"></span>
+          </div>
+          <div class="member-info">
+            <span class="name">{{ m.name }}</span>
+            <ng-container *ngIf="isAdmin; else readonlyRole">
+              <span class="role-select">
+                <select [ngModel]="m.role" (ngModelChange)="changeRole(m, $any($event))">
+                  <option value="Admin">Admin</option>
+                  <option value="Moderator">Moderator</option>
+                  <option value="Member">Member</option>
+                </select>
+              </span>
+            </ng-container>
+            <ng-template #readonlyRole>
+              <span class="role-label">{{ m.role }}</span>
+            </ng-template>
+          </div>
+        </div>
+      </section>
+
+      <section class="card calendar-card" *ngIf="calendarDays && calendarDays.length">
+        <h3>Calendar</h3>
+        <p class="muted month-label">{{ calendarMonthLabel }}</p>
+        <div class="calendar-grid">
+          <span
+            class="day-cell"
+            *ngFor="let d of calendarDays"
+            [ngClass]="{ 'has-event': d.hasEvent }">
+            {{ d.day }}
+          </span>
+        </div>
+        <div class="calendar-legend">
+          <span><span class="dot dot-event"></span> Event</span>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

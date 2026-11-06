@@ -1,0 +1,39 @@
+<div class="comment-reactions-inline">
+  <!-- Left: Just show emoji + count (no button) -->
+  <div class="reactions-display" *ngIf="getTotalReactions() > 0">
+    <span 
+      class="reaction-badge" 
+      *ngFor="let type of getTopReactions()"
+      [title]="reactionLabels[type] + ': ' + reactionCounts[type]">
+      {{ reactionEmojis[type] }} {{ reactionCounts[type] }}
+    </span>
+  </div>
+
+  <!-- Right: Small reaction trigger -->
+  <div class="reaction-trigger">
+    <button 
+      class="react-btn" 
+      [class.reacted]="userReaction"
+      [attr.data-reaction]="userReaction"
+      (mouseenter)="showPicker()"
+      (mouseleave)="hidePicker()">
+      <span class="icon">{{ userReaction ? reactionEmojis[userReaction] : '👍' }}</span>
+    </button>
+
+    <!-- Compact Floating Picker -->
+    <div 
+      class="mini-picker" 
+      *ngIf="showReactionPicker"
+      (mouseenter)="showPicker()"
+      (mouseleave)="hidePicker()">
+      <button 
+        class="mini-emoji"
+        *ngFor="let type of getReactionTypes()"
+        [class.active]="userReaction === type"
+        (click)="selectReaction(type)"
+        [title]="reactionLabels[type]">
+        {{ reactionEmojis[type] }}
+      </button>
+    </div>
+  </div>
+</div>

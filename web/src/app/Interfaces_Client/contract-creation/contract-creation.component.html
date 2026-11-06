@@ -1,0 +1,137 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/ClientFeed">
+      <img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+    </div>
+    <div class="nav-menu">
+        <span class="nav-step">1. Proposal</span>
+        <i class="fa fa-chevron-right step-arrow"></i>
+        <span class="nav-step active">2. Contract Review</span>
+        <i class="fa fa-chevron-right step-arrow"></i>
+        <span class="nav-step">3. Hire</span>
+    </div>
+    <div class="nav-actions">
+       <div class="user-profile-menu" routerLink="/ClientProfil" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/40x40/198754/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'C')" alt="Client Profile" class="nav-profile-img">
+       </div>
+    </div>
+  </div>
+</nav>
+
+<div class="contract-wrapper">
+  
+  <div class="contract-paper">
+    <header class="paper-header">
+      <div class="header-top">
+        <span class="status-badge">DRAFT MODE</span>
+        <span class="contract-id">PROPOSAL ID: {{ proposalId }}</span>
+      </div>
+      <h1>Service Agreement Contract</h1>
+      <p class="date">Generated on {{ currentDate | date:'fullDate' }}</p>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="parties-section">
+      <div class="party client">
+        <small>Client (Hiring Party)</small>
+        <input [(ngModel)]="contractData.clientName" class="input-minimal" placeholder="Company Name">
+        <p>Verified Client</p>
+      </div>
+      <div class="arrow"><i class="fa fa-handshake"></i></div>
+      <div class="party freelancer">
+        <small>Freelancer (Contractor)</small>
+        <div class="freelancer-chip">
+          <img src="https://placehold.co/40x40/1f2937/white?text=F" alt="Freelancer">
+          <div>
+            <h3>{{ contractData.freelancerName }}</h3>
+            <p>Remote Contractor</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="details-grid">
+      <div class="detail-box">
+        <label>Project Title</label>
+        <strong>{{ contractData.projectTitle }}</strong>
+      </div>
+      <div class="detail-box">
+        <label>Start Date</label>
+        <input type="date" [(ngModel)]="contractData.startDate" class="date-input">
+      </div>
+      <div class="detail-box">
+        <label>Agreed Rate</label>
+        <strong class="highlight">${{ contractData.rate }}</strong>
+      </div>
+
+      <div class="detail-box">
+        <label>Deadline (Est.)</label>
+        <div class="text-muted" style="font-size: 1.1rem; color: #1f2937;">
+            {{ contractData.deadline ? (contractData.deadline | date:'mediumDate') : '--' }}
+        </div>
+      </div>
+    </section>
+
+    <section class="scope-section">
+      <h4>Contract Terms & Scope</h4>
+      <p class="info-text">You can edit the terms below before sending.</p>
+      <textarea class="editable-terms" [(ngModel)]="contractData.terms" rows="12"></textarea>
+    </section>
+
+    <section class="signature-section">
+      <div class="sig-box">
+        <p>Client Signature (Draw below):</p>
+        
+        <div class="signature-container">
+          <canvas #signatureCanvas class="signature-pad"></canvas>
+        </div>
+
+        <div class="sig-actions">
+          <button class="btn-clear" (click)="clearSignature()">
+            <i class="fa fa-eraser"></i> Clear / Retry
+          </button>
+          
+          <span *ngIf="signatureImg" class="text-success">
+            <i class="fa fa-check-circle"></i> Signature Captured
+          </span>
+          <span *ngIf="!signatureImg" class="text-danger">
+            * Signature required
+          </span>
+        </div>
+
+        <div class="digital-signature-text">{{ contractData.clientName }}</div>
+        <small>Electronic Signature • {{ currentDate | date:'medium' }}</small>
+      </div>
+    </section>
+  </div>
+
+  <aside class="action-sidebar">
+    <div class="action-card">
+      <h3>Ready to Hire?</h3>
+      <p>Sending this offer will turn this proposal into a binding contract for <strong>{{ contractData.freelancerName }}</strong>.</p>
+      
+      <div class="cost-summary">
+        <div class="row"><span>Agreed Amount</span> <span>${{ contractData.rate | number:'1.2-2' }}</span></div>
+        <div class="row"><span>CatchOPP Fee (3%)</span> <span>${{ calculatePlatformFee() | number:'1.2-2' }}</span></div>
+        <div class="total"><span>Total to Pay</span> <span>${{ calculateTotalCost() | number:'1.2-2' }}</span></div>
+      </div>
+
+      <button class="btn-send" (click)="sendOffer()" [disabled]="isLoading">
+        <i class="fa" [ngClass]="isLoading ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i> 
+        {{ isLoading ? 'Processing...' : 'Send Official Offer' }}
+      </button>
+      <button class="btn-cancel" routerLink="/ClientDashboard">Cancel</button>
+    </div>
+  </aside>
+
+</div>
+
+<div class="modal-overlay" *ngIf="showSuccessModal">
+  <div class="success-card">
+    <div class="check-icon"><i class="fa fa-check"></i></div>
+    <h2>Contract Sent!</h2>
+    <p>The contract has been created and sent to <strong>{{ contractData.freelancerName }}</strong> for approval.</p>
+    <button class="btn-primary-modal" routerLink="/AllProjects">Return to Projects</button>
+  </div>
+</div>

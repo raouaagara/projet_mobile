@@ -1,0 +1,276 @@
+<!-- Top Navigation -->
+<nav class="top-navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <div class="logo-circle">C</div>
+      <span class="brand-text">CatchOPP</span>
+    </div>
+
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input
+        type="text"
+        placeholder="Search events by title, location or date"
+        [(ngModel)]="searchTerm"
+        (input)="filterEvents()">
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-icon-btn" [routerLink]="['/groups']" title="Groups">
+        <i class="fa fa-users"></i>
+      </button>
+      <app-notification-bell></app-notification-bell>
+      <div class="user-profile">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <span class="user-name">Community User</span>
+          <span class="user-role">Member</span>
+        </div>
+        <i class="fa fa-chevron-down"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Layout -->
+<div class="page-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h3>Events</h3>
+      <p>Discover and attend events in your community.</p>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Filters</h4>
+      <div class="filter-group">
+        <label>Event Status</label>
+        <select class="filter-select" [(ngModel)]="statusFilter" (change)="filterEvents()">
+          <option value="all">All Events</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="past">Past</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Event Type</label>
+        <select class="filter-select" [(ngModel)]="typeFilter" (change)="filterEvents()">
+          <option value="all">All Types</option>
+          <option value="online">Online</option>
+          <option value="in-person">In Person</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <div>
+        <h1>Events</h1>
+        <p>Discover and attend events in your community</p>
+      </div>
+      <button class="btn-create" (click)="openCreateEventModal()">
+        <i class="fa fa-plus"></i> Create Event
+      </button>
+    </div>
+
+    <!-- Featured Events -->
+    <section class="section" *ngIf="featuredEvents.length > 0">
+      <div class="section-header">
+        <h2>Featured Events</h2>
+      </div>
+
+      <div class="featured-event" *ngFor="let event of featuredEvents">
+        <div class="featured-banner" [style.background]="'linear-gradient(135deg, #198754 0%, #0d6efd 100%)'">
+          <div class="featured-date">
+            <span class="date-day">{{ event.startDate | date: 'd' }}</span>
+            <span class="date-month">{{ event.startDate | date: 'MMM' }}</span>
+          </div>
+        </div>
+        <div class="featured-content">
+          <div class="featured-header">
+            <div>
+              <h3>{{ event.title }}</h3>
+              <p class="event-organizer">Organized by {{ event.organizerName || 'Community' }}</p>
+            </div>
+            <span class="status-badge" [ngClass]="getStatusClass(event.status)">
+              {{ event.status }}
+            </span>
+          </div>
+          <p class="event-description">{{ event.description }}</p>
+          <div class="event-meta-row">
+            <span class="meta-item">
+              <i class="fa fa-map-marker-alt"></i> {{ event.location }}
+            </span>
+            <span class="meta-item">
+              <i class="fa fa-clock"></i> {{ event.startDate | date: 'h:mm a' }}
+            </span>
+            <span class="meta-item">
+              <i class="fa fa-users"></i> {{ event.attendeesCount || 0 }} joining
+            </span>
+          </div>
+          <div class="event-actions">
+            <button class="btn-primary" *ngIf="isUpcoming(event)" (click)="attendEvent(event.id)">
+              <i class="fa fa-check"></i> Join Event
+            </button>
+            <button class="btn-secondary" (click)="viewEventDetails(event.id)">
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upcoming Events -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Upcoming Events</h2>
+        <span class="event-count">{{ filteredEvents.length }} events</span>
+      </div>
+
+      <div class="events-grid">
+        <div class="event-card" *ngFor="let event of filteredEvents">
+          <div class="event-card-date">
+            <span class="date-day">{{ event.startDate | date: 'd' }}</span>
+            <span class="date-month">{{ event.startDate | date: 'MMM' }}</span>
+            <span class="date-year">{{ event.startDate | date: 'yyyy' }}</span>
+          </div>
+          <div class="event-card-content">
+            <div class="event-card-header">
+              <h4>{{ event.title }}</h4>
+              <span class="status-badge-sm" [ngClass]="getStatusClass(event.status)">
+                <i class="fa" [ngClass]="isUpcoming(event) ? 'fa-check-circle' : 'fa-clock'"></i>
+              </span>
+            </div>
+            <p class="event-card-description">{{ event.description }}</p>
+            <div class="event-card-meta">
+              <span class="meta-item">
+                <i class="fa fa-map-marker-alt"></i> {{ event.location }}
+              </span>
+              <span class="meta-item">
+                <i class="fa fa-clock"></i> {{ event.startDate | date: 'h:mm a' }}
+              </span>
+            </div>
+            <div class="event-card-footer">
+              <div class="attendees-info">
+                <i class="fa fa-users"></i>
+                <span>{{ event.attendeesCount || 0 }} joining</span>
+              </div>
+              <button class="btn-attend" *ngIf="isUpcoming(event)" (click)="attendEvent(event.id)">
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredEvents.length === 0 && !loading">
+      <i class="fa fa-calendar-times"></i>
+      <h3>No events found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading events...</p>
+    </div>
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="right-sidebar">
+    <div class="sidebar-card">
+      <h4>Quick Stats</h4>
+      <div class="stats-list">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-calendar-check"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ upcomingEventsCount }}</span>
+            <span class="stat-label">Upcoming</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalAttendeesCount }}</span>
+            <span class="stat-label">Total Joining</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-map-marker-alt"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ uniqueLocationsCount }}</span>
+            <span class="stat-label">Locations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Popular Categories</h4>
+      <div class="categories-list">
+        <button class="category-chip" *ngFor="let category of popularCategories" (click)="filterByCategory(category)">
+          <i [class]="category.icon"></i>
+          {{ category.name }}
+        </button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal-overlay" *ngIf="isCreateModalOpen" (click)="closeCreateEventModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Create New Event</h3>
+      <button class="modal-close" (click)="closeCreateEventModal()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Event Title</label>
+        <input type="text" [(ngModel)]="newEventForm.title" placeholder="e.g., Tech Meetup 2026">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="newEventForm.description" rows="4" placeholder="Describe your event..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" [(ngModel)]="newEventForm.location" placeholder="e.g., Conference Hall A">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date & Time</label>
+          <input type="datetime-local" [(ngModel)]="newEventForm.startDate">
+        </div>
+        <div class="form-group">
+          <label>End Date & Time</label>
+          <input type="datetime-local" [(ngModel)]="newEventForm.endDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Group</label>
+        <select [(ngModel)]="newEventForm.groupId">
+          <option value="0">Select a group</option>
+          <option *ngFor="let group of availableGroups" [value]="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeCreateEventModal()">Cancel</button>
+      <button class="btn-primary" (click)="createEvent()">Create Event</button>
+    </div>
+  </div>
+</div>

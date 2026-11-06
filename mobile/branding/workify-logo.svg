@@ -1,0 +1,8 @@
+<!-- Workify mark: a W whose last stroke leaves as an arrow going up. Same drawing as lib/shared/widgets/workify_logo.dart. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-170 -170 340 340" width="512" height="512">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M33,93 L130,-86" stroke="#5CB135" stroke-width="40"/>
+    <path d="M72,-75 L136,-97 L151,-37" stroke="#5CB135" stroke-width="34"/>
+    <path d="M-146,-29 L-86,93 L-27,1 L33,93" stroke="#2F7A1F" stroke-width="48"/>
+  </g>
+</svg>

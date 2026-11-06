@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="split-box">
+    <div class="form-section">
+      <div class="inner-form">
+        <a routerLink="/Auth" class="back-link"><i class="fa fa-arrow-left"></i> Back</a>
+        
+        <div class="login-header">
+          <span class="badge">Freelancer Portal</span>
+          <h1>Welcome Back, Expert!</h1>
+          <p>Login to manage your projects and earnings.</p>
+        </div>
+
+        <div *ngIf="errorMessage" style="color: #ef4444; background: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+          <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" style="color: #166534; background: #dcfce7; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+          <i class="fa fa-check-circle"></i> {{ successMessage }}
+        </div>
+
+        <form (ngSubmit)="onLogin()">
+          <div class="input-field">
+            <label>Professional Email</label>
+            <input type="email" placeholder="e.g. freelancer@workiq.com" name="email" [(ngModel)]="email" required>
+          </div>
+          
+          <div class="input-field">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" name="password" [(ngModel)]="password" required>
+          </div>
+
+          <div class="form-help">
+            <label><input type="checkbox"> Keep me logged in</label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary freelancer-btn">Log In to Dashboard</button>
+        </form>
+
+        <p class="switch-page">Don't Have Account? <a routerLink="/RegisterFreelancer">Register</a></p>
+      </div>
+    </div>
+
+    <div class="visual-section freelancer-bg">
+      <div class="visual-content">
+        <h2>"The best way to predict the future is to create it."</h2>
+        <p>— CatchIQ Community</p>
+      </div>
+    </div>
+  </div>
+</div>

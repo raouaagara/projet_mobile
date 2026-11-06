@@ -1,0 +1,240 @@
+<div class="support-container">
+
+  <!-- ── NOTIFICATIONS ──────────────────────────────────────────────────── -->
+  <div class="notifications-bar" *ngIf="notifications.length > 0">
+    <div class="notif-item" *ngFor="let n of notifications; let i = index">
+      <i class="fa fa-bell"></i>
+      <span>{{ n.type | titlecase }}: Ticket updated</span>
+      <span class="notif-time">{{ n.time }}</span>
+      <button (click)="dismissNotification(i)"><i class="fa fa-times"></i></button>
+    </div>
+  </div>
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+  <div class="support-header">
+    <div class="header-left">
+      <div class="logo">
+        <i class="fa fa-life-ring"></i>
+        <h1>Support Center</h1>
+      </div>
+      <p class="subtitle">How can we help you today?</p>
+    </div>
+    <button class="btn-primary" (click)="openCreate()" *ngIf="view === 'list'">
+      <i class="fa fa-plus"></i> New Ticket
+    </button>
+    <button class="btn-back" (click)="goBack()" *ngIf="view !== 'list'">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- LIST VIEW                                                              -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="view === 'list'">
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" placeholder="Search tickets..." [(ngModel)]="searchQuery" (input)="applyFilters()">
+      </div>
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()">
+        <option value="">All Status</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ formatLabel(s) }}</option>
+      </select>
+      <select [(ngModel)]="filterPriority" (change)="applyFilters()">
+        <option value="">All Priority</option>
+        <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+      </select>
+      <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+        <option value="">All Categories</option>
+        <option *ngFor="let c of categories" [value]="c">{{ formatLabel(c) }}</option>
+      </select>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div><p>Loading tickets...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!loading && filteredTickets.length === 0">
+      <i class="fa fa-inbox"></i>
+      <h3>No tickets found</h3>
+      <p>Submit a new ticket and our team will get back to you.</p>
+      <button class="btn-primary" (click)="openCreate()"><i class="fa fa-plus"></i> Create Ticket</button>
+    </div>
+
+    <!-- Ticket cards -->
+    <div class="tickets-grid" *ngIf="!loading && filteredTickets.length > 0">
+      <div class="ticket-card" *ngFor="let t of filteredTickets" (click)="openDetail(t)">
+        <div class="card-top">
+          <span class="ticket-id">#{{ t.id }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(t.status)">{{ formatLabel(t.status) }}</span>
+        </div>
+        <h3 class="ticket-title">{{ t.title }}</h3>
+        <p class="ticket-desc">{{ t.description | slice:0:100 }}{{ t.description.length > 100 ? '...' : '' }}</p>
+        <div class="card-meta">
+          <span class="priority-tag" [ngClass]="getPriorityClass(t.priority)">
+            <i class="fa fa-flag"></i> {{ t.priority }}
+          </span>
+          <span class="category-tag"><i class="fa fa-tag"></i> {{ formatLabel(t.category) }}</span>
+          <span class="date-tag"><i class="fa fa-clock-o"></i> {{ t.createdAtStr | date:'mediumDate' }}</span>
+        </div>
+        <div class="card-alerts">
+          <span class="alert-badge escalated" *ngIf="t.escalated"><i class="fa fa-exclamation-triangle"></i> Escalated</span>
+          <span class="alert-badge sla" *ngIf="t.slaBreached"><i class="fa fa-clock-o"></i> SLA Breached</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- CREATE VIEW                                                            -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="view === 'create'">
+    <div class="form-card">
+      <h2><i class="fa fa-ticket"></i> Submit a Support Ticket</h2>
+
+      <div class="alert success" *ngIf="successMsg"><i class="fa fa-check-circle"></i> {{ successMsg }}</div>
+      <div class="alert error"   *ngIf="errorMsg">  <i class="fa fa-times-circle"></i> {{ errorMsg }}</div>
+
+      <div class="form-group">
+        <label>Title <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="newTicket.title" placeholder="Brief summary of your issue">
+      </div>
+
+      <div class="form-group">
+        <label>Description <span class="required">*</span></label>
+        <textarea [(ngModel)]="newTicket.description" rows="5" placeholder="Describe your issue in detail..."></textarea>
+        <div class="ai-btn-row">
+          <button class="btn-ai-enhance" type="button"
+                  (click)="enhanceDescription()"
+                  [disabled]="enhancing || !newTicket.description?.trim()">
+            <i class="fa fa-magic" [class.fa-spin]="enhancing"></i>
+            {{ enhancing ? 'Enhancing...' : 'Enhance Description' }}
+          </button>
+          <span class="ai-hint" *ngIf="enhanced">
+            <i class="fa fa-check-circle"></i> Description enhanced
+          </span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select [(ngModel)]="newTicket.category">
+            <option value="">Auto-detect</option>
+            <option *ngFor="let c of categories" [value]="c">{{ formatLabel(c) }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select [(ngModel)]="newTicket.priority">
+            <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ai-hint">
+        <i class="fa fa-magic"></i>
+        <span>Category and priority will be auto-detected by AI if not specified.</span>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" (click)="goBack()">Cancel</button>
+        <button class="btn-primary" (click)="submitTicket()" [disabled]="submitting">
+          <i class="fa fa-paper-plane"></i> {{ submitting ? 'Submitting...' : 'Submit Ticket' }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- DETAIL VIEW                                                            -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="view === 'detail' && selectedTicket">
+    <div class="detail-layout">
+
+      <!-- Left: Ticket info -->
+      <div class="detail-main">
+        <div class="detail-header">
+          <div>
+            <h2>{{ selectedTicket.title }}</h2>
+            <span class="ticket-id">#{{ selectedTicket.id }}</span>
+          </div>
+          <span class="status-badge lg" [ngClass]="getStatusClass(selectedTicket.status)">
+            {{ formatLabel(selectedTicket.status) }}
+          </span>
+        </div>
+
+        <div class="detail-body">
+          <p class="description-text">{{ selectedTicket.description }}</p>
+        </div>
+
+        <!-- Conversation thread -->
+        <div class="thread-section">
+          <h3><i class="fa fa-comments"></i> Conversation</h3>
+          <div class="thread-empty" *ngIf="responses.length === 0">
+            <i class="fa fa-comment-o"></i><p>No replies yet. Our team will respond shortly.</p>
+          </div>
+          <div class="thread-messages">
+            <div class="thread-msg" *ngFor="let r of responses" [class.staff-msg]="r.isStaff" [class.user-msg]="!r.isStaff">
+              <div class="msg-avatar">
+                <i class="fa" [ngClass]="r.isStaff ? 'fa-headset' : 'fa-user'"></i>
+              </div>
+              <div class="msg-content">
+                <div class="msg-header">
+                  <strong>{{ r.responderName }}</strong>
+                  <span class="staff-label" *ngIf="r.isStaff">Support Staff</span>
+                  <span class="msg-time">{{ r.createdAtStr | date:'short' }}</span>
+                </div>
+                <p>{{ r.message }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reply box -->
+          <div class="reply-box" *ngIf="selectedTicket.status !== 'CLOSED' && selectedTicket.status !== 'RESOLVED'">
+            <textarea [(ngModel)]="newReply" rows="3" placeholder="Add a reply..."></textarea>
+            <button class="btn-primary" (click)="sendReply()" [disabled]="!newReply.trim()">
+              <i class="fa fa-paper-plane"></i> Send
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Ticket metadata -->
+      <div class="detail-sidebar">
+        <div class="sidebar-card">
+          <h4>Ticket Details</h4>
+          <div class="meta-row"><span>Status</span>
+            <span class="status-badge sm" [ngClass]="getStatusClass(selectedTicket.status)">{{ formatLabel(selectedTicket.status) }}</span>
+          </div>
+          <div class="meta-row"><span>Priority</span>
+            <span class="priority-tag" [ngClass]="getPriorityClass(selectedTicket.priority)">{{ selectedTicket.priority }}</span>
+          </div>
+          <div class="meta-row"><span>Category</span><span>{{ formatLabel(selectedTicket.category) }}</span></div>
+          <div class="meta-row"><span>Department</span><span>{{ selectedTicket.department }}</span></div>
+          <div class="meta-row" *ngIf="selectedTicket.assignedToName"><span>Assigned To</span><span>{{ selectedTicket.assignedToName }}</span></div>
+          <div class="meta-row"><span>Created</span><span>{{ selectedTicket.createdAtStr | date:'medium' }}</span></div>
+          <div class="meta-row" *ngIf="selectedTicket.slaDeadlineStr">
+            <span>SLA Deadline</span>
+            <span [class.text-danger]="selectedTicket.slaBreached">{{ selectedTicket.slaDeadlineStr | date:'medium' }}</span>
+          </div>
+          <div class="meta-row" *ngIf="selectedTicket.resolvedAtStr"><span>Resolved</span><span>{{ selectedTicket.resolvedAtStr | date:'medium' }}</span></div>
+        </div>
+
+        <div class="alert-card" *ngIf="selectedTicket.escalated">
+          <i class="fa fa-exclamation-triangle"></i>
+          <p>This ticket has been escalated to senior support.</p>
+        </div>
+        <div class="alert-card sla-alert" *ngIf="selectedTicket.slaBreached">
+          <i class="fa fa-clock-o"></i>
+          <p>SLA deadline has been breached. We apologize for the delay.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+</div>

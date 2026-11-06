@@ -1,0 +1,185 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/AdminDashboard">
+      <img src="assets/logo.png" alt="CatchIQ Admin" class="logo-img">
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="nav-menu">
+      <a routerLink="/AdminDashboard" routerLinkActive="active"><i class="fa fa-chart-line"></i> Overview</a>
+      <a routerLink="/AdminUsers" routerLinkActive="active"><i class="fa fa-users-cog"></i> Users</a>
+      <a routerLink="/AdminSkills" routerLinkActive="active"><i class="fa fa-tags"></i> Skills</a>
+      <a routerLink="/AdminJobs" routerLinkActive="active"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/AdminFinance" routerLinkActive="active"><i class="fa fa-wallet"></i> Finance</a>
+      <a routerLink="/AdminDisputes" routerLinkActive="active" class="active-link"><i class="fa fa-gavel"></i> Disputes
+        <span class="badge-dot" *ngIf="openDisputesCount > 0"></span>
+      </a>
+      <a routerLink="/AdminSupport" routerLinkActive="active"><i class="fa fa-headset"></i> Support</a>
+    </div>
+    <div class="nav-actions">
+      <div class="user-profile">
+        <img src="https://placehold.co/40x40/1f2937/ffffff?text=AD" alt="Admin">
+        <div class="user-text"><span class="name">Super Admin</span></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+
+    <header class="page-header">
+      <div class="header-text">
+        <h1>Dispute Resolution Center</h1>
+        <p>Contracts under dispute — grouped with all parties involved. Resolve to close the contract.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-outline" (click)="loadDisputes()"><i class="fa fa-sync-alt"></i> Refresh</button>
+      </div>
+    </header>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card danger">
+        <i class="fa fa-fire"></i>
+        <div>
+          <span class="stat-number">{{ openDisputesCount }}</span>
+          <span class="stat-label">Active Disputes</span>
+        </div>
+      </div>
+      <div class="stat-card neutral">
+        <i class="fa fa-layer-group"></i>
+        <div>
+          <span class="stat-number">{{ disputeGroups.length }}</span>
+          <span class="stat-label">Contracts Disputed</span>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <i class="fa fa-check-circle"></i>
+        <div>
+          <span class="stat-number">{{ disputeGroups.length - openDisputesCount }}</span>
+          <span class="stat-label">Resolved</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid full-width">
+      <div class="card">
+        <div class="card-header-row">
+          <h3><i class="fa fa-layer-group"></i> Disputes Grouped by Contract</h3>
+        </div>
+
+        <div *ngIf="isLoading" class="loading-state">
+          <i class="fa fa-spinner fa-spin fa-2x"></i>
+          <p>Loading disputes...</p>
+        </div>
+
+        <table class="admin-table" *ngIf="!isLoading && disputeGroups.length > 0">
+          <thead>
+            <tr>
+              <th>Contract ID</th>
+              <th>Escrow ID</th>
+              <th>Parties (User IDs)</th>
+              <th>Disputes</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let group of disputeGroups">
+              <td><strong>#CTR-{{ group.contractId }}</strong></td>
+              <td>#ESC-{{ group.escrowId || '—' }}</td>
+              <td>
+                <div class="parties-cell">
+                  <span class="party-tag client" *ngFor="let d of group.disputes">
+                    <i class="fa fa-user"></i> User {{ d.raisedByUserId }}
+                    <small>(vs {{ d.againstUserId }})</small>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span class="count-badge">{{ group.disputes.length }} filing(s)</span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-danger': group.status === 'OPEN',
+                  'badge-success': group.status !== 'OPEN'
+                }">{{ group.status === 'OPEN' ? 'ACTIVE' : 'RESOLVED' }}</span>
+              </td>
+              <td>
+                <button class="btn-action view" (click)="viewGroup(group)">
+                  <i class="fa fa-search"></i> Review
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!isLoading && disputeGroups.length === 0" class="empty-state">
+          <i class="fa fa-check-circle"></i>
+          <p>No disputes found. The platform is running smoothly!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Detail Panel Modal -->
+<div class="modal-overlay" *ngIf="selectedGroup" (click)="closeGroupView()">
+  <div class="dispute-modal" (click)="$event.stopPropagation()">
+
+    <div class="dispute-modal-header">
+      <div class="header-info">
+        <h2><i class="fa fa-gavel"></i> Contract #{{ selectedGroup.contractId }}</h2>
+        <span class="badge" [ngClass]="{
+          'badge-danger': selectedGroup.status === 'OPEN',
+          'badge-success': selectedGroup.status !== 'OPEN'
+        }">{{ selectedGroup.status === 'OPEN' ? 'ACTIVE DISPUTE' : 'RESOLVED' }}</span>
+      </div>
+      <button class="btn-close" (click)="closeGroupView()"><i class="fa fa-times"></i></button>
+    </div>
+
+    <div class="dispute-modal-body">
+
+      <!-- All filings for this contract -->
+      <h3 style="margin-top:0">All Dispute Filings</h3>
+      <div class="filing-list">
+        <div class="filing-card" *ngFor="let d of selectedGroup.disputes">
+          <div class="filing-header">
+            <span>
+              <strong>User {{ d.raisedByUserId }}</strong> filed against <strong>User {{ d.againstUserId }}</strong>
+            </span>
+            <span class="badge" [ngClass]="{
+              'badge-danger': d.status === 'OPEN',
+              'badge-warning': d.status === 'IN_REVIEW',
+              'badge-success': d.status?.startsWith('RESOLVED')
+            }">{{ d.status }}</span>
+          </div>
+          <div class="reason-box">
+            <em>{{ d.reason }}</em>
+          </div>
+          <small style="color:#9ca3af">Filed: {{ d.createdAt | date:'medium' }}</small>
+        </div>
+      </div>
+
+      <!-- Resolution section (only show if there's an open dispute) -->
+      <ng-container *ngIf="activeDisputeForResolution">
+        <div class="escrow-warning">
+          <i class="fa fa-exclamation-triangle"></i>
+          Resolving will transfer all locked escrow funds and <strong>permanently close the contract</strong>. This cannot be undone.
+        </div>
+        <div class="resolution-actions">
+          <button class="btn-resolve-client" (click)="resolveDispute('CLIENT')" [disabled]="isActionLoading">
+            <i class="fa fa-undo"></i> Refund Client
+          </button>
+          <button class="btn-resolve-freelancer" (click)="resolveDispute('FREELANCER')" [disabled]="isActionLoading">
+            <i class="fa fa-check-circle"></i> Pay Freelancer
+          </button>
+        </div>
+      </ng-container>
+
+      <div class="resolution-notice" *ngIf="!activeDisputeForResolution">
+        <i class="fa fa-info-circle"></i> All disputes for this contract have been resolved.
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="admin-layout">
+  <header class="admin-header">
+    <div class="logo" routerLink="/">
+      <span class="logo-mark">C</span>
+      <span class="logo-text">Catch<span>OPP</span> Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a routerLink="/AdminStatistics" class="nav-link"><i class="fa fa-chart-bar"></i> Statistics</a>
+      <a routerLink="/AdminSubscriptions" class="nav-link"><i class="fa fa-users"></i> Subscriptions</a>
+      <a routerLink="/AdminPlans" class="nav-link active"><i class="fa fa-crown"></i> Plans</a>
+      <a routerLink="/AdminCertifications" class="nav-link"><i class="fa fa-award"></i> Certifications</a>
+      <a routerLink="/AdminPromoCodes" class="nav-link"><i class="fa fa-tag"></i> Promo Codes</a>
+      <a routerLink="/AdminUsers" class="nav-link"><i class="fa fa-user-cog"></i> Users</a>
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1>Subscription Plans</h1>
+        <p>Create, edit and manage subscription plans.</p>
+      </div>
+      <button class="btn-primary" (click)="openCreate()"><i class="fa fa-plus"></i> Create Plan</button>
+    </div>
+
+    <p class="msg" *ngIf="message">{{ message }}</p>
+
+    <div class="loading-row" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading...
+    </div>
+
+    <section class="table-card" *ngIf="!loading && plans.length">
+      <div class="table-header-row">
+        <span>Name</span>
+        <span>Type</span>
+        <span>Price</span>
+        <span>Duration</span>
+        <span>AI Access</span>
+        <span>Actions</span>
+      </div>
+      <div class="table-row" *ngFor="let plan of plans">
+        <div class="cell">
+          <strong>{{ plan.name }}</strong>
+          <div class="muted" *ngIf="plan.description">{{ plan.description | slice:0:50 }}...</div>
+        </div>
+        <div class="cell"><span class="badge" [ngClass]="plan.type.toLowerCase()">{{ plan.type }}</span></div>
+        <div class="cell">${{ plan.price }}</div>
+        <div class="cell">{{ plan.duration }}</div>
+        <div class="cell">{{ plan.hasAiCvAccess ? 'Yes' : 'No' }}</div>
+        <div class="cell actions">
+          <button class="btn-sm" (click)="openEdit(plan)"><i class="fa fa-edit"></i> Edit</button>
+          <button class="btn-sm btn-danger" (click)="deletePlan(plan)"><i class="fa fa-trash"></i> Delete</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="empty-row" *ngIf="!loading && !plans.length">
+      No plans yet. <button class="link-btn" (click)="openCreate()">Create your first plan</button>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" [class.active]="showForm">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>{{ editingPlan ? 'Edit Plan' : 'Create Plan' }}</h2>
+      <button class="close-btn" (click)="closeForm()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="form.name" placeholder="e.g. Premium Plan">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Type</label>
+          <select [(ngModel)]="form.type">
+            <option *ngFor="let t of planTypes" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select [(ngModel)]="form.duration">
+            <option *ngFor="let d of durations" [value]="d">{{ d }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Price ($)</label>
+        <input type="number" [(ngModel)]="form.price" min="0" step="0.01" placeholder="24.99">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description" rows="2" placeholder="Plan description..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Benefits (comma-separated)</label>
+        <input type="text" [(ngModel)]="form.benefits" placeholder="Skill tests, Certifications, AI CV...">
+      </div>
+      <div class="form-row">
+        <div class="form-group checkbox-wrap">
+          <label><input type="checkbox" [(ngModel)]="form.hasAiCvAccess"> AI CV Access</label>
+        </div>
+        <div class="form-group" *ngIf="form.hasAiCvAccess">
+          <label>AI CV Limit (null = unlimited)</label>
+          <input type="number" [(ngModel)]="form.aiCvLimit" min="0" placeholder="Leave empty for unlimited">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeForm()">Cancel</button>
+      <button class="btn-primary" (click)="save()">Save</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="split-box">
+    <div class="form-section">
+      <div class="inner-form">
+        <a routerLink="/Auth" class="back-link"><i class="fa fa-arrow-left"></i> Back</a>
+        
+        <div class="login-header">
+          <span class="badge client-badge">Client Portal</span>
+          <h1>Find Your Next Hire.</h1>
+          <p>Login to post jobs and review applications.</p>
+        </div>
+
+        <div *ngIf="errorMessage" style="color: #ef4444; background: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+          <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" style="color: #166534; background: #dcfce7; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+          <i class="fa fa-check-circle"></i> {{ successMessage }}
+        </div>
+
+        <form (ngSubmit)="onLogin()">
+          <div class="input-field">
+            <label>Business Email</label>
+            <input type="email" placeholder="e.g. manager@company.com" name="email" [(ngModel)]="email" required>
+          </div>
+          
+          <div class="input-field">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" name="password" [(ngModel)]="password" required>
+          </div>
+
+          <div class="form-help">
+            <label><input type="checkbox"> Remember Company</label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary client-btn">Log In to Hiring Hub</button>
+        </form>
+
+        <p class="switch-page">Don't Have Account? <a routerLink="/RegisterClient">Register</a></p>
+      </div>
+    </div>
+
+    <div class="visual-section client-bg">
+      <div class="visual-content">
+        <h2>"Great things in business are never done by one person."</h2>
+        <p>— Steve Jobs</p>
+      </div>
+    </div>
+  </div>
+</div>

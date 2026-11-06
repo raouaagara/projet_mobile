@@ -1,0 +1,200 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/AdminDashboard">
+      <img src="assets/logo.png" alt="CatchIQ Admin" class="logo-img">
+      <span class="admin-badge">ADMIN</span>
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/AdminDashboard" routerLinkActive="active"><i class="fa fa-chart-line"></i> Overview</a>
+      <a routerLink="/AdminUsers" routerLinkActive="active" class="active-link"><i class="fa fa-users-cog"></i> Users</a>
+      <a routerLink="/AdminSkills" routerLinkActive="active" ><i class="fa fa-tags"></i> Skills</a>
+      <a routerLink="/AdminJobs" routerLinkActive="active"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/AdminFinance" routerLinkActive="active"><i class="fa fa-wallet"></i> Finance</a>
+      <a routerLink="/AdminDisputes" routerLinkActive="active"><i class="fa fa-gavel"></i> Disputes</a>
+    </div>
+
+    <div class="nav-actions">
+        <div class="user-profile">
+            <img src="https://placehold.co/40x40/1f2937/ffffff?text=AD" alt="Admin">
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+    
+    <header class="page-header">
+      <div class="header-text">
+        <h1>User Management</h1>
+        <p>Manage freelancers, clients, and verification requests.</p>
+      </div>
+      <button class="btn-primary"><i class="fa fa-user-plus"></i> Add Admin</button>
+    </header>
+
+    <div class="stats-row">
+        <div class="stat-pill">
+            <span class="label">Total Users</span>
+            <span class="value">12,450</span>
+        </div>
+        <div class="stat-pill">
+            <span class="label">New Today</span>
+            <span class="value">+124</span>
+        </div>
+        <div class="stat-pill warning">
+            <span class="label">Pending Verification</span>
+            <span class="value">15</span>
+        </div>
+        <div class="stat-pill danger">
+            <span class="label">Reported Users</span>
+            <span class="value">3</span>
+        </div>
+    </div>
+
+    <div class="card toolbar-card">
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="Search by name, email, or ID...">
+        </div>
+        
+        <div class="filters">
+            <select class="form-select">
+                <option value="all">All Roles</option>
+                <option value="client">Clients</option>
+                <option value="freelancer">Freelancers</option>
+            </select>
+            
+            <select class="form-select">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+            </select>
+
+            <button class="btn-icon refresh"><i class="fa fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">
+                        <input type="checkbox">
+                    </th>
+                    <th>User Identity</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined Date</th>
+                    <th>Performance</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>
+                        <div class="user-cell">
+                            <img src="https://i.pravatar.cc/150?u=10" class="avatar">
+                            <div class="u-info">
+                                <strong>Kenneth Silva</strong>
+                                <small>kennethemail.com</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-badge free">Freelancer</span></td>
+                    <td><span class="status-badge active">Active</span></td>
+                    <td>Oct 12, 2025</td>
+                    <td>
+                        <div class="rating"><i class="fa fa-star filled"></i> 5.0</div>
+                    </td>
+                    <td class="text-right">
+                        <button class="btn-action" title="Edit"><i class="fa fa-pen"></i></button>
+                        <button class="btn-action" title="More"><i class="fa fa-ellipsis-v"></i></button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>
+                        <div class="user-cell">
+                            <img src="https://placehold.co/40x40/198754/ffffff?text=AC" class="avatar">
+                            <div class="u-info">
+                                <strong>Acme Corp</strong>
+                                <small>contactacme.com</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-badge client">Client</span></td>
+                    <td><span class="status-badge active">Active</span></td>
+                    <td>Jan 05, 2024</td>
+                    <td>
+                        <div class="rating"><i class="fa fa-star filled"></i> 4.9</div>
+                    </td>
+                    <td class="text-right">
+                        <button class="btn-action" title="Edit"><i class="fa fa-pen"></i></button>
+                        <button class="btn-action" title="More"><i class="fa fa-ellipsis-v"></i></button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>
+                        <div class="user-cell">
+                            <img src="https://i.pravatar.cc/150?u=33" class="avatar">
+                            <div class="u-info">
+                                <strong>John Doe</strong>
+                                <small>john.demail.com</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-badge free">Freelancer</span></td>
+                    <td><span class="status-badge pending">Pending ID</span></td>
+                    <td>Today</td>
+                    <td><span class="text-muted">-</span></td>
+                    <td class="text-right">
+                        <button class="btn-sm-primary">Verify</button>
+                    </td>
+                </tr>
+
+                <tr class="row-suspended">
+                    <td><input type="checkbox"></td>
+                    <td>
+                        <div class="user-cell">
+                            <img src="https://i.pravatar.cc/150?u=99" class="avatar grayscale">
+                            <div class="u-info">
+                                <strong>Spam Bot 9000</strong>
+                                <small>spammalicious.com</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-badge client">Client</span></td>
+                    <td><span class="status-badge suspended">Suspended</span></td>
+                    <td>Feb 01, 2026</td>
+                    <td><span class="text-danger">0.0</span></td>
+                    <td class="text-right">
+                        <button class="btn-action text-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                        <button class="btn-action" title="Unban"><i class="fa fa-undo"></i></button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="table-footer">
+            <span class="showing-text">Showing <strong>1-4</strong> of <strong>12,450</strong> users</span>
+            <div class="pagination">
+                <button class="page-btn disabled"><i class="fa fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+  </main>
+</div>

@@ -1,0 +1,24 @@
+:host { --primary: #10b981; --surface: #fff; --text-main: #111827; --border: #e5e7eb; }
+.navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; }
+.nav-container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.nav-brand { display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; color: inherit; }
+.logo-mark { width: 32px; height: 32px; border-radius: 6px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.logo-text span { color: var(--primary); }
+.quiz-title { font-weight: 700; font-size: 1.1rem; }
+.main-container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+.loading { text-align: center; padding: 48px; color: #6b7280; }
+.progress-wrap { margin-bottom: 32px; }
+.progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+.fill { height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.3s; }
+.progress-text { font-size: 0.9rem; color: #6b7280; }
+.question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; }
+.question-card h2 { margin: 0 0 24px; font-size: 1.25rem; line-height: 1.5; }
+.options { display: flex; flex-direction: column; gap: 12px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px; background: #f9fafb; border: 2px solid transparent; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; }
+.option:hover { background: #f3f4f6; }
+.option.selected { border-color: var(--primary); background: rgba(16,185,129,0.08); }
+.letter { font-weight: 700; color: var(--primary); min-width: 24px; }
+.nav-buttons { display: flex; justify-content: space-between; }
+.btn { padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-weight: 600; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.primary { background: var(--primary); color: white; border-color: var(--primary); }

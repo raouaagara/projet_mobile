@@ -1,0 +1,148 @@
+:host {
+  --primary: #10b981; /* Freelancer Green */
+  --bg-body: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-body: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --gold: #fbbf24;
+  --silver: #94a3b8;
+  --bronze: #b45309;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- REUSED LAYOUT STYLES (From your feed) --- */
+.navbar { position: sticky; top: 0; background: var(--surface); border-bottom: 1px solid var(--border); height: 64px; z-index: 100; }
+.nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 100%; }
+.nav-brand {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  height: 100%; 
+}
+
+
+.logo-img {
+  height: 50px;      
+  width: auto;      
+  max-width: 150px;  
+  object-fit: contain; 
+  display: block;   
+}
+.nav-search { flex: 0 1 450px; position: relative; }
+.nav-search i { position: absolute; left: 14px; top: 10px; color: var(--text-muted); }
+.nav-search input { width: 100%; padding: 10px 10px 10px 38px; border-radius: 20px; border: 1px solid var(--border); outline: none; transition: 0.2s; }
+
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.nav-link { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+.nav-link:hover { color: var(--primary); }
+.nav-divider { width: 1px; height: 24px; background: var(--border); }
+.user-profile-menu img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; }
+
+/* --- MAIN LAYOUT --- */
+.main-layout { display: grid; grid-template-columns: 260px 1fr 300px; gap: 24px; max-width: 1400px; margin: 24px auto; padding: 0 24px; }
+
+/* Left Sidebar */
+.filter-card { background: var(--surface); padding: 24px; border-radius: 12px; border: 1px solid var(--border); position: sticky; top: 84px; }
+.filter-card h3 { margin: 0 0 20px; font-size: 1.1rem; color: var(--text-main); }
+.nav-menu-item { display: flex; align-items: center; gap: 10px; padding: 10px; color: var(--text-body); cursor: pointer; border-radius: 8px; font-weight: 500; margin-bottom: 4px; }
+.nav-menu-item:hover, .nav-menu-item.active { background: #ecfdf5; color: var(--primary); font-weight: 600; }
+.filter-group label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px; color: var(--text-main); margin-top: 20px; }
+.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-body); }
+.checkbox-row input { accent-color: var(--primary); }
+
+/* --- CENTER FEED STYLES --- */
+.feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.feed-header h2 { margin: 0; font-size: 1.5rem; color: var(--text-main); }
+.sort-box span { color: var(--text-muted); font-size: 0.9rem; margin-right: 8px; }
+.sort-box select { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); outline: none; }
+
+/* PODIUM (Cards specific to Leaderboard) */
+.podium-section { display: flex; justify-content: center; align-items: flex-end; gap: 16px; margin-bottom: 30px; }
+
+.podium-user { 
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; 
+  padding: 20px; text-align: center; width: 100%; position: relative; 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s;
+}
+.podium-user:hover { transform: translateY(-4px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+
+.podium-user.gold { height: 280px; border-top: 4px solid var(--gold); z-index: 2; }
+.podium-user.silver { height: 250px; border-top: 4px solid var(--silver); }
+.podium-user.bronze { height: 240px; border-top: 4px solid var(--bronze); }
+
+.avatar-wrap { position: relative; width: 64px; height: 64px; margin: 0 auto 10px; }
+.avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.gold .avatar-wrap { width: 80px; height: 80px; }
+
+.crown { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 1.2rem; background: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.rank-badge { position: absolute; top: 10px; left: 10px; font-weight: 800; color: #e5e7eb; font-size: 2rem; line-height: 1; }
+
+.podium-user h4 { margin: 10px 0 2px; color: var(--text-main); font-size: 1rem; }
+.p-role { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+.p-score { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
+
+.btn-connect { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: 100%; }
+.btn-connect:hover { background: var(--primary); color: white; }
+
+/* RANKING LIST */
+.ranking-container { display: flex; flex-direction: column; gap: 10px; }
+
+.rank-card { 
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; 
+  padding: 16px 24px; display: grid; grid-template-columns: 30px 50px 1fr 60px 80px; 
+  align-items: center; gap: 15px; transition: 0.2s;
+}
+.rank-card:not(.locked):hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+.rank-num { font-weight: 700; color: var(--text-muted); font-size: 1.1rem; }
+.rank-avatar img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.rank-info h3 { margin: 0 0 2px; font-size: 1rem; color: var(--text-main); }
+.rank-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+.rank-score { font-weight: 700; color: var(--text-main); background: #f3f4f6; padding: 4px 10px; border-radius: 8px; text-align: center; }
+
+.btn-view-details.sm { padding: 6px 16px; font-size: 0.8rem; }
+
+/* Locked State */
+.divider-text { text-align: center; margin: 10px 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.rank-card.locked { background: #f9fafb; opacity: 0.8; }
+.rank-avatar.blur img { filter: blur(3px); }
+.locked-badge { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem; color: var(--text-muted); background: #e5e7eb; padding: 6px; border-radius: 6px; font-weight: 600; }
+
+/* --- RIGHT SIDEBAR --- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+
+.widget-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.widget-head img { width: 48px; height: 48px; border-radius: 50%; }
+.widget-head h4 { margin: 0; font-size: 1rem; color: var(--text-main); }
+.widget-head p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-muted); }
+
+.my-rank-display { display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; padding: 10px; border-radius: 8px; margin-bottom: 15px; color: var(--primary); font-weight: 600; }
+
+.profile-link a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.95rem; color: var(--text-body); }
+.stat-row strong { color: var(--text-main); font-weight: 700; }
+
+.saved-list { list-style: none; padding: 0; margin: 0; }
+.saved-item { border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; margin-bottom: 10px; }
+.saved-item:last-child { border: none; margin: 0; padding: 0; }
+.saved-title { display: block; font-size: 0.95rem; color: var(--text-main); text-decoration: none; font-weight: 600; margin-bottom: 4px; }
+.saved-meta { font-size: 0.8rem; color: var(--primary); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-layout { grid-template-columns: 240px 1fr; }
+  .sidebar-right { display: none; }
+}
+@media (max-width: 768px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar-left { display: none; }
+  .podium-section { flex-direction: column; align-items: center; }
+  .rank-card { grid-template-columns: 30px 50px 1fr auto; }
+  .rank-action { display: none; } /* Hide action button on small screens to save space */
+}

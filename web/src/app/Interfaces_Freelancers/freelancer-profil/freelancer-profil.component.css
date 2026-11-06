@@ -1,0 +1,794 @@
+
+:host {
+  --primary: #198754;       /* Green Brand Color */
+  --bg-body: #f3f4f6;       /* Light Grey Background */
+  --surface: #ffffff;       /* White Card Background */
+  --text-main: #1f2937;     /* Dark Grey Text */
+  --text-muted: #6b7280;    /* Muted Text */
+  --border: #e5e7eb;        /* Light Border */
+  --star-filled: #f59e0b;   /* Gold for stars */
+  --star-empty: #e5e7eb;    /* Grey for empty stars */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+
+.navbar {
+  background: var(--surface);
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  height: 100%; 
+}
+
+
+.logo-img {
+  height: 50px;      
+  width: auto;      
+  max-width: 150px;  
+  object-fit: contain; 
+  display: block;   
+}
+
+.nav-search {
+  flex: 1;
+  max-width: 400px;
+  position: relative;
+  margin: 0 20px;
+}
+
+.nav-search i {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  color: var(--text-muted);
+}
+
+.nav-search input {
+  width: 100%;
+  padding: 8px 10px 8px 35px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+
+.profile-container {
+  background: var(--bg-body);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.profile-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+/* Cover Photo */
+.cover-photo {
+  height: 200px; /* Shorter than client profile */
+  position: relative;
+  background: #374151;
+  overflow: hidden;
+}
+
+.cover-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+/* User Info Bar */
+.user-info-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 24px;
+}
+
+/* Profile Picture & Online Badge */
+.profile-pic-container {
+  width: 140px;
+  height: 140px;
+  margin-top: -50px;
+  margin-right: 24px;
+  border: 4px solid var(--surface);
+  border-radius: 50%; /* Circular */
+  background: white;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.profile-pic-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.online-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  background: #22c55e; /* Green dot */
+  border: 3px solid white;
+  border-radius: 50%;
+}
+
+/* User Text Details */
+.user-details {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 10px;
+}
+
+.details-left h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Top Rated Badge */
+.badge-top-rated {
+  font-size: 0.75rem;
+  background: #fffbeb;
+  color: #d97706;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #fcd34d;
+  vertical-align: middle;
+}
+
+.headline {
+  font-size: 1.05rem;
+  color: var(--text-main);
+  margin: 6px 0;
+  font-weight: 500;
+}
+
+.location-row {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dot {
+  font-size: 0.5rem;
+  opacity: 0.5;
+}
+
+/* Right Side: Rate & Buttons */
+.details-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.rate-box {
+  text-align: right;
+}
+
+.rate-box .rate {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.rate-box small {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-message {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: background 0.2s;
+}
+
+.btn-message:hover {
+  background: #f9fafb;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #146c43;
+}
+
+/* Tabs */
+.profile-tabs {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.tab-link {
+  background: none;
+  border: none;
+  padding: 16px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s;
+}
+
+.tab-link:hover {
+  color: var(--text-main);
+}
+
+.tab-link.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.count {
+  background: #f3f4f6;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+/* =========================================
+   4. MAIN GRID LAYOUT
+   ========================================= */
+.profile-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 300px 1fr; /* Sidebar fixed, content flexible */
+  gap: 24px;
+  padding: 0 24px;
+}
+
+/* Common Card Style */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card h3 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* =========================================
+   5. LEFT SIDEBAR WIDGETS
+   ========================================= */
+/* Job Success Bar */
+.success-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.success-bar .fill {
+  height: 100%;
+  background: var(--primary);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mt-3 {
+  margin-top: 12px;
+}
+
+.stat-item strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.stat-item small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Skills Tags */
+.stack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stack-tags span {
+  background: #f3f4f6;
+  color: #4b5563;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Info Lists (Languages, Education) */
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.edu-item {
+  margin-bottom: 10px;
+}
+
+.edu-item strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.edu-item small {
+  color: var(--text-muted);
+}
+
+/* =========================================
+   6. RIGHT COLUMN CONTENT (TABS)
+   ========================================= */
+
+/* --- TAB 1: OVERVIEW --- */
+.about-section p {
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+/* Work History Items */
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.h-main h4 {
+  margin: 0 0 4px;
+  color: var(--primary); /* Title as link color */
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.h-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.h-rating i {
+  color: var(--star-filled);
+}
+
+.h-dates {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-left: 8px;
+}
+
+.h-feedback {
+  font-style: italic;
+  color: #4b5563;
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.h-meta {
+  text-align: right;
+  min-width: 100px;
+}
+
+.h-meta strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.h-meta small {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* --- TAB 2: PORTFOLIO GRID --- */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  padding: 0; /* Remove default card padding for image bleed */
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border);
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.project-img {
+  height: 160px;
+  background: #e5e7eb;
+}
+
+.project-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-info {
+  padding: 12px 16px;
+}
+
+.project-info h4 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.project-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* --- TAB 3: REVIEWS & FORM --- */
+/* Reviews Summary Header */
+.row-flex {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.rating-big-side {
+  text-align: center;
+}
+
+.rating-big-side .score {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: block;
+  line-height: 1;
+}
+
+.rating-big-side small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.rating-bars-side {
+  flex: 1;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.bar-row span:first-child {
+  width: 40px; /* Width for '5 Star' label */
+}
+
+.progress-bg {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--star-filled);
+  border-radius: 4px;
+}
+
+/* Write Review Form */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.review-form {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box; /* Fixes padding width issues */
+}
+
+.review-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Star Rating Input (Interactive) */
+.star-rating-input {
+  display: flex;
+  flex-direction: row-reverse; /* Allows CSS hover previous sibling trick */
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.star-rating-input input {
+  display: none;
+}
+
+.star-rating-input label {
+  font-size: 1.5rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin: 0;
+}
+
+/* Hover and Checked States */
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label,
+.star-rating-input input:checked ~ label {
+  color: var(--star-filled);
+}
+
+/* Static Stars (Display Only) */
+.stars-static {
+  color: var(--star-empty);
+  margin: 4px 0 8px 0;
+  font-size: 0.9rem;
+}
+
+.stars-static .filled {
+  color: var(--star-filled);
+}
+
+/* Reviews Feed Items */
+.review-item {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.review-avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-content {
+  flex: 1;
+}
+
+.review-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.reviewer-name {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.review-role {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.review-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.review-body {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.review-project-tag {
+  display: inline-block;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Animation for switching tabs smoothly */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   7. RESPONSIVE MEDIA QUERIES
+   ========================================= */
+@media (max-width: 900px) {
+  .profile-body {
+    grid-template-columns: 1fr; /* Stack sidebar on top/bottom */
+  }
+
+  .user-info-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-pic-container {
+    margin-right: 0;
+  }
+
+  .user-details {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .details-left h1 {
+    justify-content: center;
+  }
+
+  .location-row {
+    justify-content: center;
+  }
+
+  .details-right {
+    align-items: center;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Adjust history items for mobile */
+  .history-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .h-meta {
+    text-align: left;
+  }
+}

@@ -1,0 +1,366 @@
+/* Container */
+.reactions-container {
+  padding: 12px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Single Line Layout */
+.reactions-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ===== LEFT: Reaction Summary ===== */
+.reaction-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.reaction-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.reaction-icon {
+  font-size: 18px;
+  animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  cursor: pointer;
+  transition: transform 0.4s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.reaction-icon:hover {
+  transform: scale(1.4) rotate(15deg);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.count-text {
+  font-weight: 600;
+  color: #374151;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== RIGHT: Like Button ===== */
+.reaction-action {
+  position: relative;
+  flex: 1;
+  max-width: 200px;
+}
+
+.like-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 24px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.like-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.8s ease, height 0.8s ease;
+}
+
+.like-btn:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.like-btn:hover {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.like-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Liked States with Gradients */
+.like-btn.liked {
+  font-weight: 700;
+  border-color: currentColor;
+}
+
+.like-btn.liked[data-reaction="LIKE"] {
+  color: #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.like-btn.liked[data-reaction="LOVE"] {
+  color: #ef4444;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.like-btn.liked[data-reaction="HAPPY"] {
+  color: #f59e0b;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.like-btn.liked[data-reaction="SAD"] {
+  color: #6366f1;
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.like-btn.liked[data-reaction="ANGRY"] {
+  color: #dc2626;
+  background: linear-gradient(135deg, #fee2e2 0%, #fca5a5 100%);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+.like-btn.liked[data-reaction="WOW"] {
+  color: #f59e0b;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.like-btn .emoji {
+  font-size: 22px;
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.like-btn:hover .emoji {
+  transform: scale(1.3) rotate(-15deg);
+  animation: wiggle 0.8s ease infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: scale(1.3) rotate(-15deg); }
+  25% { transform: scale(1.4) rotate(-20deg); }
+  50% { transform: scale(1.3) rotate(-10deg); }
+  75% { transform: scale(1.4) rotate(-20deg); }
+}
+
+.like-btn .text {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.like-btn:hover .text {
+  transform: translateX(2px);
+}
+
+/* ===== Floating Emoji Picker ===== */
+.emoji-picker {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 60px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  animation: slideUpSlow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUpSlow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.8);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.emoji-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 30px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  filter: grayscale(0.3);
+}
+
+.emoji-btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.4s ease;
+  z-index: -1;
+}
+
+.emoji-btn:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.emoji-btn:hover {
+  transform: scale(1.35) translateY(-8px);
+  filter: grayscale(0) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  animation: floatBounce 0.8s ease infinite;
+}
+
+@keyframes floatBounce {
+  0%, 100% { 
+    transform: scale(1.35) translateY(-8px); 
+  }
+  50% { 
+    transform: scale(1.4) translateY(-12px) rotate(5deg); 
+  }
+}
+
+.emoji-btn.selected {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  filter: grayscale(0);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Ripple Effect on Click */
+.emoji-btn:active {
+  animation: ripplePulse 0.8s ease-out;
+}
+
+@keyframes ripplePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 25px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Glow effect for picker */
+.emoji-picker::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  opacity: 0;
+  animation: glowPulse 2s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.5; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .reactions-line {
+    gap: 12px;
+  }
+  
+  .reaction-action {
+    max-width: 150px;
+  }
+  
+  .like-btn {
+    padding: 8px 18px;
+    font-size: 14px;
+  }
+  
+  .like-btn .emoji {
+    font-size: 20px;
+  }
+  
+  .emoji-picker {
+    gap: 4px;
+    padding: 8px 10px;
+  }
+  
+  .emoji-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 26px;
+  }
+}
+
+/* ===== Accessibility ===== */
+.like-btn:focus-visible,
+.emoji-btn:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 3px;
+}
+
+/* ===== Loading State ===== */
+.like-btn.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.like-btn.loading .emoji {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

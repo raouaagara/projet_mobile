@@ -1,0 +1,248 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+    </div>
+    
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" [(ngModel)]="searchText" (keyup)="applyFilters()" placeholder="Search for jobs (e.g. Angular, Design)...">
+    </div>
+
+    <div class="nav-actions">
+       
+       <div class="icon-btn-wrapper" style="position: relative;">
+         <button class="nav-icon-btn" (click)="toggleNotifMenu($event)">
+           <i class="fa fa-bell"></i>
+         </button>
+         <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+
+         <div class="notif-dropdown" *ngIf="isNotifOpen" style="position: absolute; top: 50px; right: -50px; width: 320px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;" (click)="$event.stopPropagation()">
+           <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+             <h3 style="margin:0; font-size: 1.1rem;">Notifications</h3>
+           </div>
+           
+           <div style="max-height: 350px; overflow-y: auto;">
+             <div *ngIf="notifications.length === 0" style="padding: 20px; text-align: center; color: gray;">
+               No notifications yet.
+             </div>
+
+             <div *ngFor="let n of notifications" 
+                  style="padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s;"
+                  [ngStyle]="{'background': n.read ? 'white' : '#f0fdf4'}"
+                  (click)="markNotifRead(n, $event)">
+               
+               <div style="display: flex; gap: 10px; align-items: start;">
+                 <div style="background: #10b981; color: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                   <i class="fa fa-handshake"></i>
+                 </div>
+                 <div>
+                   <p style="margin: 0; font-size: 0.9rem; color: #333;">{{ n.message }}</p>
+                   <small style="color: gray; font-size: 0.75rem;">{{ n.createdAt | date:'short' }}</small>
+                 </div>
+                 <div *ngIf="!n.read" style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-top: 5px;"></div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       <button class="nav-icon-btn" (click)="toggleMessages(); $event.stopPropagation()" [class.active]="isMessagesOpen">
+          <i class="fa fa-comment-dots"></i> 
+        </button>
+       <a routerLink="/LeaderboardFreelancer" class="nav-link">
+         <i class="fa fa-trophy"></i> Leaderboard
+       </a>
+             <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> </a>
+
+       
+        <app-messenger 
+            *ngIf="isMessagesOpen" 
+            (click)="$event.stopPropagation()">
+        </app-messenger>
+       <div class="nav-divider"></div>
+       <div class="user-profile-menu" routerLink="/FreelancerProfil" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/40x40/3b82f6/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'F')" alt="User Avatar">
+        <i class="fa fa-chevron-down"></i>
+       </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-layout">
+
+  <aside class="sidebar-left">
+    <div class="filter-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Filter Jobs</h3>
+        <a style="font-size: 0.8rem; color: var(--primary); cursor: pointer;" (click)="clearFilters()">Clear</a>
+      </div>
+      
+      <div class="filter-group">
+        <label>Category</label>
+        <div class="checkbox-row" *ngFor="let cat of categories">
+          <input type="checkbox" [(ngModel)]="cat.selected" (change)="applyFilters()"> 
+          <span>{{ cat.label }}</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <label>Job Type</label>
+        <div class="checkbox-row" *ngFor="let type of jobTypes">
+          <input type="checkbox" [(ngModel)]="type.selected" (change)="applyFilters()"> 
+          <span>{{ type.label }}</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <label>Budget Range</label>
+        <div class="radio-row">
+          <input type="radio" name="budget" value="Any" [(ngModel)]="selectedBudget" (change)="applyFilters()"> <span>Any Budget</span>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="budget" value="100-500" [(ngModel)]="selectedBudget" (change)="applyFilters()"> <span>$100 - $500</span>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="budget" value="500-1000" [(ngModel)]="selectedBudget" (change)="applyFilters()"> <span>$500 - $1k</span>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="budget" value="1000+" [(ngModel)]="selectedBudget" (change)="applyFilters()"> <span>$1k+</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <label>My Workspace</label>
+        <a routerLink="/FreelancerDashboard" class="dashboard-link">
+            <i class="fa fa-th-large"></i> Go to Dashboard
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="feed-center">
+    
+    <div class="feed-header">
+      <h2>Jobs you might like ({{ filteredProjects.length }})</h2>
+      <div class="sort-box">
+        <span>Sort by:</span>
+        <select [(ngModel)]="sortBy" (change)="applyFilters()">
+          <option value="Best Match">Best Match (%)</option>
+          <option value="Newest">Newest</option>
+          <option value="Budget (High-Low)">Budget (High-Low)</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="filteredProjects.length === 0" style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px dashed #e5e7eb;">
+      <i class="fa fa-search" style="font-size: 3rem; color: #d1d5db; margin-bottom: 15px;"></i>
+      <h3 style="color: #1f2937;">No jobs found</h3>
+      <p style="color: #6b7280;">Try adjusting your filters to see more results.</p>
+    </div>
+
+    <div class="job-card" *ngFor="let p of filteredProjects" [routerLink]="['/ProjectDetails', p.id]">
+      
+      <div class="card-header">
+        <div class="header-main">
+          <h3 class="job-title">{{ p.title }}</h3>
+          <span class="posted-time">Posted {{ p.postedAt }}</span>
+        </div>
+        
+        <button class="btn-save" [class.active-saved]="isSaved(p.id)" title="Save Job" (click)="toggleSave(p, $event)">
+          <i class="fa-heart" [ngClass]="isSaved(p.id) ? 'fas' : 'far'"></i>
+        </button>
+      </div>
+      
+      <div class="job-meta">
+        <span class="badge" [ngClass]="p.jobType === 'HOURLY' ? 'hourly' : 'fixed'">
+          <i class="fa fa-money-bill-wave"></i>
+          {{ p.jobType === 'HOURLY' ? 'Hourly Rate' : 'Fixed Price' }}: ${{ p.budget }}
+        </span>
+        <span class="meta-item"><i class="fa fa-layer-group"></i> {{ p.ExperienceLevel }}</span>
+        <span class="meta-item"><i class="fa fa-folder"></i> {{ formatEnumText(p.category) }}</span>
+      </div>
+
+      <p class="job-desc">{{ p.description }}</p>
+
+      <img *ngIf="p.image" [src]="p.image" class="job-image" alt="Project Image">
+
+      <div class="matching-container" *ngIf="p.requiredCompetenceIds && p.requiredCompetenceIds.length > 0" 
+            style="margin-top: 15px; margin-bottom: 15px; background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #374151;">
+            <i class="fa fa-bolt" [ngStyle]="{'color': getMatchColor(getMatchPercentage(p))}"></i> Skill Match
+          </span>
+          <span style="font-size: 0.85rem; font-weight: 700;" [ngStyle]="{'color': getMatchColor(getMatchPercentage(p))}">
+            {{ getMatchPercentage(p) }}%
+          </span>
+        </div>
+        
+        <div style="width: 100%; height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden;">
+          <div [style.width.%]="getMatchPercentage(p)" 
+               [style.background-color]="getMatchColor(getMatchPercentage(p))" 
+               style="height: 100%; border-radius: 10px; transition: width 0.6s ease-out;">
+          </div>
+        </div>
+      </div>
+      
+      <div class="client-info" style="margin-top: 15px; border-top: 1px solid #f3f4f6; padding-top: 15px;">
+        <img [src]="clientDetailsMap[p.clientId!]?.profilePictureUrl || 'https://placehold.co/48x48/198754/white?text=' + (clientDetailsMap[p.clientId!]?.firstName ? clientDetailsMap[p.clientId!].firstName.charAt(0).toUpperCase() : 'C')" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; object-fit: cover;">
+        
+        <div style="flex: 1;">
+          <span style="font-weight: 600; font-size: 0.9rem; color: #1f2937;">
+            {{ clientDetailsMap[p.clientId!]?.firstName || 'Utilisateur inconnu' }}
+          </span>
+        </div>
+        
+        <div class="verified-badge"><i class="fa fa-check-circle"></i> Payment Verified</div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <aside class="sidebar-right">
+    
+    <div class="card profile-widget">
+      <div class="widget-head">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/150x150/3b82f6/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'F')" alt="Me">
+        <div>
+          <h4>{{ currentUser?.firstName || 'Freelancer' }} {{ currentUser?.lastName || '' }}</h4>
+          <p>{{ currentUser?.bio || 'Update your title in profile' }}</p>
+        </div>
+      </div>
+      <div class="profile-link">
+        <a routerLink="/FreelancerProfilManager">Complete your profile</a>
+        <div class="progress-bar"><div class="fill" style="width: 85%"></div></div>
+        <small>85% Complete</small>
+      </div>
+    </div>
+
+    <div class="card saved-widget">
+      <div class="widget-header">
+        <h4>Saved Jobs ({{ savedProjects.length }})</h4>
+        <a *ngIf="savedProjects.length > 0" routerLink="/SavedProjects">View All</a>
+      </div>
+      
+      <p *ngIf="savedProjects.length === 0" style="font-size: 0.85rem; color: #6b7280; text-align: center; margin: 10px 0;">
+        No jobs saved yet.
+      </p>
+
+      <ul class="saved-list" *ngIf="savedProjects.length > 0">
+        <li class="saved-item" *ngFor="let sp of savedProjects | slice:0:3">
+          <a [routerLink]="['/ProjectDetails', sp.id]" class="saved-title" (click)="$event.stopPropagation()">{{ sp.title }}</a>
+          <span class="saved-meta">
+            {{ sp.jobType === 'HOURLY' ? 'Hourly' : 'Fixed' }} • Posted {{ sp.postedAt }}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+  </aside>
+</div>

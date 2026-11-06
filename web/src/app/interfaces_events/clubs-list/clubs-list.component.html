@@ -1,0 +1,212 @@
+<!-- Top Navigation -->
+<nav class="top-navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <div class="logo-circle">C</div>
+      <span class="brand-text">CatchOPP</span>
+    </div>
+
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input
+        type="text"
+        placeholder="Search by club, interest or skill"
+        [(ngModel)]="searchTerm"
+        (input)="filterClubs()">
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-icon-btn" (click)="navigateToGroups()" title="Groups">
+        <i class="fa fa-users"></i>
+      </button>
+      <button class="nav-icon-btn" (click)="navigateToEvents()" title="Events">
+        <i class="fa fa-calendar-alt"></i>
+      </button>
+      <app-notification-bell></app-notification-bell>
+      <div class="user-profile">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <span class="user-name">Community User</span>
+          <span class="user-role">Member</span>
+        </div>
+        <i class="fa fa-chevron-down"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Layout -->
+<div class="page-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h3>Communities & Clubs</h3>
+      <p>Join groups, attend events and grow your network.</p>
+      <div class="quick-links">
+        <button class="quick-link-btn" [routerLink]="['/groups']">
+          <i class="fa fa-users"></i> Groups
+        </button>
+        <button class="quick-link-btn active">
+          <i class="fa fa-users-cog"></i> Clubs
+        </button>
+        <button class="quick-link-btn" (click)="navigateToEvents()">
+          <i class="fa fa-calendar-alt"></i> Events
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Filters</h4>
+      <div class="filter-group">
+        <label>Interest</label>
+        <select class="filter-select" [(ngModel)]="selectedInterest" (change)="filterClubs()">
+          <option value="all">All</option>
+          <option value="Technology">Technology</option>
+          <option value="Design">Design</option>
+          <option value="Business">Business</option>
+          <option value="Marketing">Marketing</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <div>
+        <h1>Communities & Clubs</h1>
+        <p>Join groups, attend events and grow your network</p>
+      </div>
+      <button class="btn-create" (click)="createClub()">
+        <i class="fa fa-plus"></i> Create Club
+      </button>
+    </div>
+
+    <!-- Recommended Clubs Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Recommended clubs</h2>
+        <a class="view-all-link" (click)="toggleShowAllClubs()" style="cursor: pointer;">
+          {{ showAllClubs ? 'Show less' : 'View all' }}
+        </a>
+      </div>
+
+      <div class="clubs-grid">
+        <div class="club-card" *ngFor="let club of filteredClubs" (click)="viewClub(club.id)">
+          <div class="club-banner" [style.background]="'linear-gradient(135deg, #198754 0%, #20c997 100%)'">
+          </div>
+          <div class="club-content">
+            <h3 class="club-name">{{ club.name }}</h3>
+            <p class="club-description">{{ club.description }}</p>
+            
+            <div class="club-meta">
+              <span class="meta-item">
+                <i class="fa fa-users"></i> {{ 0 }} members
+              </span>
+              <span class="meta-item">
+                <i class="fa fa-calendar"></i> {{ 0 }} events this month
+              </span>
+            </div>
+
+            <div class="club-interests" *ngIf="club.interests">
+              <span class="interest-badge" *ngFor="let interest of getInterestBadges(club.interests)">
+                {{ interest }}
+              </span>
+            </div>
+
+            <div class="club-actions">
+              <button class="btn-secondary" (click)="viewClub(club.id); $event.stopPropagation()">
+                View wall
+              </button>
+              <button class="btn-primary" (click)="joinClub(club, $event)">
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredClubs.length === 0 && !loading">
+      <i class="fa fa-users-slash"></i>
+      <h3>No clubs found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading clubs...</p>
+    </div>
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="right-sidebar">
+    <div class="sidebar-card">
+      <div class="card-header">
+        <h4>Upcoming events</h4>
+        <a class="view-all-link" (click)="navigateToEvents()">All events</a>
+      </div>
+      <div class="events-list" *ngIf="upcomingEvents.length > 0">
+        <div class="event-item" *ngFor="let event of upcomingEvents">
+          <div class="event-date">
+            <span class="date-day">{{ event.startDate | date: 'd' }}</span>
+            <span class="date-month">{{ event.startDate | date: 'MMM' }}</span>
+          </div>
+          <div class="event-info">
+            <h5>{{ event.title }}</h5>
+            <p>{{ event.location }}</p>
+          </div>
+        </div>
+      </div>
+      <p class="no-events" *ngIf="upcomingEvents.length === 0">No upcoming events</p>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Calendar</h4>
+      <div class="calendar-widget">
+        <div class="calendar-header">
+          <button class="calendar-nav" (click)="previousMonth()">
+            <i class="fa fa-chevron-left"></i>
+          </button>
+          <span class="calendar-month">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+          <button class="calendar-nav" (click)="nextMonth()">
+            <i class="fa fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="calendar-grid">
+          <div class="calendar-day-header" *ngFor="let day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']">
+            {{ day }}
+          </div>
+          <div class="calendar-day" *ngFor="let day of calendarDays"
+               [class.today]="day.isToday"
+               [class.has-event]="day.hasEvent"
+               [class.other-month]="day.isOtherMonth">
+            {{ day.date }}
+          </div>
+        </div>
+        <div class="calendar-legend">
+          <span class="legend-item">
+            <span class="legend-dot event-dot"></span> Event
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot today-dot"></span> Today
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Popular Interests</h4>
+      <div class="interests-list">
+        <button class="interest-chip" *ngFor="let interest of popularInterests" (click)="filterByInterest(interest)">
+          <i [class]="interest.icon"></i>
+          {{ interest.name }}
+        </button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+

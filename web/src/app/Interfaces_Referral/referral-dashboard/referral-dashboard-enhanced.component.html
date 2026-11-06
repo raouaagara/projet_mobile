@@ -1,0 +1,235 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>💰 Community & Rewards</h1>
+    <p>Earn rewards, help others, and grow together</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'overview'"
+      (click)="switchTab('overview')">
+      📊 Overview
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'referrals'"
+      (click)="switchTab('referrals')">
+      🤝 Referrals
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'rewards'"
+      (click)="switchTab('rewards')">
+      🏆 Rewards
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'donations'"
+      (click)="switchTab('donations')">
+      💝 Donations
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'wallet'"
+      (click)="switchTab('wallet')">
+      💳 Wallet
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'leaderboards'"
+      (click)="switchTab('leaderboards')">
+      🏅 Leaderboards
+    </button>
+  </div>
+
+  <!-- Overview Tab -->
+  <div *ngIf="activeTab === 'overview'" class="tab-content">
+    <!-- Wallet Card -->
+    <div class="wallet-card">
+      <div class="wallet-header">
+        <div class="wallet-balance">
+          <span class="balance-label">Available Balance</span>
+          <span class="balance-amount">${{ wallet?.balance || 0 | number:'1.2-2' }}</span>
+        </div>
+        <div class="wallet-tier" *ngIf="wallet">
+          <span class="tier-badge">{{ getTierBadge(wallet.currentTier) }}</span>
+          <span class="tier-label">{{ getTierLabel(wallet.currentTier) }} Learner</span>
+        </div>
+      </div>
+      <div class="wallet-stats">
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalEarned || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Earned</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalDonated || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Donated</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">${{ wallet?.totalReceived || 0 | number:'1.2-2' }}</span>
+          <span class="stat-label">Total Received</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ wallet?.certificationsCount || 0 }}</span>
+          <span class="stat-label">Certifications</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress to Next Tier -->
+    <div class="progress-card" *ngIf="walletStats && walletStats.nextTier">
+      <h3>🎯 Next Milestone</h3>
+      <div class="milestone-info">
+        <span class="milestone-text">
+          {{ walletStats.certificationsToNextTier }} more certifications to 
+          {{ getTierBadge(walletStats.nextTier) }} {{ getTierLabel(walletStats.nextTier) }}
+        </span>
+        <span class="milestone-reward">${{ walletStats.nextTierReward }} Reward</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <div class="progress-label">{{ getProgressPercentage() | number:'1.0-0' }}% Complete</div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="quick-stats-grid">
+      <div class="quick-stat-card">
+        <div class="stat-icon">🤝</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalReferrals }}</div>
+          <div class="stat-title">Total Referrals</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ qualifiedReferrals }}</div>
+          <div class="stat-title">Qualified</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon">💝</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ donationsSent.length }}</div>
+          <div class="stat-title">Donations Sent</div>
+        </div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="stat-icon">🎁</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ donationsReceived.length }}</div>
+          <div class="stat-title">Donations Received</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h3>📜 Recent Activity</h3>
+      <div class="activity-list">
+        <div *ngFor="let transaction of transactions.slice(0, 5)" class="activity-item">
+          <div class="activity-icon">💰</div>
+          <div class="activity-details">
+            <div class="activity-title">{{ transaction.description }}</div>
+            <div class="activity-date">{{ formatDate(transaction.createdAt) }}</div>
+          </div>
+          <div class="activity-amount">+${{ transaction.amount | number:'1.2-2' }}</div>
+        </div>
+        <div *ngIf="transactions.length === 0" class="empty-state">
+          <p>No activity yet. Start earning by passing skill tests!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referrals Tab (Existing Content) -->
+  <div *ngIf="activeTab === 'referrals'" class="tab-content">
+    <!-- Your existing referral content here -->
+    <div class="referral-section">
+      <h2>🤝 Invite Friends & Earn</h2>
+      <p>Share your referral link and earn $10 for each qualified referral!</p>
+      
+      <!-- Referral Link Card -->
+      <div class="referral-link-card">
+        <label>Your Referral Link:</label>
+        <div class="link-input-group">
+          <input type="text" [value]="referralUrl" readonly>
+          <button (click)="copyLink()" [class.success]="copySuccess">
+            {{ copySuccess ? '✓ Copied!' : '📋 Copy' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Social Share Buttons -->
+      <div class="social-share">
+        <h3>Share on Social Media:</h3>
+        <div class="social-buttons">
+          <button class="social-btn twitter" (click)="shareOnTwitter()">
+            <span class="icon">🐦</span> Twitter
+          </button>
+          <button class="social-btn linkedin" (click)="shareOnLinkedIn()">
+            <span class="icon">💼</span> LinkedIn
+          </button>
+          <button class="social-btn facebook" (click)="shareOnFacebook()">
+            <span class="icon">📘</span> Facebook
+          </button>
+          <button class="social-btn whatsapp" (click)="shareOnWhatsApp()">
+            <span class="icon">💬</span> WhatsApp
+          </button>
+          <button class="social-btn email" (click)="shareViaEmail()">
+            <span class="icon">✉️</span> Email
+          </button>
+        </div>
+      </div>
+
+      <!-- Referral Stats -->
+      <div class="referral-stats-grid">
+        <div class="stat-box">
+          <div class="stat-value">{{ totalReferrals }}</div>
+          <div class="stat-label">Total Referrals</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">{{ qualifiedReferrals }}</div>
+          <div class="stat-label">Qualified</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${{ totalEarned | number:'1.2-2' }}</div>
+          <div class="stat-label">Total Earned</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${{ pendingEarnings | number:'1.2-2' }}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+      </div>
+
+      <!-- Referrals List -->
+      <div class="referrals-list">
+        <h3>Your Referrals:</h3>
+        <div *ngIf="loading" class="loading">Loading...</div>
+        <div *ngIf="!loading && referrals.length === 0" class="empty-state">
+          <p>No referrals yet. Start sharing your link!</p>
+        </div>
+        <div *ngFor="let referral of referrals" class="referral-item">
+          <div class="referral-info">
+            <div class="referral-name">User #{{ referral.referredUserId }}</div>
+            <div class="referral-date">{{ formatDate(referral.createdAt) }}</div>
+          </div>
+          <div class="referral-status">
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(referral.status)">
+              {{ getStatusLabel(referral.status) }}
+            </span>
+          </div>
+          <div class="referral-earnings">
+            ${{ getEarnings(referral) | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Continue in next part... -->
+</div>

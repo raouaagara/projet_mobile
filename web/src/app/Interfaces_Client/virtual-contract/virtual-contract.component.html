@@ -1,0 +1,116 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/client-feed">
+      <div class="logo-mark">C</div><span class="logo-text">Catch<span>IQ</span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="contract-wrapper">
+  
+  <div class="contract-paper">
+    
+    <header class="paper-header">
+      <div class="header-top">
+        <span class="status-badge">DRAFT - REVIEW MODE</span>
+        <span class="contract-id">ID: CN-2025-8492</span>
+      </div>
+      <h1>Service Agreement Contract</h1>
+      <p class="date">Generated on October 25, 2025</p>
+    </header>
+
+    <hr class="divider">
+
+    <section class="parties-section">
+      <div class="party client">
+        <small>Client (Hiring Party)</small>
+        <h3>Acme Corp</h3>
+        <p>San Francisco, CA, USA</p>
+      </div>
+      <div class="arrow"><i class="fa fa-handshake"></i></div>
+      <div class="party freelancer">
+        <small>Freelancer (Contractor)</small>
+        <div class="freelancer-chip">
+          <img src="https://i.pravatar.cc/150?u=10" alt="Kenneth">
+          <div>
+            <h3>Kenneth Silva</h3>
+            <p>Tunisia</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="details-grid">
+      <div class="detail-box">
+        <label>Project Title</label>
+        <strong>Senior Angular Developer</strong>
+      </div>
+      <div class="detail-box">
+        <label>Payment Terms</label>
+        <strong>Hourly Rate</strong>
+      </div>
+      <div class="detail-box">
+        <label>Rate Amount</label>
+        <strong class="highlight">$55.00 / hr</strong>
+      </div>
+      <div class="detail-box">
+        <label>Weekly Limit</label>
+        <strong>40 Hours / Week</strong>
+      </div>
+    </section>
+
+    <section class="scope-section">
+      <h4>1. Scope of Work</h4>
+      <p>
+        The Contractor agrees to perform the following services: Refactoring of the Client's SaaS Dashboard using Angular 18, implementing NgRx state management, and optimizing UI performance using TailwindCSS.
+      </p>
+      
+      <h4>2. Confidentiality</h4>
+      <p>
+        The Contractor acknowledges that they may have access to proprietary information. The Contractor agrees to keep all such information confidential and not to disclose it to any third party.
+      </p>
+
+      <h4>3. Payment Schedule</h4>
+      <p>
+        Payments will be released weekly upon approval of the timesheet by the Client. CatchIQ Escrow Protection applies to all transactions.
+      </p>
+    </section>
+
+    <section class="signature-section">
+      <div class="sig-box">
+        <p>Signed by Client:</p>
+        <div class="digital-signature">Acme Corp</div>
+        <small>Electronic Signature • {{ currentDate | date:'medium' }}</small>
+      </div>
+    </section>
+
+  </div>
+
+  <aside class="action-sidebar">
+    <div class="card action-card">
+      <h3>Ready to Hire?</h3>
+      <p>Sending this offer will notify <strong>Kenneth Silva</strong> immediately.</p>
+      
+      <div class="cost-summary">
+        <div class="row"><span>Hourly Rate</span> <span>$55.00</span></div>
+        <div class="row"><span>CatchIQ Fee (3%)</span> <span>$1.65</span></div>
+        <div class="total"><span>Est. Total/hr</span> <span>$56.65</span></div>
+      </div>
+
+      <button class="btn-send" (click)="sendOffer()">
+        <i class="fa fa-paper-plane"></i> Send Official Offer
+      </button>
+      <button class="btn-cancel" routerLink="/project-proposals">Cancel</button>
+    </div>
+  </aside>
+
+</div>
+
+<div class="modal-overlay" *ngIf="showSuccessModal">
+  <div class="success-card">
+    <div class="check-icon"><i class="fa fa-check"></i></div>
+    <h2>Offer Sent Successfully!</h2>
+    <p>We've sent a notification to <strong>Kenneth</strong>. You will be notified once they accept the contract.</p>
+    <button class="btn-primary" routerLink="/client-dashboard">Return to Dashboard</button>
+  </div>
+</div>

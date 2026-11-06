@@ -1,0 +1,217 @@
+<div class="rewards-container">
+  <!-- Header -->
+  <div class="rewards-header">
+    <div class="header-content">
+      <div class="brand-title">
+        <span class="brand-logo">C</span>
+        <h1>Catch<span class="brand-highlight">OPP</span> Rewards</h1>
+      </div>
+      <p>Earn promo codes and save on your subscriptions!</p>
+    </div>
+    <div class="header-actions">
+      <button class="community-btn" (click)="goToCommunity()">
+        💰 Community & Rewards
+      </button>
+      <button class="spin-btn" (click)="goToSpinWheel()">
+        🎰 Spin the Wheel
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🎫</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ totalEarned }}</div>
+        <div class="stat-label">Total Earned</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ totalUsed }}</div>
+        <div class="stat-label">Used</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ availableCodes.length }}</div>
+        <div class="stat-label">Available</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <div class="stat-value">${{ totalSavings }}</div>
+        <div class="stat-label">Total Savings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="selectedTab === 'available'"
+      (click)="selectedTab = 'available'">
+      Available Codes ({{ availableCodes.length }})
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="selectedTab === 'all'"
+      (click)="selectedTab = 'all'">
+      All Codes ({{ allCodes.length }})
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="selectedTab === 'history'"
+      (click)="selectedTab = 'history'">
+      Rewards History ({{ rewards.length }})
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading your rewards...</p>
+  </div>
+
+  <!-- Available Codes Tab -->
+  <div *ngIf="!loading && selectedTab === 'available'" class="codes-grid">
+    <div *ngIf="availableCodes.length === 0" class="empty-state">
+      <div class="empty-icon">🎁</div>
+      <h3>No available codes yet</h3>
+      <p>Complete challenges and milestones to earn promo codes!</p>
+      <button class="primary-btn" (click)="goToSpinWheel()">Try Spin the Wheel</button>
+    </div>
+
+    <div *ngFor="let code of availableCodes" class="code-card available">
+      <div class="code-header">
+        <span class="code-type-icon">{{ getCodeTypeIcon(code.type) }}</span>
+        <span class="code-type">{{ getCodeTypeLabel(code.type) }}</span>
+        <span class="discount-badge">{{ getDiscountLabel(code) }}</span>
+      </div>
+      
+      <div class="code-body">
+        <div class="code-display">
+          <span class="code-text">{{ code.code }}</span>
+          <button class="copy-btn" (click)="copyCode(code.code)" title="Copy code">
+            📋
+          </button>
+        </div>
+        
+        <div class="code-expiry" [class.expiring-soon]="isExpiringSoon(code)">
+          <span *ngIf="!isExpired(code)">
+            ⏰ Expires in {{ getDaysUntilExpiry(code) }} days
+          </span>
+          <span *ngIf="isExpired(code)" class="expired">
+            ❌ Expired
+          </span>
+        </div>
+      </div>
+
+      <div class="code-footer">
+        <button class="use-btn" (click)="goToCheckout(code)">
+          Use Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Codes Tab -->
+  <div *ngIf="!loading && selectedTab === 'all'" class="codes-list">
+    <div *ngIf="allCodes.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No codes yet</h3>
+      <p>Start earning codes by completing challenges!</p>
+    </div>
+
+    <div *ngFor="let code of allCodes" class="code-row" 
+         [class.used]="code.usedAt !== null"
+         [class.expired]="isExpired(code) && code.usedAt === null">
+      <div class="code-row-icon">{{ getCodeTypeIcon(code.type) }}</div>
+      <div class="code-row-info">
+        <div class="code-row-code">{{ code.code }}</div>
+        <div class="code-row-type">{{ getCodeTypeLabel(code.type) }}</div>
+      </div>
+      <div class="code-row-discount">{{ getDiscountLabel(code) }}</div>
+      <div class="code-row-status">
+        <span *ngIf="code.usedAt !== null" class="status-badge used">
+          ✅ Used on {{ formatDate(code.usedAt) }}
+        </span>
+        <span *ngIf="code.usedAt === null && isExpired(code)" class="status-badge expired">
+          ❌ Expired
+        </span>
+        <span *ngIf="code.usedAt === null && !isExpired(code)" class="status-badge available">
+          ✨ Available
+        </span>
+      </div>
+      <div class="code-row-actions">
+        <button *ngIf="code.usedAt === null && !isExpired(code)" 
+                class="small-btn" 
+                (click)="goToCheckout(code)">
+          Use
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rewards History Tab -->
+  <div *ngIf="!loading && selectedTab === 'history'" class="rewards-history">
+    <div *ngIf="rewards.length === 0" class="empty-state">
+      <div class="empty-icon">📜</div>
+      <h3>No rewards history</h3>
+      <p>Your earned rewards will appear here</p>
+    </div>
+
+    <div *ngFor="let reward of rewards" class="history-item">
+      <div class="history-icon">{{ getCodeTypeIcon(reward.promoCode.type) }}</div>
+      <div class="history-info">
+        <div class="history-title">{{ reward.rewardType }}</div>
+        <div class="history-date">Earned on {{ formatDate(reward.earnedAt) }}</div>
+      </div>
+      <div class="history-code">
+        <span class="code-badge">{{ reward.promoCode.code }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to Earn Section -->
+  <div class="earn-section">
+    <h2>🎯 How to Earn More Codes</h2>
+    <div class="earn-grid">
+      <div class="earn-card">
+        <div class="earn-icon">🏆</div>
+        <h3>Loyalty Rewards</h3>
+        <p>Stay subscribed for 3 or 6 months to earn loyalty codes</p>
+      </div>
+      <div class="earn-card">
+        <div class="earn-icon">🤝</div>
+        <h3>Referral Milestone</h3>
+        <p>Refer 5 friends and get 1 month free</p>
+      </div>
+      <div class="earn-card">
+        <div class="earn-icon">⭐</div>
+        <h3>Pass Skill Tests</h3>
+        <p>Complete certifications to earn 20% off</p>
+      </div>
+      <div class="earn-card">
+        <div class="earn-icon">🎓</div>
+        <h3>Student Discount</h3>
+        <p>Verify your .edu email for 20% off</p>
+      </div>
+      <div class="earn-card">
+        <div class="earn-icon">🎰</div>
+        <h3>Spin the Wheel</h3>
+        <p>Try your luck once per month for random discounts</p>
+      </div>
+      <div class="earn-card">
+        <div class="earn-icon">🏅</div>
+        <h3>Top 10 Leaderboard</h3>
+        <p>Rank in top 10 for exclusive 35% off codes</p>
+      </div>
+    </div>
+  </div>
+</div>

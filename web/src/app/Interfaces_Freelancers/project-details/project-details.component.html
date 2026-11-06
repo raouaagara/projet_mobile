@@ -1,0 +1,376 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+    </div>
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search freelancers or services...">
+    </div>
+    <div class="nav-actions">
+      <button class="nav-icon-btn"><i class="fa fa-bell"></i></button>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu" routerLink="/FreelancerProfilManager" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/150x150/3b82f6/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'F')" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" style="text-align: center; padding: 100px; color: var(--primary);">
+  <i class="fa fa-circle-notch fa-spin fa-3x"></i>
+  <p style="margin-top: 15px; font-weight: 500;">Loading project details...</p>
+</div>
+
+<!-- Main Layout -->
+<div class="details-layout" *ngIf="!isLoading && project">
+
+  <div class="back-row">
+    <a routerLink="/FreelancerFeed" class="back-link"><i class="fa fa-arrow-left"></i> Back to Feed</a>
+  </div>
+
+  <div class="content-grid">
+    <main class="main-details">
+      <div class="card detail-card">
+
+        <div class="project-header">
+          <div class="header-top">
+            <span class="category-badge">{{ formatEnumText(project.category) }}</span>
+            <span class="time-badge">Posted {{ project.postedAt | date }}</span>
+          </div>
+          <h1>{{ project.title }}</h1>
+          <div class="project-meta">
+            <span><i class="fa fa-globe-americas"></i> Worldwide</span>
+            <span class="separator">•</span>
+            <span><i class="fa fa-clock"></i> {{ project.jobType === 'HOURLY' ? 'Hourly Project' : 'Fixed Price Project' }}</span>
+            <span class="separator">•</span>
+            <span><i class="fa fa-layer-group"></i> {{ project.ExperienceLevel || 'Any' }} Level</span>
+          </div>
+        </div>
+
+        <div class="tabs-row">
+          <button class="tab-btn" [class.active]="activeTab === 'job'" (click)="setTab('job')">View Job</button>
+          <button class="tab-btn" [class.active]="activeTab === 'proposals'" (click)="setTab('proposals')">
+            Proposals <span class="badge">{{ proposals.length }}</span>
+          </button>
+          <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="setTab('reviews')">
+            Reviews <span class="badge">{{ projectReviews.length }}</span>
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Job Tab -->
+        <div *ngIf="activeTab === 'job'">
+          <div class="section description-section">
+            <h3>Project Description</h3>
+            <p style="white-space: pre-wrap;">{{ project.description }}</p>
+
+            <div *ngIf="project.image" style="margin-top: 20px;">
+              <img [src]="project.image" alt="Project Attachment" style="max-width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;">
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="section skills-section">
+            <h3>Skills & Expertise Required</h3>
+            <div class="tags-container">
+              <span class="skill-tag" *ngFor="let skill of projectSkills">{{ skill.nom }}</span>
+              <span *ngIf="projectSkills.length === 0" style="color: #9ca3af; font-size: 0.9rem; font-style: italic;">
+                No specific skills required.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proposals Tab -->
+        <div *ngIf="activeTab === 'proposals'" class="section proposals-section">
+          <h3>Freelancer Bids ({{ proposals.length }})</h3>
+
+          <div *ngIf="proposals.length === 0" class="empty-state">
+            <i class="fa fa-file-signature fa-2x"></i>
+            <p>No proposals yet. Be the first to apply!</p>
+          </div>
+
+          <div class="analytics-dashboard" *ngIf="proposals.length > 0">
+            <div class="stat-card lowest"><i class="fa fa-arrow-down"></i><div><small>Lowest Bid</small><strong>${{ lowestBid }}</strong></div></div>
+            <div class="stat-card average"><i class="fa fa-equals"></i><div><small>Average Bid</small><strong>${{ averageBid }}</strong></div></div>
+            <div class="stat-card highest"><i class="fa fa-arrow-up"></i><div><small>Highest Bid</small><strong>${{ highestBid }}</strong></div></div>
+          </div>
+
+          <div class="proposal-card" *ngFor="let prop of proposals">
+            <div class="prop-freelancer">
+              <img src="https://placehold.co/40x40/1f2937/white?text=F" alt="Freelancer">
+              <div>
+                <strong>Freelancer #{{ prop.freelancerId }} <span *ngIf="prop.freelancerId === currentFreelancerId" style="color:#3b82f6; font-size: 0.8em;">(You)</span></strong>
+                <small>Submitted an offer</small>
+              </div>
+            </div>
+            <div class="prop-details">
+              <div class="prop-stat"><small>Bid Amount</small><strong>${{ prop.bidAmount }}</strong></div>
+              <div class="prop-stat"><small>Est. Delivery</small><strong>{{ prop.estimationEndDate }}</strong></div>
+              <span class="status-badge" [ngClass]="prop.status?.toLowerCase()">{{ prop.status || 'PENDING' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div *ngIf="activeTab === 'reviews'" class="section reviews-section">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>Client Reputation</h3>
+            <button class="btn-outline-full" style="width: auto; padding: 5px 15px;" (click)="openReviewModal()">+ Write a Review</button>
+          </div>
+
+          <div *ngIf="projectReviews.length === 0" class="empty-state">
+            <i class="fa fa-star fa-2x" style="color: #cbd5e1;"></i>
+            <p>This client has no reviews yet for this project.</p>
+          </div>
+
+          <div class="review-bubble" *ngFor="let rev of projectReviews">
+            <div class="review-header">
+              <span class="reviewer-name">{{ rev.reviewerName || 'Freelancer' }}</span>
+              <div class="stars">
+                <i class="fa fa-star" *ngFor="let s of [1,2,3,4,5]"
+                   [ngClass]="s <= rev.rating ? 'filled' : ''"
+                   [style.color]="s <= rev.rating ? '#f59e0b' : '#e2e8f0'"></i>
+              </div>
+            </div>
+            <p>"{{ rev.description }}"</p>
+            <small class="review-date">{{ rev.createdAt | date:'mediumDate' }}</small>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar-details">
+
+      <div class="card action-widget">
+        <div class="budget-display">
+          <small>{{ project.jobType === 'HOURLY' ? 'Hourly Rate' : 'Fixed Budget' }}</small>
+          <h2>${{ project.budget }}</h2>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-primary-full" *ngIf="!hasAlreadyApplied" (click)="openModal()">Submit a Proposal</button>
+          <button class="btn-primary-full btn-applied" *ngIf="hasAlreadyApplied" disabled>
+            <i class="fa fa-check-circle"></i> Already Applied
+          </button>
+          <button class="btn-outline-full" [class.saved]="isSaved" (click)="toggleSave()">
+            <i class="fa-heart" [ngClass]="isSaved ? 'fas' : 'far'"></i> {{ isSaved ? 'Saved' : 'Save Job' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card client-widget">
+        <h4>About the Client</h4>
+        <div class="client-rating" *ngIf="projectReviews.length > 0">
+          <div class="stars">
+            <i class="fa fa-star filled"></i><i class="fa fa-star filled"></i>
+            <i class="fa fa-star filled"></i><i class="fa fa-star filled"></i>
+            <i class="fa fa-star filled"></i>
+          </div>
+          <span>Based on {{ projectReviews.length }} reviews</span>
+        </div>
+        <ul class="client-stats-list">
+          <li>
+            <i class="fa fa-building"></i>
+            <div><strong>Client ID: {{ project.clientId }}</strong><small>Identity Verified</small></div>
+          </li>
+          <li>
+            <i class="fa fa-check-circle verified-color"></i>
+            <div><strong>Payment Verified</strong><small>Trusted Member</small></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card share-widget">
+        <h4>Share Job</h4>
+        <div class="copy-box">
+          <input type="text" [value]="currentUrl" readonly>
+          <button (click)="copyLink()">Copy</button>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- Not Found -->
+<div *ngIf="!isLoading && !project" style="text-align: center; padding: 100px;">
+  <h2>Project not found</h2>
+  <a routerLink="/FreelancerFeed" style="color: #3b82f6;">Return to feed</a>
+</div>
+
+
+<!-- ======================== PROPOSAL MODAL ======================== -->
+<div class="modal-overlay" *ngIf="isProposalModalOpen">
+  <div class="modal-card premium-modal">
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon proposal-icon"><i class="fa fa-file-signature"></i></div>
+        <div>
+          <h2>Submit Your Proposal</h2>
+          <p class="subtitle">Offer your services for: <strong style="color: #1e293b;">{{ project?.title }}</strong></p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeModal()"><i class="fa fa-times"></i></button>
+    </div>
+
+    <div class="modal-body premium-body">
+      
+      <div class="form-section">
+        <div class="form-group">
+          <label><i class="fa fa-dollar-sign text-muted"></i> Your Bid Amount <span class="required">*</span></label>
+          <div class="input-wrapper-prefix">
+            <span class="prefix">$</span>
+            <input type="number" class="form-control premium-input with-prefix" [(ngModel)]="newProposal.bidAmount" placeholder="e.g. 500">
+          </div>
+          <small class="helper-text"><i class="fa fa-info-circle"></i> Client's budget is ${{ project?.budget }}</small>
+        </div>
+      </div>
+
+      <div class="form-section important-section">
+        <div class="important-header">
+          <div class="warning-icon-wrapper">
+            <i class="fa fa-calendar-check warning-icon"></i>
+          </div>
+          <div>
+            <h4>Estimated Delivery Date <span class="required">*</span></h4>
+            <p>This date is crucial. It will serve as the <strong>official end date of your contract</strong>.</p>
+          </div>
+        </div>
+        
+        <div class="form-group custom-datepicker-container" style="margin-top: 15px; margin-bottom: 0;">
+          <div class="datepicker-input-wrapper" (click)="toggleDatePicker()">
+            <input type="text" readonly class="form-control premium-input date-input-highlight" 
+                   [value]="newProposal.estimationEndDate ? newProposal.estimationEndDate : 'Select a delivery date'"
+                   style="cursor: pointer; background: white;">
+            <i class="fa fa-calendar-alt calendar-icon"></i>
+          </div>
+          
+          <div class="custom-calendar-popup" *ngIf="showDatePicker" (click)="$event.stopPropagation()">
+            <div class="calendar-header">
+              <button type="button" class="nav-btn" (click)="prevMonth($event)"><i class="fa fa-chevron-left"></i></button>
+              <strong>{{ months[currentDate.getMonth()] }} {{ currentDate.getFullYear() }}</strong>
+              <button type="button" class="nav-btn" (click)="nextMonth($event)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-grid">
+              <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+              <ng-container *ngFor="let week of calendarWeeks">
+                <div class="day-cell" *ngFor="let day of week" 
+                     [class.empty]="!day" 
+                     [class.selected]="isSameDate(day, selectedDate)"
+                     (click)="day ? selectDate(day, $event) : null">
+                  {{ day ? day.getDate() : '' }}
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer premium-footer">
+      <button class="btn-cancel premium-btn-outline" (click)="closeModal()">Cancel</button>
+      <button class="btn-publish premium-btn-primary" (click)="submitProposal()">
+        <i class="fa fa-paper-plane"></i> Send Proposal
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================== REVIEW MODAL ======================== -->
+<div class="modal-overlay" *ngIf="showReviewModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Rate the Client</h2>
+      <button class="close-btn" (click)="closeReviewModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- 🔴 REJECTION BANNER — shown only when backend rejects the review -->
+      <div *ngIf="reviewWasRejected && reviewRejectionMsg" class="review-rejection-banner">
+        <div class="rejection-icon">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div class="rejection-content">
+          <p class="rejection-title">Review rejected</p>
+          <p class="rejection-reason">{{ reviewRejectionMsg }}</p>
+          <p class="rejection-hint">
+            Edit your text manually or click
+            <strong>"Improve with Gemini AI"</strong> to clean it up automatically.
+          </p>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="form-group">
+        <label>Rating (Out of 5)</label>
+        <select [(ngModel)]="rating" class="form-control">
+          <option [ngValue]="5">⭐⭐⭐⭐⭐ (5) Excellent</option>
+          <option [ngValue]="4">⭐⭐⭐⭐ (4) Good</option>
+          <option [ngValue]="3">⭐⭐⭐ (3) Average</option>
+          <option [ngValue]="2">⭐⭐ (2) Poor</option>
+          <option [ngValue]="1">⭐ (1) Terrible</option>
+        </select>
+      </div>
+
+      <!-- Feedback textarea -->
+      <div class="form-group">
+        <label>Your Feedback</label>
+        <div class="ai-textarea-wrapper">
+
+          <!-- Textarea — red border when rejected -->
+          <textarea
+            [(ngModel)]="reviewText"
+            class="form-control ai-textarea"
+            [class.textarea-rejected]="reviewWasRejected && reviewRejectionMsg"
+            placeholder="Write your honest feedback here..."
+            rows="4">
+          </textarea>
+
+          <!-- AI Enhance Button -->
+          <button
+            class="ai-magic-btn"
+            [class.ai-magic-btn--fix]="reviewWasRejected && reviewRejectionMsg"
+            [disabled]="isEnhancing || !reviewText"
+            (click)="enhanceWithAI()"
+            title="Professionalize text using AI">
+            <i class="fa" [ngClass]="isEnhancing ? 'fa-spinner fa-spin' : 'fa-magic'"></i>
+            <span *ngIf="!isEnhancing && !(reviewWasRejected && reviewRejectionMsg)">Improve with Gemini AI</span>
+            <span *ngIf="!isEnhancing && reviewWasRejected && reviewRejectionMsg">Fix with Gemini AI</span>
+            <span *ngIf="isEnhancing">Improving...</span>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeReviewModal()">Cancel</button>
+      <button
+        class="btn-publish"
+        [disabled]="!reviewText || isSubmittingReview"
+        (click)="submitReview()">
+        <span *ngIf="!isSubmittingReview">Post Review</span>
+        <span *ngIf="isSubmittingReview"><i class="fa fa-spinner fa-spin"></i> Posting...</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== CUSTOM TOAST NOTIFICATION ======================== -->
+<div class="custom-toast" [class.show]="toastMessage" [ngClass]="toastType">
+  <div class="toast-icon">
+    <i class="fa fa-check-circle" *ngIf="toastType === 'success'"></i>
+    <i class="fa fa-exclamation-circle" *ngIf="toastType === 'error'"></i>
+  </div>
+  <div class="toast-content">{{ toastMessage }}</div>
+</div>

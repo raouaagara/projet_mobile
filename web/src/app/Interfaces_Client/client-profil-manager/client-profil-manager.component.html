@@ -1,0 +1,157 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/ClientFeed">
+      <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/ClientFeed" routerLinkActive="active"><i class="fa fa-stream"></i> Feed</a>
+      <a routerLink="/ClientDashboard" routerLinkActive="active"><i class="fa fa-th-large"></i> Dashboard</a>
+      <a routerLink="/ClientProfileManager" routerLinkActive="active" class="active-link"><i class="fa fa-user-circle"></i> Profile</a>
+      <a routerLink="/AllProjects" routerLinkActive="active"><i class="fa fa-folder-open"></i> Projects</a>
+      <a routerLink="/ClientContracts"><i class="fa fa-file-contract"></i> Contracts</a>
+         <a routerLink="/WorldClock" class="menu-item"><i class="fa fa-globe"></i> World Clock</a>
+      <a routerLink="/Payments" routerLinkActive="active"><i class="fa fa-wallet"></i> Payments</a>
+    </div>
+
+    <div class="nav-actions">
+        <button class="btn-create-nav"><i class="fa fa-plus"></i> Post Job</button>
+        <div class="user-profile">
+            <img [src]="currentUser.profilePictureUrl || 'https://placehold.co/40x40/198754/ffffff?text=' + (currentUser.firstName ? currentUser.firstName.charAt(0) : 'C')" alt="Company">
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+    
+    <header class="top-header">
+      <div class="welcome-text">
+        <h1>{{ currentUser.firstName || 'Company' }} Profile</h1>
+        <p>Manage your brand identity and company details visible to freelancers.</p>
+      </div>
+      <div class="header-actions">
+        <span *ngIf="successMessage" style="color: #166534; font-weight: bold; margin-right: 15px;">
+          <i class="fa fa-check-circle"></i> {{ successMessage }}
+        </span>
+        <span *ngIf="errorMessage" style="color: #ef4444; font-weight: bold; margin-right: 15px;">
+          <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+        </span>
+
+        <button class="btn-outline" routerLink="/ClientProfil">View Public Page</button>
+        <button class="btn-create" (click)="saveChanges()">Save Changes</button>
+      </div>
+    </header>
+
+    <div class="edit-grid">
+      
+      <div class="column-main">
+        
+        <div class="card edit-card">
+            <div class="card-header">
+                <h3><i class="fa fa-building"></i> Company Information</h3>
+            </div>
+            
+            <div class="form-group">
+                <label>Company Name</label>
+                <input type="text" [(ngModel)]="currentUser.firstName" placeholder="e.g. Acme Corp">
+            </div>
+
+            <div class="form-group">
+                <label>Tagline / Headline</label>
+                <input type="text" [(ngModel)]="currentUser.lastName" placeholder="e.g. Building the future of digital payments.">
+            </div>
+
+            <div class="form-group">
+                <label>About Us</label>
+                <textarea rows="5" [(ngModel)]="currentUser.bio" placeholder="Describe your company culture..."></textarea>
+            </div>
+        </div>
+
+        <div class="card edit-card">
+            <div class="card-header">
+                <h3><i class="fa fa-image"></i> Brand Assets</h3>
+            </div>
+
+        <div class="assets-row">
+    <div class="asset-col">
+        <label>Company Logo (PDP)</label>
+        <div class="logo-upload-box">
+            <img [src]="currentUser.profilePictureUrl || 'https://placehold.co/80x80/198754/ffffff?text=' + (currentUser.firstName ? currentUser.firstName.charAt(0) : 'C')" alt="Logo">
+            
+            <button class="btn-icon-edit" (click)="logoInput.click()"><i class="fa fa-camera"></i></button>
+        </div>
+        
+        <input type="file" #logoInput accept="image/*" style="display: none;" (change)="onLogoSelected($event)">
+    </div>
+
+    <div class="asset-col flex-grow">
+        <label>Profile Cover (PDC)</label>
+        <div class="cover-upload-box">
+            <img [src]="currentUser.coverPictureUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80'" alt="Cover">
+            <div class="overlay">
+                <button class="btn-outline-white" (click)="coverInput.click()"><i class="fa fa-upload"></i> Change Cover</button>
+            </div>
+        </div>
+        
+        <input type="file" #coverInput accept="image/*" style="display: none;" (change)="onCoverSelected($event)">
+    </div>
+</div>
+        </div>
+
+      </div>
+
+      <aside class="column-side">
+        
+        <div class="card edit-card">
+            <div class="card-header">
+                <h3>Details</h3>
+            </div>
+            
+            <div class="form-group">
+                <label>Website</label>
+                <input type="text" [(ngModel)]="currentUser.website" placeholder="https://acmecorp.com">
+            </div>
+
+        </div>
+
+        <div class="card edit-card">
+            <div class="card-header">
+                <h3>Location</h3>
+            </div>
+            <div class="form-group">
+                <label>City / Region</label>
+                <input type="text" [(ngModel)]="currentUser.location" placeholder="e.g. San Francisco">
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <select class="form-control" [(ngModel)]="currentUser.country">
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Tunisia">Tunisia</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card edit-card">
+            <div class="card-header">
+                <h3>Social Links</h3>
+            </div>
+            <div class="social-input">
+                <i class="fab fa-linkedin"></i>
+                <input type="text" [(ngModel)]="currentUser.linkedinUrl" placeholder="LinkedIn URL">
+            </div>
+            <div class="social-input">
+                <i class="fab fa-twitter"></i>
+                <input type="text" [(ngModel)]="currentUser.twitterUrl" placeholder="Twitter URL">
+            </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+</div>

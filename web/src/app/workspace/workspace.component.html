@@ -1,0 +1,151 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+        <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+    <div class="nav-menu">
+        <a routerLink="/FreelancerContracts" class="back-link"><i class="fa fa-arrow-left"></i> Back to My Jobs</a>
+    </div>
+    <div class="nav-actions">
+        <div class="user-profile">
+            <img src="https://placehold.co/40x40/198754/ffffff?text=ME" alt="Profile">
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="workspace-layout">
+  
+  <main class="workspace-main">
+    
+    <header class="workspace-header">
+      <div class="header-badges">
+        <span class="status-badge active"><i class="fa fa-bolt"></i> IN PROGRESS</span>
+        <span class="contract-id">Contract #{{ contractId || '1024' }}</span>
+      </div>
+      <h1>{{ workspaceData.projectTitle }}</h1>
+    </header>
+
+    <div class="workspace-tabs">
+      <button class="tab-btn" [class.active]="currentTab === 'activity'" (click)="currentTab = 'activity'">
+        <i class="fa fa-comments"></i> Activity & Chat
+      </button>
+      <button class="tab-btn" [class.active]="currentTab === 'submissions'" (click)="currentTab = 'submissions'">
+        <i class="fa fa-box-open"></i> Deliverables
+      </button>
+      <button class="tab-btn" [class.active]="currentTab === 'details'" (click)="currentTab = 'details'">
+        <i class="fa fa-file-contract"></i> Original Contract
+      </button>
+    </div>
+
+    <div class="tab-content" *ngIf="currentTab === 'activity'">
+      
+      <div class="timeline">
+        <div class="timeline-event system">
+          <div class="event-icon"><i class="fa fa-file-signature"></i></div>
+          <div class="event-body">
+            <strong>Contract Signed</strong>
+            <p>Both parties have signed the agreement. Escrow is funded.</p>
+            <span class="time">Feb 24, 2026</span>
+          </div>
+        </div>
+
+        <div class="timeline-event message client-msg">
+          <img src="https://placehold.co/40x40/3b82f6/white?text=C" class="avatar">
+          <div class="event-body">
+            <div class="msg-header">
+              <strong>{{ workspaceData.clientName }}</strong> <span class="time">Yesterday, 10:00 AM</span>
+            </div>
+            <div class="msg-bubble">
+              Hello! Looking forward to working with you. Let me know if you need the API keys to start.
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-event message freelancer-msg">
+          <img src="https://placehold.co/40x40/198754/white?text=F" class="avatar">
+          <div class="event-body">
+            <div class="msg-header">
+              <strong>{{ workspaceData.freelancerName }} (You)</strong> <span class="time">Yesterday, 10:15 AM</span>
+            </div>
+            <div class="msg-bubble">
+              Hi! Yes, please send them over securely. I've already set up the Spring Boot environment.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-box">
+        <textarea placeholder="Type a message or share an update..."></textarea>
+        <div class="chat-actions">
+          <button class="btn-icon"><i class="fa fa-paperclip"></i> Attach File</button>
+          <button class="btn-send"><i class="fa fa-paper-plane"></i> Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="currentTab === 'submissions'">
+      
+      <div class="submit-work-card" *ngIf="currentUserRole === 'FREELANCER'">
+        <h3>Submit Final Work</h3>
+        <p class="text-muted">Upload your deliverables or provide links to your work for the client to review.</p>
+        
+        <div class="form-group">
+          <label>Message to Client</label>
+          <textarea  placeholder="Describe what you have completed..." rows="4"></textarea>
+        </div>
+        
+        <div class="upload-zone">
+          <i class="fa fa-cloud-upload-alt"></i>
+          <p>Drag & drop files here, or <strong>browse</strong></p>
+          <small>Max size: 50MB (.zip, .pdf, .png)</small>
+        </div>
+
+        <button class="btn-submit-work" (click)="submitWork()">
+          <i class="fa fa-check-circle"></i> Submit for Payment
+        </button>
+      </div>
+
+      <div class="empty-state" *ngIf="currentUserRole === 'CLIENT'">
+        <i class="fa fa-hourglass-half"></i>
+        <h3>Waiting for Deliverables</h3>
+        <p>The freelancer has not submitted the final work yet.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <aside class="workspace-sidebar">
+    
+    <div class="meta-card escrow-card">
+      <div class="card-title"><i class="fa fa-shield-alt"></i> Escrow Protection</div>
+      <div class="escrow-amount">${{ workspaceData.budget  }}</div>
+      <div class="escrow-status"><i class="fa fa-check"></i> Funds Secured</div>
+      <p class="meta-help">Money is held safely by CatchOp until work is approved.</p>
+    </div>
+
+    <div class="meta-card info-card">
+      <div class="info-row">
+        <span><i class="fa fa-flag"></i> Deadline</span>
+        <strong>{{ workspaceData.deadline}}</strong>
+      </div>
+      <hr>
+      <div class="info-row party-info">
+        <span>Working with</span>
+        <div class="party-profile">
+          <img src="https://placehold.co/40x40/3b82f6/white?text=C" alt="Partner">
+          <div>
+            <strong>{{ workspaceData.clientName }}</strong>
+            <small>Client</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button class="btn-outline-danger"><i class="fa fa-exclamation-triangle"></i> Report an Issue</button>
+    </div>
+
+  </aside>
+
+</div>

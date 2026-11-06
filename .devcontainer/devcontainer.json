@@ -1,0 +1,27 @@
+// GitHub Codespaces: runs the whole CatchOPP backend in the cloud, the same way as on our PCs
+// (MariaDB on localhost:3306 + every service from its jar). How to use it: docs/CODESPACES.md
+{
+  "name": "CatchOPP backend",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "none", "installMaven": "true", "installGradle": "false" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  // No Python feature (its install fails on this image): catchopp.sh gets Python 3.12 for the AI service through uv.
+  // 12 JVMs + MariaDB + the AI service need about 6 GB: the 2-core machine (8 GB) is enough.
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  "forwardPorts": [8085, 8761],
+  "portsAttributes": {
+    "8085": { "label": "API gateway (the app)", "onAutoForward": "silent" },
+    "8761": { "label": "Eureka", "onAutoForward": "silent" }
+  },
+  "otherPortsAttributes": { "onAutoForward": "silent" },
+  "postCreateCommand": "sudo ln -sf \"$PWD/backend/scripts/catchopp.sh\" /usr/local/bin/catchopp",
+  // Runs each time the codespace starts or wakes up: only rebuilds the services whose code changed.
+  "postStartCommand": "bash backend/scripts/catchopp.sh start",
+  "customizations": {
+    "codespaces": { "openFiles": ["docs/CODESPACES.md"] }
+  }
+}

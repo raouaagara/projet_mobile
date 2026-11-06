@@ -1,0 +1,546 @@
+<div class="admin-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1><i class="fa fa-chart-line"></i> Admin Dashboard</h1>
+        <p>Manage communities, events, and clubs</p>
+      </div>
+      <div class="header-right">
+        <app-notification-bell></app-notification-bell>
+        <button class="btn-outline" (click)="router.navigate(['/groups'])">
+          <i class="fa fa-users"></i> Groups & Clubs
+        </button>
+        <button class="btn-outline" (click)="router.navigate(['/events'])">
+          <i class="fa fa-calendar-alt"></i> Events
+        </button>
+        <button class="btn-primary" (click)="navigateToClubDashboard()">
+          <i class="fa fa-chart-pie"></i> Club Dashboard
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card stat-primary">
+      <div class="stat-icon">
+        <i class="fa fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{stats.totalGroups}}</h3>
+        <p>Total Groups</p>
+        <span class="stat-growth positive">
+          <i class="fa fa-arrow-up"></i> {{stats.groupsGrowth}}%
+        </span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-success">
+      <div class="stat-icon">
+        <i class="fa fa-calendar-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{stats.totalEvents}}</h3>
+        <p>Total Events</p>
+        <span class="stat-growth positive">
+          <i class="fa fa-arrow-up"></i> {{stats.eventsGrowth}}%
+        </span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-info">
+      <div class="stat-icon">
+        <i class="fa fa-star"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{stats.totalClubs}}</h3>
+        <p>Total Clubs</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-warning">
+      <div class="stat-icon">
+        <i class="fa fa-user-friends"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{stats.totalMembers}}</h3>
+        <p>Total Members</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="dashboard-tabs">
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'overview'"
+      (click)="selectTab('overview')">
+      <i class="fa fa-chart-bar"></i> Overview
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'groups'"
+      (click)="selectTab('groups')">
+      <i class="fa fa-users"></i> Groups ({{stats.totalGroups}})
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'events'"
+      (click)="selectTab('events')">
+      <i class="fa fa-calendar"></i> Events ({{stats.totalEvents}})
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'clubs'"
+      (click)="selectTab('clubs')">
+      <i class="fa fa-star"></i> Clubs ({{stats.totalClubs}})
+    </button>
+  </div>
+
+  <!-- Overview Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'overview'">
+    <div class="overview-grid">
+      <!-- Group Distribution Chart -->
+      <div class="card chart-card">
+        <h3><i class="fa fa-chart-pie"></i> Group Distribution</h3>
+        <div class="chart-content">
+          <div class="pie-chart">
+            <div class="pie-segment public" 
+                 [style.--percentage]="(stats.publicGroups / stats.totalGroups * 100) + '%'">
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-color public"></span>
+              <span>Public: {{stats.publicGroups}}</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color private"></span>
+              <span>Private: {{stats.privateGroups}}</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color invitation"></span>
+              <span>Invitation Only: {{stats.invitationOnlyGroups}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Groups -->
+      <div class="card">
+        <h3><i class="fa fa-clock"></i> Recent Groups</h3>
+        <div class="recent-list">
+          <div class="recent-item" *ngFor="let group of stats.recentGroups">
+            <div class="recent-info">
+              <h4>{{group.name}}</h4>
+              <p>{{group.description | slice:0:50}}...</p>
+            </div>
+            <span class="badge" [ngClass]="getTypeClass(group.type)">
+              {{getTypeLabel(group.type)}}
+            </span>
+          </div>
+          <div class="empty-state" *ngIf="stats.recentGroups.length === 0">
+            <i class="fa fa-inbox"></i>
+            <p>No groups yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Events -->
+      <div class="card">
+        <h3><i class="fa fa-calendar-check"></i> Recent Events</h3>
+        <div class="recent-list">
+          <div class="recent-item" *ngFor="let event of stats.recentEvents">
+            <div class="recent-info">
+              <h4>{{event.title}}</h4>
+              <p><i class="fa fa-map-marker-alt"></i> {{event.location}}</p>
+            </div>
+            <span class="event-date">{{event.startDate | date:'short'}}</span>
+          </div>
+          <div class="empty-state" *ngIf="stats.recentEvents.length === 0">
+            <i class="fa fa-inbox"></i>
+            <p>No events yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="card">
+        <h3><i class="fa fa-info-circle"></i> Quick Stats</h3>
+        <div class="quick-stats">
+          <div class="quick-stat-item">
+            <span class="stat-label">Total Posts</span>
+            <span class="stat-value">{{stats.totalPosts}}</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="stat-label">Avg Members/Group</span>
+            <span class="stat-value">{{stats.totalGroups > 0 ? (stats.totalMembers / stats.totalGroups).toFixed(1) : 0}}</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="stat-label">Active Communities</span>
+            <span class="stat-value">{{stats.totalGroups + stats.totalClubs}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'groups'">
+    <div class="groups-toolbar">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search groups by name or description..."
+          [(ngModel)]="groupSearchTerm"
+          (input)="filterGroups()">
+      </div>
+      <div class="filter-buttons">
+        <button 
+          class="filter-btn" 
+          [class.active]="groupTypeFilter === 'all'"
+          (click)="setGroupFilter('all')">
+          <i class="fa fa-list"></i> All
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="groupTypeFilter === 'PUBLIC'"
+          (click)="setGroupFilter('PUBLIC')">
+          <i class="fa fa-globe"></i> Public
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="groupTypeFilter === 'PRIVATE'"
+          (click)="setGroupFilter('PRIVATE')">
+          <i class="fa fa-lock"></i> Private
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="groupTypeFilter === 'INVITE_ONLY'"
+          (click)="setGroupFilter('INVITE_ONLY')">
+          <i class="fa fa-envelope"></i> Invitation
+        </button>
+      </div>
+      <button class="btn-primary" (click)="openCreateGroupModal()">
+        <i class="fa fa-plus"></i> Add Group
+      </button>
+    </div>
+
+    <!-- Groups Grid -->
+    <div class="groups-grid-admin" *ngIf="filteredGroupsAdmin && filteredGroupsAdmin.length > 0">
+      <div class="group-admin-card" *ngFor="let group of filteredGroupsAdmin">
+        <div class="group-admin-header" [style.background-image]="group.bannerUrl ? 'url(' + group.bannerUrl + ')' : 'none'">
+          <div class="group-header-overlay">
+            <span class="type-badge-admin" [ngClass]="getTypeClass(group.type)">
+              {{getTypeLabel(group.type)}}
+            </span>
+          </div>
+        </div>
+
+        <div class="group-admin-body">
+          <h4 class="group-admin-title">{{group.name}}</h4>
+          <p class="group-admin-description">{{group.description}}</p>
+        </div>
+
+        <div class="group-admin-footer">
+          <div class="standard-actions">
+            <button class="btn-icon-admin" (click)="viewGroup(group.id)" title="View">
+              <i class="fa fa-eye"></i>
+            </button>
+            <button class="btn-icon-admin" (click)="openEditGroupModal(group)" title="Edit">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn-icon-admin btn-danger-admin" (click)="deleteGroup(group)" title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!filteredGroupsAdmin || filteredGroupsAdmin.length === 0">
+      <i class="fa fa-users"></i>
+      <h3>No Groups Found</h3>
+      <p *ngIf="groupSearchTerm">Try adjusting your search or filters</p>
+      <p *ngIf="!groupSearchTerm">No groups match the selected filter</p>
+      <button class="btn-primary" (click)="openCreateGroupModal()">
+        <i class="fa fa-plus"></i> Create First Group
+      </button>
+    </div>
+  </div>
+
+  <!-- Events Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'events'">
+    <!-- Search and Filter Bar -->
+    <div class="events-toolbar">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search events by title or location..."
+          [(ngModel)]="eventSearchTerm"
+          (input)="filterEvents()">
+      </div>
+      <div class="filter-buttons">
+        <button 
+          class="filter-btn" 
+          [class.active]="eventStatusFilter === 'all'"
+          (click)="setEventFilter('all')">
+          <i class="fa fa-list"></i> All
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="eventStatusFilter === 'PENDING'"
+          (click)="setEventFilter('PENDING')">
+          <i class="fa fa-clock"></i> Pending
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="eventStatusFilter === 'APPROVED'"
+          (click)="setEventFilter('APPROVED')">
+          <i class="fa fa-check-circle"></i> Approved
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="eventStatusFilter === 'REJECTED'"
+          (click)="setEventFilter('REJECTED')">
+          <i class="fa fa-times-circle"></i> Rejected
+        </button>
+      </div>
+      <button class="btn-primary" (click)="openCreateEventModal()">
+        <i class="fa fa-plus"></i> Create Event
+      </button>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="events-grid-admin" *ngIf="filteredEventsAdmin && filteredEventsAdmin.length > 0">
+      <div class="event-admin-card" *ngFor="let event of filteredEventsAdmin">
+        <div class="event-admin-header">
+          <div class="event-admin-date">
+            <span class="date-day">{{ formatDay(event.startDate) }}</span>
+            <span class="date-month">{{ formatMonth(event.startDate) }}</span>
+          </div>
+          <span class="status-badge-admin" [ngClass]="{
+            'status-pending': event.status === 'PENDING',
+            'status-approved': event.status === 'APPROVED',
+            'status-rejected': event.status === 'REJECTED'
+          }">
+            {{event.status || 'APPROVED'}}
+          </span>
+        </div>
+
+        <div class="event-admin-body">
+          <h4 class="event-admin-title">{{event.title}}</h4>
+          <p class="event-admin-description">{{event.description}}</p>
+          
+          <div class="event-admin-details">
+            <div class="detail-row">
+              <i class="fa fa-map-marker-alt"></i>
+              <span>{{event.location}}</span>
+            </div>
+            <div class="detail-row">
+              <i class="fa fa-clock"></i>
+              <span>{{event.startDate | date:'short'}} - {{event.endDate | date:'short'}}</span>
+            </div>
+            <div class="detail-row">
+              <i class="fa fa-users"></i>
+              <span>{{event.group?.name || 'No Group'}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="event-admin-footer">
+          <div class="approval-actions" *ngIf="event.status === 'PENDING'">
+            <button class="btn-approve" (click)="approveEvent(event)" title="Approve Event">
+              <i class="fa fa-check"></i> Approve
+            </button>
+            <button class="btn-reject" (click)="rejectEvent(event)" title="Reject Event">
+              <i class="fa fa-times"></i> Reject
+            </button>
+          </div>
+          <div class="standard-actions">
+            <button class="btn-icon-admin" (click)="openEditEventModal(event)" title="Edit">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn-icon-admin btn-danger-admin" (click)="deleteEvent(event)" title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!filteredEventsAdmin || filteredEventsAdmin.length === 0">
+      <i class="fa fa-calendar-times"></i>
+      <h3>No Events Found</h3>
+      <p *ngIf="eventSearchTerm">Try adjusting your search or filters</p>
+      <p *ngIf="!eventSearchTerm">No events match the selected filter</p>
+      <button class="btn-primary" (click)="openCreateEventModal()">
+        <i class="fa fa-plus"></i> Create First Event
+      </button>
+    </div>
+  </div>
+
+  <!-- Clubs Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'clubs'">
+    <div class="clubs-toolbar">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search clubs by name or interests..."
+          [(ngModel)]="clubSearchTerm"
+          (input)="filterClubs()">
+      </div>
+      <button class="btn-primary" (click)="navigateToClubDashboard()">
+        <i class="fa fa-chart-pie"></i> Club Dashboard
+      </button>
+    </div>
+
+    <!-- Clubs Grid -->
+    <div class="clubs-grid-admin" *ngIf="filteredClubsAdmin && filteredClubsAdmin.length > 0">
+      <div class="club-admin-card" *ngFor="let club of filteredClubsAdmin">
+        <div class="club-admin-header">
+          <div class="club-icon">
+            <i class="fa fa-star"></i>
+          </div>
+        </div>
+
+        <div class="club-admin-body">
+          <h4 class="club-admin-title">{{club.name}}</h4>
+          <p class="club-admin-description">{{club.description}}</p>
+          
+          <div class="club-admin-details" *ngIf="club.interests">
+            <div class="detail-row">
+              <i class="fa fa-tags"></i>
+              <span>{{club.interests}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="club-admin-footer">
+          <div class="standard-actions">
+            <button class="btn-icon-admin" title="View">
+              <i class="fa fa-eye"></i>
+            </button>
+            <button class="btn-icon-admin" title="Edit">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn-icon-admin btn-danger-admin" title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!filteredClubsAdmin || filteredClubsAdmin.length === 0">
+      <i class="fa fa-star"></i>
+      <h3>No Clubs Found</h3>
+      <p *ngIf="clubSearchTerm">Try adjusting your search</p>
+      <p *ngIf="!clubSearchTerm">No clubs available</p>
+    </div>
+  </div>
+</div>
+
+<!-- Group Modal -->
+<div class="modal-overlay" *ngIf="isGroupModalOpen" (click)="closeGroupModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{editingGroup ? 'Edit Group' : 'Create New Group'}}</h2>
+      <button class="close-btn" (click)="closeGroupModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Group Name *</label>
+        <input type="text" [(ngModel)]="groupForm.name" placeholder="e.g. Web Developers Community">
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea [(ngModel)]="groupForm.description" rows="4" 
+                  placeholder="Describe your group..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Group Type *</label>
+        <select [(ngModel)]="groupForm.type">
+          <option value="PUBLIC">Public - Anyone can join</option>
+          <option value="PRIVATE">Private - Approval required</option>
+          <option value="INVITE_ONLY">Invitation Only</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Banner URL (optional)</label>
+        <input type="text" [(ngModel)]="groupForm.bannerUrl" 
+               placeholder="https://example.com/banner.jpg">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeGroupModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveGroup()">
+        {{editingGroup ? 'Update' : 'Create'}} Group
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Event Modal -->
+<div class="modal-overlay" *ngIf="isEventModalOpen" (click)="closeEventModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{editingEvent ? 'Edit Event' : 'Create New Event'}}</h2>
+      <button class="close-btn" (click)="closeEventModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Event Title *</label>
+        <input type="text" [(ngModel)]="eventForm.title" placeholder="e.g. Web Development Workshop">
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea [(ngModel)]="eventForm.description" rows="4" 
+                  placeholder="Describe the event..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Location *</label>
+        <input type="text" [(ngModel)]="eventForm.location" 
+               placeholder="e.g. Online or Physical Address">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date & Time *</label>
+          <input type="datetime-local" [(ngModel)]="eventForm.startDate">
+        </div>
+        <div class="form-group">
+          <label>End Date & Time *</label>
+          <input type="datetime-local" [(ngModel)]="eventForm.endDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Associated Group *</label>
+        <select [(ngModel)]="eventForm.groupId">
+          <option [value]="0" disabled>Select a group</option>
+          <option *ngFor="let group of groups" [value]="group.id">
+            {{group.name}}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeEventModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveEvent()">
+        {{editingEvent ? 'Update' : 'Create'}} Event
+      </button>
+    </div>
+  </div>
+</div>

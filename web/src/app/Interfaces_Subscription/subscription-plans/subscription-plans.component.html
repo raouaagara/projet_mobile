@@ -1,0 +1,81 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="nav-actions">
+      <app-dark-mode-toggle></app-dark-mode-toggle>
+      <app-notification-center></app-notification-center>
+      <a routerLink="/FreelancerFeed" class="nav-link"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/FreelancerJobs" class="nav-link"><i class="fa fa-folder-open"></i> My Jobs</a>
+      <a routerLink="/SubscriptionPlans" class="nav-link active"><i class="fa fa-crown"></i> Subscription</a>
+      <div class="nav-divider"></div>
+      <div class="user-profile-menu">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Profile">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <div class="page-header">
+    <h1>Choose Your Plan</h1>
+    <p class="subtitle">Unlock more opportunities with a subscription. Premium & Enterprise include AI CV, skill tests, and certifications.</p>
+  </div>
+
+  <div class="filters-card">
+    <div class="filter-group">
+      <label>Price</label>
+      <select [(ngModel)]="priceFilter" name="priceFilter" class="filter-select">
+        <option value="all">All prices</option>
+        <option value="low">Under $15/mo</option>
+        <option value="mid">$15 - $30/mo</option>
+        <option value="high">Over $30/mo</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Duration</label>
+      <select [(ngModel)]="durationFilter" name="durationFilter" class="filter-select">
+        <option value="all">All durations</option>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="loading-plans" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i> Loading plans...
+  </div>
+  <div class="plans-grid" *ngIf="!loading">
+    <div *ngFor="let plan of filteredPlans" class="plan-card" [class.popular]="plan.popular">
+      <div class="popular-badge" *ngIf="plan.popular">Most Popular</div>
+      <div class="plan-header">
+        <h3>{{ plan.name }}</h3>
+        <div class="price">
+          <span class="amount">${{ plan.price }}</span>
+          <span class="period">/{{ plan.duration }}</span>
+        </div>
+      </div>
+      <ul class="benefits-list">
+        <li *ngFor="let benefit of plan.benefits">
+          <i class="fa fa-check-circle"></i>
+          <span>{{ benefit }}</span>
+        </li>
+      </ul>
+      <div class="plan-footer">
+        <a [routerLink]="['/SubscriptionDetail', plan.id]" class="btn-detail">View Details</a>
+        <a [routerLink]="['/SubscriptionCheckout', plan.id]" class="btn-subscribe">Subscribe</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-link">
+    <a routerLink="/SubscriptionDashboard"><i class="fa fa-tachometer-alt"></i> My Subscription Dashboard</a>
+    <a routerLink="/SkillTests"><i class="fa fa-graduation-cap"></i> Skill Tests & Certifications</a>
+    <a routerLink="/PlanComparator" class="compare-link"><i class="fa fa-columns"></i> Compare Plans</a>
+  </div>
+</div>

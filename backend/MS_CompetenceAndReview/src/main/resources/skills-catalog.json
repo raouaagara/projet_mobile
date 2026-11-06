@@ -1,0 +1,578 @@
+[
+ {
+  "name": "Java",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Python",
+  "category": "Programming languages"
+ },
+ {
+  "name": "JavaScript",
+  "category": "Programming languages"
+ },
+ {
+  "name": "TypeScript",
+  "category": "Programming languages"
+ },
+ {
+  "name": "C",
+  "category": "Programming languages"
+ },
+ {
+  "name": "C++",
+  "category": "Programming languages"
+ },
+ {
+  "name": "C#",
+  "category": "Programming languages"
+ },
+ {
+  "name": "PHP",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Kotlin",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Swift",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Dart",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Go",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Rust",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Ruby",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Scala",
+  "category": "Programming languages"
+ },
+ {
+  "name": "R",
+  "category": "Programming languages"
+ },
+ {
+  "name": "MATLAB",
+  "category": "Programming languages"
+ },
+ {
+  "name": "Bash",
+  "category": "Programming languages"
+ },
+ {
+  "name": "PowerShell",
+  "category": "Programming languages"
+ },
+ {
+  "name": "HTML",
+  "category": "Web"
+ },
+ {
+  "name": "CSS",
+  "category": "Web"
+ },
+ {
+  "name": "Sass",
+  "category": "Web"
+ },
+ {
+  "name": "Bootstrap",
+  "category": "Web"
+ },
+ {
+  "name": "Tailwind CSS",
+  "category": "Web"
+ },
+ {
+  "name": "jQuery",
+  "category": "Web"
+ },
+ {
+  "name": "Angular",
+  "category": "Web"
+ },
+ {
+  "name": "React",
+  "category": "Web"
+ },
+ {
+  "name": "Vue.js",
+  "category": "Web"
+ },
+ {
+  "name": "Next.js",
+  "category": "Web"
+ },
+ {
+  "name": "Node.js",
+  "category": "Web"
+ },
+ {
+  "name": "Express.js",
+  "category": "Web"
+ },
+ {
+  "name": "REST APIs",
+  "category": "Web"
+ },
+ {
+  "name": "GraphQL",
+  "category": "Web"
+ },
+ {
+  "name": "WordPress",
+  "category": "Web"
+ },
+ {
+  "name": "Web Development",
+  "category": "Web"
+ },
+ {
+  "name": "Frontend Development",
+  "category": "Web"
+ },
+ {
+  "name": "Backend Development",
+  "category": "Web"
+ },
+ {
+  "name": "Full Stack Development",
+  "category": "Web"
+ },
+ {
+  "name": "Spring Boot",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Spring Framework",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Hibernate",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Django",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Flask",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "FastAPI",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Laravel",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Symfony",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Ruby on Rails",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": ".NET",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Microservices",
+  "category": "Backend frameworks"
+ },
+ {
+  "name": "Flutter",
+  "category": "Mobile"
+ },
+ {
+  "name": "React Native",
+  "category": "Mobile"
+ },
+ {
+  "name": "Android",
+  "category": "Mobile"
+ },
+ {
+  "name": "iOS",
+  "category": "Mobile"
+ },
+ {
+  "name": "Firebase",
+  "category": "Mobile"
+ },
+ {
+  "name": "Mobile Development",
+  "category": "Mobile"
+ },
+ {
+  "name": "SQL",
+  "category": "Data"
+ },
+ {
+  "name": "MySQL",
+  "category": "Data"
+ },
+ {
+  "name": "PostgreSQL",
+  "category": "Data"
+ },
+ {
+  "name": "MongoDB",
+  "category": "Data"
+ },
+ {
+  "name": "Oracle Database",
+  "category": "Data"
+ },
+ {
+  "name": "SQL Server",
+  "category": "Data"
+ },
+ {
+  "name": "Redis",
+  "category": "Data"
+ },
+ {
+  "name": "Elasticsearch",
+  "category": "Data"
+ },
+ {
+  "name": "Databases",
+  "category": "Data"
+ },
+ {
+  "name": "Data Analysis",
+  "category": "Data"
+ },
+ {
+  "name": "Data Science",
+  "category": "Data"
+ },
+ {
+  "name": "Machine Learning",
+  "category": "AI"
+ },
+ {
+  "name": "Deep Learning",
+  "category": "AI"
+ },
+ {
+  "name": "Artificial Intelligence",
+  "category": "AI"
+ },
+ {
+  "name": "NLP",
+  "category": "AI"
+ },
+ {
+  "name": "Computer Vision",
+  "category": "AI"
+ },
+ {
+  "name": "TensorFlow",
+  "category": "AI"
+ },
+ {
+  "name": "PyTorch",
+  "category": "AI"
+ },
+ {
+  "name": "Keras",
+  "category": "AI"
+ },
+ {
+  "name": "Scikit-learn",
+  "category": "AI"
+ },
+ {
+  "name": "Pandas",
+  "category": "Data"
+ },
+ {
+  "name": "NumPy",
+  "category": "Data"
+ },
+ {
+  "name": "Power BI",
+  "category": "Data"
+ },
+ {
+  "name": "Tableau",
+  "category": "Data"
+ },
+ {
+  "name": "Microsoft Excel",
+  "category": "Data"
+ },
+ {
+  "name": "Big Data",
+  "category": "Data"
+ },
+ {
+  "name": "Apache Spark",
+  "category": "Data"
+ },
+ {
+  "name": "Statistics",
+  "category": "Data"
+ },
+ {
+  "name": "Docker",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Kubernetes",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Jenkins",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "CI/CD",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Git",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "GitHub",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "GitLab",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "AWS",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Microsoft Azure",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Google Cloud",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Linux",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Terraform",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Ansible",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Nginx",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "DevOps",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Kafka",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "RabbitMQ",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Maven",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "SonarQube",
+  "category": "DevOps & Cloud"
+ },
+ {
+  "name": "Cybersecurity",
+  "category": "Security & Networks"
+ },
+ {
+  "name": "Networking",
+  "category": "Security & Networks"
+ },
+ {
+  "name": "System Administration",
+  "category": "Security & Networks"
+ },
+ {
+  "name": "UI/UX Design",
+  "category": "Design"
+ },
+ {
+  "name": "Figma",
+  "category": "Design"
+ },
+ {
+  "name": "Adobe XD",
+  "category": "Design"
+ },
+ {
+  "name": "Adobe Photoshop",
+  "category": "Design"
+ },
+ {
+  "name": "Adobe Illustrator",
+  "category": "Design"
+ },
+ {
+  "name": "Adobe Premiere Pro",
+  "category": "Design"
+ },
+ {
+  "name": "After Effects",
+  "category": "Design"
+ },
+ {
+  "name": "Canva",
+  "category": "Design"
+ },
+ {
+  "name": "Graphic Design",
+  "category": "Design"
+ },
+ {
+  "name": "Prototyping",
+  "category": "Design"
+ },
+ {
+  "name": "Video Editing",
+  "category": "Design"
+ },
+ {
+  "name": "Digital Marketing",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "SEO",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Social Media Marketing",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Content Writing",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Translation",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Project Management",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Agile/Scrum",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Jira",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Business Analysis",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Accounting",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Financial Analysis",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Customer Support",
+  "category": "Marketing & Business"
+ },
+ {
+  "name": "Unit Testing",
+  "category": "Quality"
+ },
+ {
+  "name": "JUnit",
+  "category": "Quality"
+ },
+ {
+  "name": "Selenium",
+  "category": "Quality"
+ },
+ {
+  "name": "Software Testing",
+  "category": "Quality"
+ },
+ {
+  "name": "Object-Oriented Programming",
+  "category": "Concepts"
+ },
+ {
+  "name": "UML",
+  "category": "Concepts"
+ },
+ {
+  "name": "Design Patterns",
+  "category": "Concepts"
+ },
+ {
+  "name": "Algorithms",
+  "category": "Concepts"
+ },
+ {
+  "name": "Communication",
+  "category": "Soft skills"
+ },
+ {
+  "name": "Teamwork",
+  "category": "Soft skills"
+ },
+ {
+  "name": "Leadership",
+  "category": "Soft skills"
+ },
+ {
+  "name": "Problem Solving",
+  "category": "Soft skills"
+ },
+ {
+  "name": "Time Management",
+  "category": "Soft skills"
+ },
+ {
+  "name": "English",
+  "category": "Languages"
+ },
+ {
+  "name": "French",
+  "category": "Languages"
+ },
+ {
+  "name": "Arabic",
+  "category": "Languages"
+ }
+]

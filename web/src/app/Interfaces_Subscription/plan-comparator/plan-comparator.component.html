@@ -1,0 +1,101 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+    </div>
+    
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" [(ngModel)]="searchText" (keyup)="applyFilters()" placeholder="Search for jobs (e.g. Angular, Design)...">
+    </div>
+
+    <div class="nav-actions">
+       
+       <div class="icon-btn-wrapper" style="position: relative;">
+         <button class="nav-icon-btn" (click)="toggleNotifMenu($event)">
+           <i class="fa fa-bell"></i>
+         </button>
+         <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+
+         <div class="notif-dropdown" *ngIf="isNotifOpen" style="position: absolute; top: 50px; right: -50px; width: 320px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;" (click)="$event.stopPropagation()">
+           <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+             <h3 style="margin:0; font-size: 1.1rem;">Notifications</h3>
+           </div>
+           
+           <div style="max-height: 350px; overflow-y: auto;">
+             <div *ngIf="notifications.length === 0" style="padding: 20px; text-align: center; color: gray;">
+               No notifications yet.
+             </div>
+
+             <div *ngFor="let n of notifications" 
+                  style="padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s;"
+                  [ngStyle]="{'background': n.read ? 'white' : '#f0fdf4'}"
+                  (click)="markNotifRead(n, $event)">
+               
+               <div style="display: flex; gap: 10px; align-items: start;">
+                 <div style="background: #10b981; color: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                   <i class="fa fa-handshake"></i>
+                 </div>
+                 <div>
+                   <p style="margin: 0; font-size: 0.9rem; color: #333;">{{ n.message }}</p>
+                   <small style="color: gray; font-size: 0.75rem;">{{ n.createdAt | date:'short' }}</small>
+                 </div>
+                 <div *ngIf="!n.read" style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-top: 5px;"></div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       <button class="nav-icon-btn" (click)="toggleMessages(); $event.stopPropagation()" [class.active]="isMessagesOpen">
+          <i class="fa fa-comment-dots"></i> 
+        </button>
+       <a routerLink="/LeaderboardFreelancer" class="nav-link">
+         <i class="fa fa-trophy"></i> Leaderboard
+       </a>
+             <a routerLink="/SubscriptionPlans" class="nav-link"><i class="fa fa-crown"></i> </a>
+
+       
+        <app-messenger 
+            *ngIf="isMessagesOpen" 
+            (click)="$event.stopPropagation()">
+        </app-messenger>
+       <div class="nav-divider"></div>
+       <div class="user-profile-menu" routerLink="/FreelancerProfil" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/40x40/3b82f6/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'F')" alt="User Avatar">
+        <i class="fa fa-chevron-down"></i>
+       </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <div class="page-header">
+    <h1>Compare Plans</h1>
+    <p>Choose the best plan for your needs. Premium includes AI CV generator.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="feature-col">Feature</th>
+          <th *ngFor="let p of plans" [class.popular]="p.popular">
+            <div class="plan-name">{{ p.name }}</div>
+            <div class="plan-price">${{ p.price }}/mo</div>
+            <a [routerLink]="['/SubscriptionCheckout', p.id]" class="btn-sub">Subscribe</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of features">
+          <td class="feature-col">{{ f.name }}</td>
+          <td>{{ f.base }}</td>
+          <td>{{ f.premium }}</td>
+          <td>{{ f.enterprise }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

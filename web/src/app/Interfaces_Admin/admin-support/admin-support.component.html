@@ -1,0 +1,239 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/AdminDashboard">
+      <img src="assets/logo.png" alt="CatchIQ Admin" class="logo-img">
+      <span class="admin-badge">ADMIN</span>
+    </div>
+
+    <div class="nav-menu">
+      <a routerLink="/AdminDashboard" routerLinkActive="active"><i class="fa fa-chart-line"></i> Overview</a>
+      <a routerLink="/AdminUsers" routerLinkActive="active"><i class="fa fa-users-cog"></i> Users</a>
+      <a routerLink="/AdminSkills" routerLinkActive="active" ><i class="fa fa-tags"></i> Skills</a>
+      <a routerLink="/AdminJobs" routerLinkActive="active"><i class="fa fa-briefcase"></i> Jobs</a>
+      <a routerLink="/AdminFinance" routerLinkActive="active"><i class="fa fa-wallet"></i> Finance</a>
+      <a routerLink="/AdminDisputes" routerLinkActive="active"><i class="fa fa-gavel"></i> Disputes</a>
+      <a routerLink="/AdminSupport" routerLinkActive="active" class="active-link"><i class="fa fa-headset"></i> Support</a>
+    </div>
+
+    <div class="nav-actions">
+        <div class="user-profile">
+            <img src="https://placehold.co/40x40/1f2937/ffffff?text=AD" alt="Admin">
+            <div class="user-text">
+                <span class="name">Super Admin</span>
+            </div>
+        </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+    
+    <header class="page-header">
+      <div class="header-text">
+        <h1>Technical Support Center</h1>
+        <p>Manage user issues, respond to tickets, and monitor SLA breaches.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-outline" (click)="loadTickets(0)"><i class="fa fa-sync-alt"></i> Refresh</button>
+      </div>
+    </header>
+
+    <div class="stats-row" *ngIf="stats">
+      <div class="stat-card">
+        <div class="icon-box red"><i class="fa fa-envelope-open-text"></i></div>
+        <div>
+            <h3>{{ stats.open }}</h3>
+            <p>Open Tickets</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box warning"><i class="fa fa-clock"></i></div>
+        <div>
+            <h3>{{ stats.slaBreached }}</h3>
+            <p>SLA Breaches</p>
+        </div>
+        <span class="trend down" *ngIf="stats.slaBreached > 0">Action Req.</span>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box critical"><i class="fa fa-exclamation-circle"></i></div>
+        <div>
+            <h3>{{ stats.critical }}</h3>
+            <p>Critical Priority</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box blue"><i class="fa fa-spinner fa-spin-hover"></i></div>
+        <div>
+            <h3>{{ stats.inProgress }}</h3>
+            <p>In Progress</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid full-width">
+        <div class="card">
+            <div class="card-header-row filters-row">
+                <h3><i class="fa fa-ticket-alt"></i> Support Tickets</h3>
+                
+                <div class="filters">
+                    <select class="filter-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+                        <option value="">All Statuses</option>
+                        <option value="OPEN">Open</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="ESCALATED">Escalated</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+
+                    <select class="filter-select" [(ngModel)]="priorityFilter" (change)="onFilterChange()">
+                        <option value="">All Priorities</option>
+                        <option value="CRITICAL">Critical</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div *ngIf="isLoading" class="loading-state">
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <p>Loading tickets...</p>
+            </div>
+
+            <table class="admin-table" *ngIf="!isLoading && tickets.length > 0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Subject / Category</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>SLA Deadline</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let t of tickets" [class.breached]="t.slaBreached">
+                        <td>#{{ t.id }}</td>
+                        <td>
+                            <strong>{{ t.userName || 'Unknown' }}</strong><br>
+                            <small class="text-muted">{{ t.userEmail }}</small>
+                        </td>
+                        <td>
+                            <strong class="ticket-title">{{ t.title }}</strong><br>
+                            <span class="category-badge">{{ t.category }}</span>
+                        </td>
+                        <td><span class="priority-indicator" [ngClass]="getPriorityClass(t.priority)">{{ t.priority }}</span></td>
+                        <td><span class="badge" [ngClass]="getStatusClass(t.status)">{{ t.status }}</span></td>
+                        <td>
+                            {{ t.slaDeadlineStr | date:'MMM dd, HH:mm' }}
+                            <i *ngIf="t.slaBreached" class="fa fa-exclamation-triangle text-red" title="SLA Breached!"></i>
+                        </td>
+                        <td>
+                            <button class="btn-action view" (click)="viewTicket(t)">View & Respond</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div *ngIf="!isLoading && tickets.length === 0" class="empty-state">
+                <i class="fa fa-check-circle"></i>
+                <p>No tickets found matching your filters. Great job!</p>
+            </div>
+
+            <div class="pagination" *ngIf="totalPages > 1">
+                <button (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+                <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+                <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+            </div>
+        </div>
+    </div>
+  </main>
+</div>
+
+<!-- Ticket View Modal / Panel -->
+<div class="modal-overlay" *ngIf="selectedTicket" (click)="closeTicketView()">
+    <div class="ticket-modal" (click)="$event.stopPropagation()">
+        
+        <div class="ticket-modal-header">
+            <div class="header-info">
+                <h2>#{{ selectedTicket.id }} - {{ selectedTicket.title }}</h2>
+                <div class="ticket-meta">
+                    <span class="badge" [ngClass]="getStatusClass(selectedTicket.status)">{{ selectedTicket.status }}</span>
+                    <span class="priority-indicator" [ngClass]="getPriorityClass(selectedTicket.priority)">{{ selectedTicket.priority }}</span>
+                    <span class="category-badge">{{ selectedTicket.category }}</span>
+                </div>
+            </div>
+            <button class="btn-close" (click)="closeTicketView()"><i class="fa fa-times"></i></button>
+        </div>
+
+        <div class="ticket-modal-body">
+            
+            <div class="ticket-sidebar">
+                <div class="info-block">
+                    <h4>User Details</h4>
+                    <p><strong>Name:</strong> {{ selectedTicket.userName }}</p>
+                    <p><strong>Email:</strong> {{ selectedTicket.userEmail }}</p>
+                    <p><strong>Created:</strong> {{ selectedTicket.createdAtStr | date:'medium' }}</p>
+                </div>
+
+                <div class="info-block ai-block" *ngIf="selectedTicket.aiSummary">
+                    <h4><i class="fa fa-robot"></i> AI Summary</h4>
+                    <p>{{ selectedTicket.aiSummary }}</p>
+                </div>
+                
+                <div class="info-block actions-block">
+                    <h4>Admin Actions</h4>
+                    <button class="btn-block btn-in-progress" *ngIf="selectedTicket.status === 'OPEN'" (click)="updateTicketStatus(selectedTicket, 'IN_PROGRESS')" [disabled]="isActionLoading">Mark In Progress</button>
+                    <button class="btn-block btn-resolve" *ngIf="selectedTicket.status !== 'RESOLVED' && selectedTicket.status !== 'CLOSED'" (click)="updateTicketStatus(selectedTicket, 'RESOLVED')" [disabled]="isActionLoading">Resolve Ticket</button>
+                    <button class="btn-block btn-close-ticket" *ngIf="selectedTicket.status === 'RESOLVED'" (click)="updateTicketStatus(selectedTicket, 'CLOSED')" [disabled]="isActionLoading">Close Ticket</button>
+                </div>
+            </div>
+
+            <div class="ticket-conversation">
+                <div class="conversation-scroll">
+                    <!-- Original Message -->
+                    <div class="message-bubble user-message">
+                        <div class="bubble-header">
+                            <strong>{{ selectedTicket.userName }}</strong>
+                            <small>{{ selectedTicket.createdAtStr | date:'short' }}</small>
+                        </div>
+                        <div class="bubble-body">
+                            {{ selectedTicket.description }}
+                        </div>
+                    </div>
+                    
+                    <div class="ai-enhancement" *ngIf="selectedTicket.enhancedDescription">
+                        <small><i class="fa fa-magic"></i> User used AI enhancement before submitting</small>
+                    </div>
+
+                    <!-- Responses -->
+                    <div *ngFor="let res of ticketResponses" class="message-bubble" [ngClass]="res.isStaff ? 'staff-message' : 'user-message'">
+                        <div class="bubble-header">
+                            <strong>{{ res.responderName }} <span class="staff-badge" *ngIf="res.isStaff">STAFF</span></strong>
+                            <small>{{ res.createdAtStr | date:'short' }}</small>
+                        </div>
+                        <div class="bubble-body">
+                            {{ res.message }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reply Box -->
+                <div class="reply-box" *ngIf="selectedTicket.status !== 'CLOSED'">
+                    <textarea [(ngModel)]="replyMessage" placeholder="Type your response to the user..."></textarea>
+                    <div class="reply-actions">
+                        <button class="btn-send" (click)="sendReply()" [disabled]="!replyMessage.trim() || isActionLoading">
+                            <i class="fa fa-paper-plane" *ngIf="!isActionLoading"></i>
+                            <i class="fa fa-spinner fa-spin" *ngIf="isActionLoading"></i> Send Reply
+                        </button>
+                    </div>
+                </div>
+                <div class="reply-box closed-notice" *ngIf="selectedTicket.status === 'CLOSED'">
+                    <p><i class="fa fa-lock"></i> This ticket is closed and cannot receive new replies.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

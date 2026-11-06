@@ -1,0 +1,157 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ" class="logo-img">
+    </div>
+    <div class="nav-menu">
+      <a routerLink="/FreelancerFeed" routerLinkActive="active"><i class="fa fa-stream"></i> Feed</a>
+      <a routerLink="/FreelancerDashboard" routerLinkActive="active"><i class="fa fa-th-large"></i> Dashboard</a>
+      <a routerLink="/FreelancerProfileManager" routerLinkActive="active"><i class="fa fa-user-circle"></i> Profile</a>
+      <a routerLink="/FreelancerContracts" routerLinkActive="active" class="active-link"><i class="fa fa-briefcase"></i> My Jobs</a>
+      <a routerLink="/Messages" routerLinkActive="active"><i class="fa fa-comment-dots"></i> Messages</a>
+      <a routerLink="/FreelancerWallet" routerLinkActive="active"><i class="fa fa-wallet"></i> Wallet</a>
+    </div>
+    <div class="nav-actions">
+      <div class="user-profile" routerLink="/FreelancerProfileManager" style="cursor: pointer;">
+        <img [src]="currentUser?.profilePictureUrl || 'https://placehold.co/40x40/3b82f6/ffffff?text=' + (currentUser?.firstName ? currentUser.firstName.charAt(0) : 'F')" alt="Freelancer">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout-container">
+  <main class="main-content">
+    
+    <header class="page-header">
+      <div class="header-text">
+        <h1>My Jobs & Contracts</h1>
+        <p>Track your active projects, review offers, and managed history.</p>
+      </div>
+      
+      <div class="header-stats">
+        <div class="stat-pill">
+            <span class="label">Active</span>
+            <span class="value" style="color: var(--primary);">{{ getActiveCount() }}</span>
+        </div>
+        <div class="stat-pill">
+            <span class="label">Pending</span>
+            <span class="value" style="color: #f59e0b;">{{ getPendingCount() }}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="controls-bar">
+        <div class="tabs">
+            <button class="tab-btn" [class.active]="currentTab === 'active'" (click)="currentTab = 'active'">
+                Active Contracts <span class="badge">{{ getActiveCount() }}</span>
+            </button>
+            
+            <button class="tab-btn" [class.active]="currentTab === 'offers'" (click)="currentTab = 'offers'">
+                Job Offers <span class="badge yellow">{{ getPendingCount() }}</span>
+            </button>
+
+            <button class="tab-btn" [class.active]="currentTab === 'rejected'" (click)="currentTab = 'rejected'">
+                Rejected <span class="badge red">{{ getRejectedCount() }}</span>
+            </button>
+        </div>
+
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="Search projects...">
+        </div>
+    </div>
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 60px;">
+        <i class="fa fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i>
+    </div>
+
+    <div *ngIf="!isLoading">
+
+        <div class="job-list" *ngIf="currentTab === 'active'">
+            <div *ngIf="getActiveCount() === 0" class="empty-state">
+                <i class="fa fa-folder-open"></i>
+                <p>You don't have any active jobs yet.</p>
+                <button class="btn-create-nav" routerLink="/FreelancerFeed">Find Work</button>
+            </div>
+
+            <ng-container *ngFor="let contract of contracts">
+                <div class="contract-card" *ngIf="contract.status === 'ACTIVE'">
+                    <div class="card-status in-progress"><i class="fa fa-bolt"></i> In Progress</div>
+                    <div class="card-body">
+                        <div class="job-main">
+                            <h3>{{ contract.projectTitle || 'Untitled Project' }}</h3>
+                            <span class="client-name">Client: <strong>{{ contract.clientName }}</strong></span>
+                            <div class="job-meta">
+                                <span><i class="fa fa-calendar-alt"></i> Started: {{ contract.startDate | date:'mediumDate' }}</span>
+                            </div>
+                        </div>
+                        <div class="earnings-box">
+                            <small>Value</small>
+                            <strong>${{ contract.rate | number:'1.2-2' }}</strong>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="footer-actions">
+                            <button class="btn-action secondary" [routerLink]="['/FreelancerContractDetails', contract.id]">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="job-list" *ngIf="currentTab === 'offers'">
+            <div *ngIf="getPendingCount() === 0" class="empty-state">
+                <p>No pending job offers at the moment.</p>
+            </div>
+
+            <ng-container *ngFor="let contract of contracts">
+                <div class="contract-card offer-card" *ngIf="contract.status === 'SENT'">
+                    <div class="card-status status-pending"><i class="fa fa-bell"></i> New Offer</div>
+                    <div class="card-body">
+                        <div class="job-main">
+                            <h3>{{ contract.projectTitle }}</h3>
+                            <span class="client-name">From: <strong>{{ contract.clientName }}</strong></span>
+                        </div>
+                        <div class="earnings-box">
+                            <small>Offered Rate</small>
+                            <strong>${{ contract.rate | number:'1.2-2' }}</strong>
+                        </div>
+                    </div>
+                    <div class="card-footer footer-yellow">
+                        <div class="footer-actions">
+                            <button class="btn-action danger-outline" (click)="rejectContract(contract.id!)">Decline</button>
+                            <button class="btn-action primary" [routerLink]="['/FreelancerContractReview', contract.id]">Review & Sign</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="job-list" *ngIf="currentTab === 'rejected'">
+            <div *ngIf="getRejectedCount() === 0" class="empty-state">
+                <p>No rejected contracts in your history.</p>
+            </div>
+
+            <ng-container *ngFor="let contract of contracts">
+                <div class="contract-card rejected-card" *ngIf="contract.status === 'REJECTED'">
+                    <div class="card-status status-rejected"><i class="fa fa-times-circle"></i> Declined</div>
+                    <div class="card-body">
+                        <div class="job-main">
+                            <h3 style="color: #999;">{{ contract.projectTitle }}</h3>
+                            <span class="client-name">Client: {{ contract.clientName }}</span>
+                        </div>
+                        <div class="earnings-box" style="opacity: 0.5;">
+                            <small>Bid Amount</small>
+                            <strong>${{ contract.rate | number:'1.2-2' }}</strong>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="last-updated">Offer was declined by you.</span>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+    </div>
+  </main>
+</div>

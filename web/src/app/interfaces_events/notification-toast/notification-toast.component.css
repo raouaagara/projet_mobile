@@ -1,0 +1,325 @@
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.toast-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  pointer-events: all;
+  min-width: 360px;
+  max-width: 420px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.toast-notification:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.toast-notification::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  border-radius: 20px 0 0 20px;
+}
+
+.toast-high::before {
+  background: linear-gradient(180deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+.toast-high {
+  border-color: #ffe5e5;
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.toast-normal::before {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.toast-normal {
+  border-color: #e5e9ff;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+}
+
+.toast-low::before {
+  background: linear-gradient(180deg, #a0aec0 0%, #718096 100%);
+}
+
+.toast-low {
+  border-color: #f0f0f0;
+}
+
+.toast-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+  animation: bounce-rotate 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+@keyframes bounce-rotate {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.toast-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: #f7fafc;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.toast-close:hover {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  transform: rotate(90deg);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.toast-message {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.toast-countdown {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 10px 0;
+  padding: 14px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  border-radius: 14px;
+  border: 2px solid #7dd3fc;
+  box-shadow: 0 4px 12px rgba(125, 211, 252, 0.3);
+}
+
+.countdown-circle {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.countdown-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.countdown-bg {
+  fill: none;
+  stroke: #bae6fd;
+  stroke-width: 4;
+}
+
+.countdown-progress {
+  fill: none;
+  stroke: #0284c7;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+  filter: drop-shadow(0 0 4px rgba(2, 132, 199, 0.5));
+}
+
+.countdown-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.countdown-number {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0369a1;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(3, 105, 161, 0.2);
+}
+
+.countdown-label {
+  display: block;
+  font-size: 10px;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+.countdown-message {
+  font-size: 13px;
+  color: #0369a1;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.toast-time {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* High priority styling */
+.toast-high .toast-title {
+  color: #c53030;
+}
+
+.toast-high .toast-countdown {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border-color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(252, 165, 165, 0.3);
+}
+
+.toast-high .countdown-bg {
+  stroke: #fecaca;
+}
+
+.toast-high .countdown-progress {
+  stroke: #dc2626;
+  filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.5));
+}
+
+.toast-high .countdown-number {
+  color: #dc2626;
+  text-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.toast-high .countdown-label {
+  color: #ef4444;
+}
+
+.toast-high .countdown-message {
+  color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toast-container {
+    right: 12px;
+    left: 12px;
+    max-width: none;
+  }
+
+  .toast-notification {
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* Pulse animation for high priority */
+.toast-high .toast-icon {
+  animation: bounce-rotate 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+             pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 4px 8px rgba(255, 107, 107, 0.3));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 6px 12px rgba(255, 107, 107, 0.6));
+  }
+}
+
+/* Sparkle effect for new notifications */
+.toast-notification::after {
+  content: '✨';
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  font-size: 16px;
+  animation: sparkle 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+.toast-normal::after {
+  animation-delay: 0.5s;
+}
+
+.toast-high::after {
+  content: '🔥';
+  animation-delay: 0.3s;
+}

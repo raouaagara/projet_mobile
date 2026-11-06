@@ -1,0 +1,81 @@
+:host {
+  --primary: #198754;
+  --primary-hover: #146c43;
+  --bg-body: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- NAVBAR (Same as standard) --- */
+.navbar { background: var(--surface); height: 64px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+.nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 100%; }
+.nav-brand { display: flex; align-items: center; cursor: pointer; margin-right: 40px; }
+.logo-img { height: 40px; width: auto; object-fit: contain; }
+.nav-menu { display: flex; gap: 8px; flex: 1; }
+.nav-menu a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.9rem; padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+.nav-menu a:hover, .nav-menu a.active-link { color: var(--primary); background: #ecfdf5; font-weight: 600; }
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.btn-create-nav { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.user-profile img { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border); }
+
+/* --- LAYOUT --- */
+.layout-container { background: var(--bg-body); min-height: calc(100vh - 64px); }
+.main-content { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+/* Header */
+.top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.welcome-text h1 { margin: 0 0 5px; font-size: 1.8rem; color: var(--text-main); }
+.welcome-text p { margin: 0; color: var(--text-muted); }
+.header-actions { display: flex; gap: 12px; }
+.btn-create { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.btn-create:hover { background: var(--primary-hover); }
+.btn-outline { background: white; color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+/* Grid */
+.edit-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+
+/* Card Common */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+.edit-card { padding: 24px; }
+.card-header { margin-bottom: 20px; }
+.card-header h3 { margin: 0 0 6px; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+.card-header p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+.form-group input, .form-group textarea, .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; outline: none; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; }
+.form-group input:focus, .form-group textarea:focus, .form-control:focus { border-color: var(--primary); }
+
+/* --- BRAND ASSETS SECTION --- */
+.assets-row { display: flex; gap: 24px; }
+.asset-col label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+.flex-grow { flex: 1; }
+
+/* Logo Upload */
+.logo-upload-box { position: relative; width: 100px; height: 100px; }
+.logo-upload-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+.btn-icon-edit { position: absolute; bottom: 0; right: 0; background: var(--text-main); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Cover Upload */
+.cover-upload-box { position: relative; height: 140px; border-radius: 8px; overflow: hidden; background: #e5e7eb; }
+.cover-upload-box img { width: 100%; height: 100%; object-fit: cover; }
+.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; }
+.cover-upload-box:hover .overlay { opacity: 1; }
+.btn-outline-white { background: transparent; border: 1px solid white; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.btn-outline-white:hover { background: white; color: var(--text-main); }
+
+/* Social Inputs */
+.social-input { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; padding: 0 10px; margin-bottom: 12px; }
+.social-input i { color: var(--text-muted); font-size: 1.1rem; width: 24px; }
+.social-input input { border: none; padding: 10px; width: 100%; outline: none; }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .nav-menu { display: none; }
+    .edit-grid { grid-template-columns: 1fr; }
+    .assets-row { flex-direction: column; }
+}
