@@ -1,0 +1,47 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <svg class="brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#10b981"/>
+        <text x="50" y="65" font-size="50" font-weight="bold" fill="white" text-anchor="middle">C</text>
+      </svg>
+      <span class="logo-text">Catch<span class="opp-text">OPP</span></span>
+    </div>
+    <div class="quiz-title">{{ testTitle }}</div>
+  </div>
+</nav>
+
+<div class="main-container">
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="fill" [style.width.%]="progress"></div></div>
+    <span class="progress-text">Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading test...</div>
+  <div class="question-card" *ngIf="!loading && questions[currentIndex]">
+    <h2>{{ questions[currentIndex].questionText }}</h2>
+    <div class="options">
+      <button class="option" [class.selected]="answers[questions[currentIndex].id!] === 'A'" (click)="selectAnswer(questions[currentIndex].id!, 'A')">
+        <span class="letter">A</span> {{ questions[currentIndex].optionA }}
+      </button>
+      <button class="option" [class.selected]="answers[questions[currentIndex].id!] === 'B'" (click)="selectAnswer(questions[currentIndex].id!, 'B')">
+        <span class="letter">B</span> {{ questions[currentIndex].optionB }}
+      </button>
+      <button class="option" [class.selected]="answers[questions[currentIndex].id!] === 'C'" (click)="selectAnswer(questions[currentIndex].id!, 'C')">
+        <span class="letter">C</span> {{ questions[currentIndex].optionC }}
+      </button>
+      <button class="option" [class.selected]="answers[questions[currentIndex].id!] === 'D'" (click)="selectAnswer(questions[currentIndex].id!, 'D')">
+        <span class="letter">D</span> {{ questions[currentIndex].optionD }}
+      </button>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" (click)="prev()" [disabled]="currentIndex === 0"><i class="fa fa-arrow-left"></i> Previous</button>
+    <button *ngIf="currentIndex < questions.length - 1" class="btn primary" (click)="next()">Next <i class="fa fa-arrow-right"></i></button>
+    <button *ngIf="currentIndex === questions.length - 1" class="btn primary" (click)="submit()" [disabled]="submitting">
+      {{ submitting ? 'Submitting...' : 'Submit' }} <i class="fa" [ngClass]="submitting ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+    </button>
+  </div>
+</div>
+
