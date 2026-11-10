@@ -34,17 +34,9 @@ class MenuScreen extends ConsumerWidget {
             leading: UserAvatar(user: user, radius: 28),
             title: Text(user?.fullName ?? session?.email ?? ''),
             subtitle: Text(isFreelancer ? 'Freelancer' : 'Client'),
-            onTap: () => context.push(AppPaths.profile),
           ),
           const Divider(),
-          entry(Icons.person_outline, 'My profile', AppPaths.profile),
-          if (isFreelancer)
-            entry(Icons.verified_outlined, 'Skill tests & certifications', AppPaths.skillTests),
-          entry(Icons.account_balance_wallet_outlined, 'Wallet', AppPaths.wallet),
           if (isFreelancer) ...[
-            entry(Icons.workspace_premium_outlined, 'Subscription', AppPaths.subscriptions),
-            entry(Icons.card_giftcard_outlined, 'Rewards', AppPaths.rewards),
-            entry(Icons.share_outlined, 'Referral', AppPaths.referral),
             entry(Icons.event_available_outlined, 'My availability', AppPaths.availability),
           ] else
             entry(Icons.public, 'World clock', AppPaths.worldClock),
