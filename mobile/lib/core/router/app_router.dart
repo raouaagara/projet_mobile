@@ -7,14 +7,9 @@ import '../../features/auth/data/onboarding_store.dart';
 import '../../features/auth/domain/auth_session.dart';
 import '../../features/auth/presentation/auth_controller.dart';
 import '../../features/auth/presentation/splash_screen.dart';
-import '../../features/community/community_routes.dart';
-import '../../features/contracts/contracts_routes.dart';
 import '../../features/messaging/messaging_routes.dart';
-import '../../features/profile/profile_routes.dart';
-import '../../features/projects/projects_routes.dart';
 import '../../features/shell/main_shell.dart';
 import '../../features/shell/menu_screen.dart';
-import '../../features/subscriptions/subscriptions_routes.dart';
 import 'app_paths.dart';
 
 /// Assembles the routes exported by each module. Module owners edit their own
@@ -41,22 +36,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => MainShell(navigationShell: shell),
         branches: [
-          StatefulShellBranch(routes: [projectsTab]),
-          StatefulShellBranch(routes: [contractsTab]),
           StatefulShellBranch(routes: [messagesTab]),
-          StatefulShellBranch(routes: [communityTab]),
           StatefulShellBranch(routes: [
             GoRoute(path: AppPaths.menu, builder: (context, state) => const MenuScreen()),
           ]),
         ],
       ),
       // Full-screen pages, displayed above the bottom navigation.
-      ...profileRoutes,
-      ...projectsRoutes,
-      ...contractsRoutes,
       ...messagingRoutes,
-      ...subscriptionsRoutes,
-      ...communityRoutes,
     ],
   );
 });
@@ -81,11 +68,11 @@ String? _redirect({
     if (onboardingDone.value != true) return location == AppPaths.onboarding ? null : AppPaths.onboarding;
     return onAuthPage ? null : AppPaths.login;
   }
-  if (onAuthPage || location == AppPaths.splash || location == AppPaths.onboarding) return AppPaths.projects;
+  if (onAuthPage || location == AppPaths.splash || location == AppPaths.onboarding) return AppPaths.messages;
 
   bool under(List<String> roots) =>
       roots.any((root) => location == root || location.startsWith('$root/'));
-  if (session.isClient && under(AppPaths.freelancerOnly)) return AppPaths.projects;
-  if (session.isFreelancer && under(AppPaths.clientOnly)) return AppPaths.projects;
+  if (session.isClient && under(AppPaths.freelancerOnly)) return AppPaths.messages;
+  if (session.isFreelancer && under(AppPaths.clientOnly)) return AppPaths.messages;
   return null;
 }
