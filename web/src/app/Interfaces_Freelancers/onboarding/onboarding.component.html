@@ -1,0 +1,125 @@
+<div class="custom-toast" [class.show]="notification.visible" [ngClass]="notification.type">
+  <i class="fa" [ngClass]="{'fa-check-circle': notification.type === 'success', 'fa-times-circle': notification.type === 'error', 'fa-info-circle': notification.type === 'info'}"></i>
+  <span>{{ notification.message }}</span>
+</div>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand" routerLink="/FreelancerFeed">
+      <img src="assets/logo.png" alt="CatchIQ Logo" class="logo-img">
+    </div>
+    
+    <div class="nav-search">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search for jobs (e.g. Angular, Design)...">
+    </div>
+
+    <div class="nav-actions">
+       <a routerLink="/LeaderboardFreelancer" class="nav-link">
+         <i class="fa fa-trophy"></i> Leaderboard
+       </a>
+       <a href="#" class="nav-link"><i class="fa fa-comments"></i> Messages</a>
+       <div class="nav-divider"></div>
+       <div class="user-profile-menu" routerLink="/FreelancerProfil">
+        <img src="https://i.pravatar.cc/150?u=10" alt="Kenneth">
+        <i class="fa fa-chevron-down"></i>
+       </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-layout-centered">
+  
+  <div class="onboarding-card card">
+    
+    <div class="header-section">
+      <h1>Account Setup</h1>
+      <p>Choose the technologies you work with and upload your resume to complete your profile.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-box">
+      <label class="section-label"><i class="fa fa-file-upload"></i> Upload CV / Portfolio</label>
+      
+      <div class="upload-wrapper">
+        <input type="file" id="cvUpload" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" hidden>
+        
+        <label for="cvUpload" class="upload-area" [class.has-file]="selectedFileName !== ''">
+          <div *ngIf="isParsingMode" style="text-align: center; margin-top: 15px; color: var(--primary); font-weight: 600; animation: pulse 1.5s infinite;">
+            <i class="fa fa-robot fa-spin"></i> Intelligence Artificielle en train de lire votre CV...
+          </div>
+          <i class="fa" [class.fa-file-pdf]="selectedFileName" [class.text-green]="selectedFileName" [class.fa-cloud-upload-alt]="!selectedFileName"></i>
+          
+          <span *ngIf="!selectedFileName" class="upload-text">
+            <strong>Click to browse</strong> or drag and drop your CV<br>
+            <small>Supports: PDF, DOCX (Max 5MB)</small>
+          </span>
+          
+          <span *ngIf="selectedFileName" class="file-name">
+            {{ selectedFileName }}
+            <small class="change-file-text">Click to change file</small>
+          </span>
+
+        </label>
+      </div>
+    </div>
+
+    <div class="section-box">
+      <div class="skill-header">
+        <label class="section-label"><i class="fa fa-tags"></i> Select Competences</label>
+        
+        <div class="nav-search mini-search">
+          <i class="fa fa-search"></i>
+          <input type="text" [(ngModel)]="searchText" (keyup)="applyFilter()" placeholder="Filter skills...">
+        </div>
+      </div>
+
+      <div class="skills-grid">
+        <div 
+          class="skill-chip" 
+          *ngFor="let skill of paginatedSkills"
+          [class.active]="isSelected(skill)"
+          (click)="toggleSkill(skill)">
+          
+          <div class="check-circle">
+            <i class="fa fa-check"></i>
+          </div>
+          <div class="skill-info">
+            <strong>{{ skill.nom }}</strong>
+            <span>{{ skill.categorie }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination-controls" *ngIf="filteredSkills.length > pageSize">
+        <button class="btn-page" [disabled]="currentPage === 1" (click)="prevPage()">
+          <i class="fa fa-chevron-left"></i> Prev
+        </button>
+        
+        <span class="page-info">
+          Page <strong>{{ currentPage }}</strong> of {{ totalPages }}
+        </span>
+        
+        <button class="btn-page" [disabled]="currentPage === totalPages" (click)="nextPage()">
+          Next <i class="fa fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div *ngIf="filteredSkills.length === 0" class="empty-state">
+        <i class="fa fa-search" style="font-size: 2rem; color: #d1d5db; margin-bottom: 10px; display: block;"></i>
+        No skills found matching "{{ searchText }}"
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <div class="summary">
+        <span class="badge badge-primary">{{ selectedSkills.size }}</span> skills selected
+      </div>
+      <button class="btn-primary-full" style="width: auto; padding: 12px 30px;" (click)="completeProfile()">
+        Complete Setup <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
+      </button>
+    </div>
+
+  </div>
+</div>
